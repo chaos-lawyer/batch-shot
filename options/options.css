@@ -449,8 +449,26 @@ small {
 }
 
 .footer {
-  justify-content: flex-end;
+  justify-content: space-between;
   padding-top: 16px;
+}
+
+.github-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease, background-color 0.2s ease, transform 0.15s ease;
+}
+
+.github-link:hover {
+  color: var(--text-main);
+  background: var(--btn-secondary-hover);
+  transform: translateY(-1px);
 }
 
 button {

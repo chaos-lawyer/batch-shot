@@ -364,5 +364,8 @@
   },
   "commandOpenPopupDescription": {
     "message": "Open BatchShot popup"
+  },
+  "githubLinkTitle": {
+    "message": "View on GitHub"
   }
 }

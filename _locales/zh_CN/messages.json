@@ -364,5 +364,8 @@
   },
   "commandOpenPopupDescription": {
     "message": "打开 BatchShot 弹出面板"
+  },
+  "githubLinkTitle": {
+    "message": "在 GitHub 上查看"
   }
 }
