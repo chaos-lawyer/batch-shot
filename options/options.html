@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title data-i18n="optionsTitle">BatchShot Settings</title>
+    <link rel="stylesheet" href="options.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="header">
+        <div>
+          <h1 data-i18n="optionsTitle">Settings</h1>
+          <p data-i18n="optionsSubtitle">Configure output and metadata defaults.</p>
+        </div>
+        <p class="save-state" id="saveState" data-i18n="savedStatus">Saved</p>
+      </header>
+
+      <section class="section">
+        <h2 data-i18n="outputSectionTitle">Output</h2>
+
+        <div class="grid">
+          <div class="field">
+            <label for="format" data-i18n="formatLabel">Format</label>
+            <select id="format">
+              <option value="png">PNG</option>
+              <option value="jpg">JPG</option>
+              <option value="pdf">PDF</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label for="screenshotQuality" data-i18n="screenshotQualityLabel">Quality</label>
+            <div class="inline">
+              <input id="screenshotQuality" type="range" min="1" max="100" step="1" value="92">
+              <span id="screenshotQualityValue">92%</span>
+            </div>
+            <small data-i18n="screenshotQualityHelp">Applies to JPG and PDF only.</small>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="filenamePattern" data-i18n="filenameLabel">Filename</label>
+          <input id="filenamePattern" type="text" value="{index}-{host}">
+          <small data-i18n="filenameHelp">Use {index}, {host}, {title}, {folder}, {datetime}</small>
+        </div>
+
+        <div class="field">
+          <label for="filenameDateTimeFormat" data-i18n="filenameDateTimeFormatLabel">Filename date/time format</label>
+          <input id="filenameDateTimeFormat" type="text" value="YYYY-MM-DD_HHmmss">
+          <small data-i18n="dateTimeFormatHelp">Use YYYY, MM, DD, HH, mm, ss</small>
+        </div>
+
+      </section>
+
+      <section class="section">
+        <h2 data-i18n="metadataSectionTitle">Metadata</h2>
+
+        <label class="check-row">
+          <input id="metadataEnabled" type="checkbox" aria-controls="metadataControls" aria-expanded="false">
+          <span data-i18n="metadataEnabledLabel">Add metadata to image</span>
+        </label>
+
+        <div id="metadataControls">
+          <div class="metadata-inner">
+            <div class="grid">
+            <div class="field">
+              <label for="metadataPosition" data-i18n="metadataPositionLabel">Position</label>
+              <select id="metadataPosition">
+                <option value="top" data-i18n="metadataPositionTop">Top</option>
+                <option value="bottom" data-i18n="metadataPositionBottom">Bottom</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="metadataLayout" data-i18n="metadataLayoutLabel">Layout</label>
+              <select id="metadataLayout">
+                <option value="stacked" data-i18n="metadataLayoutStacked">Stacked</option>
+                <option value="inline" data-i18n="metadataLayoutInline">Inline</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="metadataFields" data-i18n="metadataFieldsLabel">Fields and order</label>
+            <input id="metadataFields" type="text" value="capturedAt,url">
+            <small data-i18n="metadataFieldsHelp">Supports capturedAt/time, url, title, host/domain, index, total</small>
+          </div>
+
+          <div class="field">
+            <label for="metadataDateTimeFormat" data-i18n="metadataDateTimeFormatLabel">Metadata date/time format</label>
+            <input id="metadataDateTimeFormat" type="text" value="YYYY/MM/DD HH:mm">
+            <small data-i18n="dateTimeFormatHelp">Use YYYY, MM, DD, HH, mm, ss</small>
+          </div>
+
+          <hr class="divider">
+
+          <div class="grid three">
+            <div class="field">
+              <label for="metadataFontSize" data-i18n="metadataFontSizeLabel">Font</label>
+              <input id="metadataFontSize" type="number" min="10" max="64" value="24">
+            </div>
+
+            <div class="field">
+              <label for="metadataPadding" data-i18n="metadataPaddingLabel">Padding</label>
+              <input id="metadataPadding" type="number" min="0" max="96" value="10">
+            </div>
+
+            <div class="field">
+              <label for="metadataGap" data-i18n="metadataGapLabel">Gap</label>
+              <input id="metadataGap" type="number" min="0" max="64" value="10">
+            </div>
+          </div>
+
+          <div class="grid">
+            <div class="field">
+              <label for="metadataTextColor" data-i18n="metadataTextColorLabel">Text</label>
+              <input id="metadataTextColor" type="color" value="#ffffff">
+            </div>
+
+            <div class="field">
+              <label for="metadataBackgroundColor" data-i18n="metadataBackgroundColorLabel">Background</label>
+              <input id="metadataBackgroundColor" type="color" value="#000000">
+            </div>
+          </div>
+
+          <div class="grid">
+            <label class="check-row compact">
+              <input id="metadataLabelsEnabled" type="checkbox" checked>
+              <span data-i18n="metadataLabelsEnabledLabel">Show labels</span>
+            </label>
+
+            <label class="check-row compact">
+              <input id="metadataBoldLabels" type="checkbox" checked>
+              <span data-i18n="metadataBoldLabelsLabel">Bold labels</span>
+            </label>
+          </div>
+
+          <div class="field">
+            <label for="metadataSeparator" data-i18n="metadataSeparatorLabel">Inline separator</label>
+            <input id="metadataSeparator" type="text" value="  |  ">
+          </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2 data-i18n="reportSectionTitle">Report</h2>
+
+        <label class="check-row">
+          <input id="reportEnabled" type="checkbox" aria-controls="reportControls" aria-expanded="false">
+          <span data-i18n="reportEnabledLabel">Export screenshot report</span>
+        </label>
+
+        <div id="reportControls">
+          <div class="report-inner">
+            <div class="field">
+              <label for="reportFormat" data-i18n="reportFormatLabel">Report format</label>
+              <select id="reportFormat">
+                <option value="csv">CSV</option>
+                <option value="xlsx">XLSX</option>
+              </select>
+            </div>
+
+            <div class="field standalone">
+              <label for="reportFields" data-i18n="reportFieldsLabel">Fields and order</label>
+              <input id="reportFields" type="text" value="index,url,title,status,filename,error" spellcheck="false">
+              <small data-i18n="reportFieldsHelp">Use index, url, title, status, filename, error. Separate fields with commas.</small>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2 data-i18n="othersSectionTitle">Others</h2>
+
+        <label class="check-row">
+          <input id="closeBatchTabsAfterCapture" type="checkbox">
+          <span data-i18n="closeBatchTabsAfterCaptureLabel">Close each page after batch capture</span>
+        </label>
+
+        <label class="check-row">
+          <input id="urlListWrap" type="checkbox">
+          <span data-i18n="urlListWrapLabel">Wrap URLs in the popup URL list</span>
+        </label>
+
+        <div class="field standalone">
+          <label for="historyLimit" data-i18n="historyLimitLabel">History records</label>
+          <input id="historyLimit" type="number" min="1" max="50" step="1" value="10" inputmode="numeric">
+          <small data-i18n="historyLimitHelp">Maximum saved records for each history menu.</small>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <h2 data-i18n="shortcutsSectionTitle">Shortcuts</h2>
+          <button id="openChromeShortcutsButton" type="button" class="secondary" data-i18n="openChromeShortcutsButton">Edit in Chrome</button>
+        </div>
+
+        <div class="shortcut-list" id="shortcutList" aria-live="polite">
+          <div class="shortcut-row">
+            <span data-i18n="shortcutCaptureCurrentPageLabel">Capture current page</span>
+            <kbd id="captureCurrentPageShortcut">Alt+Shift+S</kbd>
+          </div>
+          <div class="shortcut-row">
+            <span data-i18n="shortcutCaptureCurrentWindowLabel">Capture all pages in current window</span>
+            <kbd id="captureCurrentWindowShortcut">Alt+Shift+W</kbd>
+          </div>
+          <div class="shortcut-row">
+            <span data-i18n="shortcutOpenPopupLabel">Open popup</span>
+            <kbd id="openPopupShortcut">Alt+Shift+B</kbd>
+          </div>
+        </div>
+        <small data-i18n="shortcutsHelp">Chrome manages extension shortcuts. Use the button to change or remove them.</small>
+      </section>
+
+      <section class="section">
+        <h2 data-i18n="appearanceSectionTitle">Appearance</h2>
+        <div class="field">
+          <label for="theme" data-i18n="themeLabel">Theme</label>
+          <select id="theme">
+            <option value="auto" data-i18n="themeAuto">Auto (System Default)</option>
+            <option value="light" data-i18n="themeLight">Light</option>
+            <option value="dark" data-i18n="themeDark">Dark</option>
+          </select>
+        </div>
+
+        <div class="field standalone">
+          <label for="appLanguage" data-i18n="languageLabel">Language</label>
+          <select id="appLanguage">
+            <option value="auto" data-i18n="languageAuto">Auto (Browser Default)</option>
+            <option value="en" data-i18n="languageEnglish">English</option>
+            <option value="zh_CN" data-i18n="languageChinese">简体中文</option>
+          </select>
+        </div>
+      </section>
+
+      <footer class="footer">
+        <button id="resetButton" type="button" class="secondary" data-i18n="resetOptionsButton">Reset</button>
+      </footer>
+    </main>
+
+    <script type="module" src="options.js"></script>
+  </body>
+</html>

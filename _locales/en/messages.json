@@ -1,0 +1,368 @@
+{
+  "appName": {
+    "message": "BatchShot"
+  },
+  "appDescription": {
+    "message": "Batch webpage screenshots with full-page stitching."
+  },
+  "popupTitle": {
+    "message": "BatchShot"
+  },
+  "popupSubtitle": {
+    "message": "Capture URL lists in batches, with full-page stitching or viewport shots"
+  },
+  "urlListLabel": {
+    "message": "URLs"
+  },
+  "urlListPlaceholder": {
+    "message": "Paste one URL per line"
+  },
+  "historyUrlsButton": {
+    "message": "Show URL history"
+  },
+  "historyTemplatesButton": {
+    "message": "Show template history"
+  },
+  "historyTemplateItemsButton": {
+    "message": "Show text list history"
+  },
+  "historyUrlsEmpty": {
+    "message": "No URL history yet."
+  },
+  "historyTemplatesEmpty": {
+    "message": "No template history yet."
+  },
+  "historyTemplateItemsEmpty": {
+    "message": "No text list history yet."
+  },
+  "historyLineCount": {
+    "message": "$COUNT$ line(s)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "historyDeleteButton": {
+    "message": "Delete"
+  },
+  "historyRenameButton": {
+    "message": "Rename"
+  },
+  "historyRenamePrompt": {
+    "message": "Name this history item"
+  },
+  "historyClearButton": {
+    "message": "Clear history"
+  },
+  "urlModeList": {
+    "message": "List"
+  },
+  "urlModeTemplate": {
+    "message": "Template"
+  },
+  "urlTemplateLabel": {
+    "message": "URL template"
+  },
+  "urlTemplatePlaceholder": {
+    "message": "https://www.baidu.com/s?wd=%s"
+  },
+  "urlTemplateItemsLabel": {
+    "message": "Text list"
+  },
+  "urlTemplateItemsPlaceholder": {
+    "message": "One search term per line"
+  },
+  "urlPreviewHelp": {
+    "message": "%s is replaced with each text line"
+  },
+  "urlPreviewCount": {
+    "message": "$COUNT$ URL(s)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "applyTemplateButton": {
+    "message": "Apply to list"
+  },
+  "captureModeLabel": {
+    "message": "Capture"
+  },
+  "modeFullPage": {
+    "message": "Full page"
+  },
+  "modeViewport": {
+    "message": "Viewport"
+  },
+  "formatLabel": {
+    "message": "Format"
+  },
+  "screenshotQualityLabel": {
+    "message": "Screenshot quality"
+  },
+  "screenshotQualityHelp": {
+    "message": "Only affects JPG and PDF; PNG stays lossless."
+  },
+  "delayLabel": {
+    "message": "Delay"
+  },
+  "delayHelp": {
+    "message": "seconds after load"
+  },
+  "delayTooltip": {
+    "message": "Wait this many seconds after a page loads before taking the screenshot."
+  },
+  "folderLabel": {
+    "message": "Folder"
+  },
+  "folderPlaceholder": {
+    "message": "BatchShot"
+  },
+  "folderTooltip": {
+    "message": "Leave empty to save in the Downloads folder root, or enter a folder name such as BatchShot to save there."
+  },
+  "filenameLabel": {
+    "message": "Filename"
+  },
+  "filenameHelp": {
+    "message": "Use {index}, {host}, {title}, {folder}, {datetime}"
+  },
+  "filenameDateTimeFormatLabel": {
+    "message": "Filename date/time format"
+  },
+  "reportEnabledLabel": {
+    "message": "Export screenshot report"
+  },
+  "reportFormatLabel": {
+    "message": "Report format"
+  },
+  "reportFieldsLabel": {
+    "message": "Fields and order"
+  },
+  "reportFieldsHelp": {
+    "message": "Use index, url, title, status, filename, error. Chinese names are also supported. Separate fields with commas."
+  },
+  "reportSectionTitle": {
+    "message": "Report"
+  },
+  "othersSectionTitle": {
+    "message": "Others"
+  },
+  "closeBatchTabsAfterCaptureLabel": {
+    "message": "Close each page after batch capture"
+  },
+  "urlListWrapLabel": {
+    "message": "Wrap URLs in the popup URL list"
+  },
+  "historyLimitLabel": {
+    "message": "History records"
+  },
+  "historyLimitHelp": {
+    "message": "Maximum saved records for each history menu."
+  },
+  "dateTimeFormatHelp": {
+    "message": "Use YYYY, MM, DD, HH, mm, ss"
+  },
+  "settingsButton": {
+    "message": "Settings"
+  },
+  "currentTabButton": {
+    "message": "Capture current page"
+  },
+  "currentWindowTabsButton": {
+    "message": "Capture all tabs in current window"
+  },
+  "currentTabRunningStatus": {
+    "message": "Capturing current page..."
+  },
+  "currentTabDoneStatus": {
+    "message": "Current page screenshot downloaded."
+  },
+  "currentTabErrorStatus": {
+    "message": "Could not capture current page."
+  },
+  "currentWindowTabsRunningStatus": {
+    "message": "Capturing current window tabs..."
+  },
+  "currentWindowTabsDoneStatus": {
+    "message": "$COUNT$ tab screenshot(s) downloaded.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "currentWindowTabsErrorStatus": {
+    "message": "Could not capture current window tabs."
+  },
+  "optionsTitle": {
+    "message": "Settings"
+  },
+  "optionsSubtitle": {
+    "message": "Configure output and metadata defaults."
+  },
+  "outputSectionTitle": {
+    "message": "Output"
+  },
+  "metadataSectionTitle": {
+    "message": "Metadata"
+  },
+  "resetOptionsButton": {
+    "message": "Reset"
+  },
+  "savedStatus": {
+    "message": "Saved"
+  },
+  "savingStatus": {
+    "message": "Saving..."
+  },
+  "saveErrorStatus": {
+    "message": "Could not save"
+  },
+  "startButton": {
+    "message": "Start"
+  },
+  "stopButton": {
+    "message": "Stop"
+  },
+  "pauseButton": {
+    "message": "Pause"
+  },
+  "resumeButton": {
+    "message": "Resume"
+  },
+  "idleStatus": {
+    "message": "Ready."
+  },
+  "runningStatus": {
+    "message": "Capturing..."
+  },
+  "pausedStatus": {
+    "message": "Paused."
+  },
+  "stoppingStatus": {
+    "message": "Stopping after current cleanup..."
+  },
+  "doneStatus": {
+    "message": "Done."
+  },
+  "emptyUrlError": {
+    "message": "Add at least one URL."
+  },
+  "urlTemplateMissingPlaceholderError": {
+    "message": "Template needs %s."
+  },
+  "metadataEnabledLabel": {
+    "message": "Add metadata to image"
+  },
+  "metadataPositionLabel": {
+    "message": "Position"
+  },
+  "metadataPositionTop": {
+    "message": "Top"
+  },
+  "metadataPositionBottom": {
+    "message": "Bottom"
+  },
+  "metadataLayoutLabel": {
+    "message": "Layout"
+  },
+  "metadataLayoutStacked": {
+    "message": "Stacked"
+  },
+  "metadataLayoutInline": {
+    "message": "Inline"
+  },
+  "metadataFieldsLabel": {
+    "message": "Fields and order"
+  },
+  "metadataFieldsHelp": {
+    "message": "Supports capturedAt/time, url, title, host/domain, index, total"
+  },
+  "metadataDateTimeFormatLabel": {
+    "message": "Metadata date/time format"
+  },
+  "metadataFontSizeLabel": {
+    "message": "Font"
+  },
+  "metadataPaddingLabel": {
+    "message": "Padding"
+  },
+  "metadataGapLabel": {
+    "message": "Gap"
+  },
+  "metadataTextColorLabel": {
+    "message": "Text color"
+  },
+  "metadataBackgroundColorLabel": {
+    "message": "Background color"
+  },
+  "metadataLabelsEnabledLabel": {
+    "message": "Show labels"
+  },
+  "metadataBoldLabelsLabel": {
+    "message": "Bold labels"
+  },
+  "metadataSeparatorLabel": {
+    "message": "Inline separator"
+  },
+  "appearanceSectionTitle": {
+    "message": "Appearance"
+  },
+  "themeLabel": {
+    "message": "Theme"
+  },
+  "themeAuto": {
+    "message": "Auto (System Default)"
+  },
+  "themeLight": {
+    "message": "Light"
+  },
+  "themeDark": {
+    "message": "Dark"
+  },
+  "languageLabel": {
+    "message": "Language"
+  },
+  "languageAuto": {
+    "message": "Auto (Browser Default)"
+  },
+  "languageEnglish": {
+    "message": "English"
+  },
+  "languageChinese": {
+    "message": "Simplified Chinese"
+  },
+  "shortcutsSectionTitle": {
+    "message": "Shortcuts"
+  },
+  "openChromeShortcutsButton": {
+    "message": "Edit in Chrome"
+  },
+  "shortcutCaptureCurrentPageLabel": {
+    "message": "Capture current page"
+  },
+  "shortcutCaptureCurrentWindowLabel": {
+    "message": "Capture all pages in current window"
+  },
+  "shortcutOpenPopupLabel": {
+    "message": "Open popup"
+  },
+  "shortcutsHelp": {
+    "message": "Chrome manages extension shortcuts. Use the button to change or remove them."
+  },
+  "shortcutNotSet": {
+    "message": "Not set"
+  },
+  "commandCaptureCurrentPageDescription": {
+    "message": "Capture the current page"
+  },
+  "commandCaptureCurrentWindowDescription": {
+    "message": "Capture all pages in the current window"
+  },
+  "commandOpenPopupDescription": {
+    "message": "Open BatchShot popup"
+  }
+}

@@ -1,0 +1,368 @@
+{
+  "appName": {
+    "message": "BatchShot 批量截图"
+  },
+  "appDescription": {
+    "message": "批量网页截图工具，支持全页拼接。"
+  },
+  "popupTitle": {
+    "message": "BatchShot"
+  },
+  "popupSubtitle": {
+    "message": "按 URL 列表批量截图，支持全页拼接和可视区截图"
+  },
+  "urlListLabel": {
+    "message": "URL 列表"
+  },
+  "urlListPlaceholder": {
+    "message": "每行粘贴一个 URL"
+  },
+  "historyUrlsButton": {
+    "message": "显示 URL 历史"
+  },
+  "historyTemplatesButton": {
+    "message": "显示模板历史"
+  },
+  "historyTemplateItemsButton": {
+    "message": "显示文本列表历史"
+  },
+  "historyUrlsEmpty": {
+    "message": "暂无 URL 历史。"
+  },
+  "historyTemplatesEmpty": {
+    "message": "暂无模板历史。"
+  },
+  "historyTemplateItemsEmpty": {
+    "message": "暂无文本列表历史。"
+  },
+  "historyLineCount": {
+    "message": "$COUNT$ 行",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "historyDeleteButton": {
+    "message": "删除"
+  },
+  "historyRenameButton": {
+    "message": "重命名"
+  },
+  "historyRenamePrompt": {
+    "message": "为这条历史记录命名"
+  },
+  "historyClearButton": {
+    "message": "清空历史"
+  },
+  "urlModeList": {
+    "message": "列表"
+  },
+  "urlModeTemplate": {
+    "message": "模板"
+  },
+  "urlTemplateLabel": {
+    "message": "URL 模板"
+  },
+  "urlTemplatePlaceholder": {
+    "message": "https://www.baidu.com/s?wd=%s"
+  },
+  "urlTemplateItemsLabel": {
+    "message": "文本列表"
+  },
+  "urlTemplateItemsPlaceholder": {
+    "message": "每行一个搜索词"
+  },
+  "urlPreviewHelp": {
+    "message": "%s 会替换为每一行文本"
+  },
+  "urlPreviewCount": {
+    "message": "$COUNT$ 个 URL",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "applyTemplateButton": {
+    "message": "应用到列表"
+  },
+  "captureModeLabel": {
+    "message": "截图模式"
+  },
+  "modeFullPage": {
+    "message": "全页"
+  },
+  "modeViewport": {
+    "message": "可视区"
+  },
+  "formatLabel": {
+    "message": "格式"
+  },
+  "screenshotQualityLabel": {
+    "message": "截图质量"
+  },
+  "screenshotQualityHelp": {
+    "message": "仅影响 JPG 和 PDF；PNG 始终为无损。"
+  },
+  "delayLabel": {
+    "message": "延迟"
+  },
+  "delayHelp": {
+    "message": "页面加载后等待秒数"
+  },
+  "delayTooltip": {
+    "message": "页面加载完成后等待多久再截图，单位为秒。"
+  },
+  "folderLabel": {
+    "message": "文件夹"
+  },
+  "folderPlaceholder": {
+    "message": "BatchShot"
+  },
+  "folderTooltip": {
+    "message": "留空会保存到下载文件夹根目录；填写文件夹名（如 BatchShot）会保存到该子文件夹。"
+  },
+  "filenameLabel": {
+    "message": "文件名"
+  },
+  "filenameHelp": {
+    "message": "可用 {index}/{序号}、{host}/{域名}、{title}/{标题}、{folder}/{文件夹}、{datetime}/{日期时间}"
+  },
+  "filenameDateTimeFormatLabel": {
+    "message": "文件名日期时间格式"
+  },
+  "reportEnabledLabel": {
+    "message": "导出截图报告"
+  },
+  "reportFormatLabel": {
+    "message": "报告格式"
+  },
+  "reportFieldsLabel": {
+    "message": "字段和顺序"
+  },
+  "reportFieldsHelp": {
+    "message": "可用 序号、网址、页面标题、状态、文件名、错误，也支持 index、url、title、status、filename、error。"
+  },
+  "reportSectionTitle": {
+    "message": "报告"
+  },
+  "othersSectionTitle": {
+    "message": "其他"
+  },
+  "closeBatchTabsAfterCaptureLabel": {
+    "message": "批量截图后关闭对应页面"
+  },
+  "urlListWrapLabel": {
+    "message": "URL 列表按窗口宽度自动换行"
+  },
+  "historyLimitLabel": {
+    "message": "历史记录数量"
+  },
+  "historyLimitHelp": {
+    "message": "每个历史菜单最多保存的记录条数。"
+  },
+  "dateTimeFormatHelp": {
+    "message": "可用 YYYY, MM, DD, HH, mm, ss"
+  },
+  "settingsButton": {
+    "message": "设置"
+  },
+  "currentTabButton": {
+    "message": "截取当前页"
+  },
+  "currentWindowTabsButton": {
+    "message": "截取当前窗口所有标签页"
+  },
+  "currentTabRunningStatus": {
+    "message": "正在截取当前页..."
+  },
+  "currentTabDoneStatus": {
+    "message": "当前页截图已下载。"
+  },
+  "currentTabErrorStatus": {
+    "message": "无法截取当前页。"
+  },
+  "currentWindowTabsRunningStatus": {
+    "message": "正在截取当前窗口标签页..."
+  },
+  "currentWindowTabsDoneStatus": {
+    "message": "已下载 $COUNT$ 个标签页截图。",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "currentWindowTabsErrorStatus": {
+    "message": "无法截取当前窗口标签页。"
+  },
+  "optionsTitle": {
+    "message": "设置"
+  },
+  "optionsSubtitle": {
+    "message": "配置输出和元信息默认值。"
+  },
+  "outputSectionTitle": {
+    "message": "输出"
+  },
+  "metadataSectionTitle": {
+    "message": "元信息"
+  },
+  "resetOptionsButton": {
+    "message": "重置"
+  },
+  "savedStatus": {
+    "message": "已保存"
+  },
+  "savingStatus": {
+    "message": "正在保存..."
+  },
+  "saveErrorStatus": {
+    "message": "保存失败"
+  },
+  "startButton": {
+    "message": "开始"
+  },
+  "stopButton": {
+    "message": "停止"
+  },
+  "pauseButton": {
+    "message": "暂停"
+  },
+  "resumeButton": {
+    "message": "继续"
+  },
+  "idleStatus": {
+    "message": "准备就绪。"
+  },
+  "runningStatus": {
+    "message": "正在截图..."
+  },
+  "pausedStatus": {
+    "message": "已暂停。"
+  },
+  "stoppingStatus": {
+    "message": "正在停止并清理当前页面..."
+  },
+  "doneStatus": {
+    "message": "完成。"
+  },
+  "emptyUrlError": {
+    "message": "请至少添加一个 URL。"
+  },
+  "urlTemplateMissingPlaceholderError": {
+    "message": "模板需要包含 %s。"
+  },
+  "metadataEnabledLabel": {
+    "message": "在图片上添加元信息"
+  },
+  "metadataPositionLabel": {
+    "message": "位置"
+  },
+  "metadataPositionTop": {
+    "message": "顶部"
+  },
+  "metadataPositionBottom": {
+    "message": "底部"
+  },
+  "metadataLayoutLabel": {
+    "message": "布局"
+  },
+  "metadataLayoutStacked": {
+    "message": "分行"
+  },
+  "metadataLayoutInline": {
+    "message": "同行"
+  },
+  "metadataFieldsLabel": {
+    "message": "字段和顺序"
+  },
+  "metadataFieldsHelp": {
+    "message": "支持 capturedAt/截图时间、url/网址、title/标题、host/域名、index/序号、total/总数"
+  },
+  "metadataDateTimeFormatLabel": {
+    "message": "元信息日期时间格式"
+  },
+  "metadataFontSizeLabel": {
+    "message": "字号"
+  },
+  "metadataPaddingLabel": {
+    "message": "内边距"
+  },
+  "metadataGapLabel": {
+    "message": "间距"
+  },
+  "metadataTextColorLabel": {
+    "message": "文字颜色"
+  },
+  "metadataBackgroundColorLabel": {
+    "message": "背景颜色"
+  },
+  "metadataLabelsEnabledLabel": {
+    "message": "显示标签"
+  },
+  "metadataBoldLabelsLabel": {
+    "message": "标签加粗"
+  },
+  "metadataSeparatorLabel": {
+    "message": "同行分隔符"
+  },
+  "appearanceSectionTitle": {
+    "message": "外观"
+  },
+  "themeLabel": {
+    "message": "主题"
+  },
+  "themeAuto": {
+    "message": "自动 (跟随系统)"
+  },
+  "themeLight": {
+    "message": "亮色"
+  },
+  "themeDark": {
+    "message": "暗色"
+  },
+  "languageLabel": {
+    "message": "语言"
+  },
+  "languageAuto": {
+    "message": "自动 (跟随浏览器)"
+  },
+  "languageEnglish": {
+    "message": "English"
+  },
+  "languageChinese": {
+    "message": "简体中文"
+  },
+  "shortcutsSectionTitle": {
+    "message": "快捷键"
+  },
+  "openChromeShortcutsButton": {
+    "message": "在 Chrome 中编辑"
+  },
+  "shortcutCaptureCurrentPageLabel": {
+    "message": "截取当前页"
+  },
+  "shortcutCaptureCurrentWindowLabel": {
+    "message": "截取当前窗口全部页面"
+  },
+  "shortcutOpenPopupLabel": {
+    "message": "打开弹出面板"
+  },
+  "shortcutsHelp": {
+    "message": "扩展快捷键由 Chrome 管理，可通过按钮修改或移除。"
+  },
+  "shortcutNotSet": {
+    "message": "未设置"
+  },
+  "commandCaptureCurrentPageDescription": {
+    "message": "截取当前页面"
+  },
+  "commandCaptureCurrentWindowDescription": {
+    "message": "截取当前窗口全部页面"
+  },
+  "commandOpenPopupDescription": {
+    "message": "打开 BatchShot 弹出面板"
+  }
+}

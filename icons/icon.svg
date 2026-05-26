@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <!-- Brand Background -->
+  <rect width="128" height="128" rx="28" fill="#2563EB"/>
+  
+  <!-- Back card -->
+  <rect x="36" y="24" width="56" height="80" rx="8" fill="#60A5FA"/>
+  
+  <!-- Middle card -->
+  <rect x="24" y="40" width="80" height="72" rx="8" fill="#93C5FD"/>
+  
+  <!-- Front card -->
+  <rect x="12" y="56" width="104" height="60" rx="8" fill="#FFFFFF"/>
+  
+  <!-- Camera Lens / Focus -->
+  <circle cx="64" cy="86" r="14" fill="none" stroke="#2563EB" stroke-width="8"/>
+  <circle cx="64" cy="86" r="4" fill="#2563EB"/>
+  
+  <!-- Flash / Accent -->
+  <circle cx="96" cy="72" r="4" fill="#2563EB"/>
+</svg>

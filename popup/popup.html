@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title data-i18n="popupTitle">BatchShot</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="header">
+        <div>
+          <h1 data-i18n="popupTitle">BatchShot</h1>
+          <p data-i18n="popupSubtitle">Capture URL lists in batches, with full-page stitching or viewport shots</p>
+        </div>
+        <div class="header-actions">
+          <button id="currentTabButton" type="button" class="icon-button" data-i18n-title="currentTabButton" aria-label="Capture current page">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
+              <circle cx="12" cy="13" r="3"></circle>
+            </svg>
+          </button>
+          <button id="currentWindowTabsButton" type="button" class="icon-button" data-i18n-title="currentWindowTabsButton" aria-label="Capture all tabs in current window">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"></path>
+              <path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"></path>
+              <circle cx="13" cy="7" r="1" fill="currentColor"></circle>
+              <rect x="8" y="2" width="14" height="14" rx="2"></rect>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <section class="field url-section">
+        <div class="section-head">
+          <div class="label-actions">
+            <label for="urlList" class="inline-label">
+              <span data-i18n="urlListLabel">URLs</span>
+              <span id="urlCountBadge" class="count-badge" hidden>0</span>
+            </label>
+            <div class="history-anchor">
+              <button id="urlListHistoryButton" type="button" class="history-button" data-history="urls" data-i18n-title="historyUrlsButton" aria-label="Show URL history" aria-expanded="false">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+                  <path d="M3 3v6h6"></path>
+                  <path d="M12 7v5l3 2"></path>
+                </svg>
+              </button>
+              <div id="urlListHistoryMenu" class="history-menu" hidden></div>
+            </div>
+          </div>
+          <div class="segmented" role="tablist" aria-label="URL input mode">
+            <button id="listModeButton" type="button" role="tab" class="mode-tab active" data-mode="list" data-i18n="urlModeList">List</button>
+            <button id="templateModeButton" type="button" role="tab" class="mode-tab" data-mode="template" data-i18n="urlModeTemplate">Template</button>
+          </div>
+        </div>
+
+        <div id="urlListPane" class="url-pane">
+          <textarea id="urlList" rows="8" spellcheck="false" data-i18n-placeholder="urlListPlaceholder"></textarea>
+        </div>
+
+        <div id="urlTemplatePane" class="url-pane template-pane" hidden>
+          <div class="field compact">
+            <div class="field-label-row">
+              <label for="urlTemplate" data-i18n="urlTemplateLabel">URL template</label>
+              <div class="history-anchor">
+                <button id="urlTemplateHistoryButton" type="button" class="history-button" data-history="templates" data-i18n-title="historyTemplatesButton" aria-label="Show template history" aria-expanded="false">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+                    <path d="M3 3v6h6"></path>
+                    <path d="M12 7v5l3 2"></path>
+                  </svg>
+                </button>
+                <div id="urlTemplateHistoryMenu" class="history-menu" hidden></div>
+              </div>
+            </div>
+            <input id="urlTemplate" type="text" spellcheck="false" data-i18n-placeholder="urlTemplatePlaceholder">
+          </div>
+
+          <div class="field compact">
+            <div class="field-label-row">
+              <label for="urlTemplateItems" data-i18n="urlTemplateItemsLabel">Text list</label>
+              <div class="history-anchor">
+                <button id="urlTemplateItemsHistoryButton" type="button" class="history-button" data-history="templateItems" data-i18n-title="historyTemplateItemsButton" aria-label="Show text list history" aria-expanded="false">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+                    <path d="M3 3v6h6"></path>
+                    <path d="M12 7v5l3 2"></path>
+                  </svg>
+                </button>
+                <div id="urlTemplateItemsHistoryMenu" class="history-menu" hidden></div>
+              </div>
+            </div>
+            <textarea id="urlTemplateItems" rows="5" spellcheck="false" data-i18n-placeholder="urlTemplateItemsPlaceholder"></textarea>
+          </div>
+
+          <div class="builder-preview">
+            <div>
+              <strong id="urlPreviewCount">0 URLs</strong>
+              <small data-i18n="urlPreviewHelp">Generated with %s encoded safely.</small>
+            </div>
+            <button id="applyTemplateButton" type="button" class="secondary neutral compact-button" data-i18n="applyTemplateButton">Apply to list</button>
+          </div>
+          <ol id="urlPreviewList" class="preview-list"></ol>
+        </div>
+      </section>
+
+      <section id="captureSettings" class="grid">
+        <div class="field">
+          <label for="captureMode" data-i18n="captureModeLabel">Capture</label>
+          <select id="captureMode">
+            <option value="fullPage" data-i18n="modeFullPage">Full page</option>
+            <option value="viewport" data-i18n="modeViewport">Viewport</option>
+          </select>
+        </div>
+
+        <div class="field delay-field">
+          <label for="delay" data-i18n="delayLabel" data-i18n-title="delayTooltip">Delay</label>
+          <input id="delay" type="number" min="0" max="30" step="0.5" value="1" inputmode="decimal" data-i18n-title="delayTooltip">
+        </div>
+
+        <div class="field">
+          <label for="folder" data-i18n="folderLabel" data-i18n-title="folderTooltip">Folder</label>
+          <input id="folder" type="text" data-i18n-placeholder="folderPlaceholder" data-i18n-title="folderTooltip">
+        </div>
+      </section>
+
+
+
+      <footer class="footer">
+        <p id="statusText" data-i18n="idleStatus">Ready.</p>
+        <div class="actions">
+          <button id="settingsButton" type="button" class="secondary neutral" data-i18n-title="settingsButton" aria-label="Settings">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </button>
+          <button id="stopButton" type="button" class="secondary" data-i18n-title="stopButton" aria-label="Stop" disabled>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+            </svg>
+          </button>
+          <button id="pauseButton" type="button" class="secondary" data-i18n-title="pauseButton" aria-label="Pause" disabled>
+            <svg class="pause-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="6" y="4" width="4" height="16" rx="1"></rect>
+              <rect x="14" y="4" width="4" height="16" rx="1"></rect>
+            </svg>
+            <svg class="resume-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" hidden>
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          </button>
+          <button id="startButton" type="button" data-i18n-title="startButton" aria-label="Start">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="5 3 19 12 5 21 5 3"></polygon>
+            </svg>
+          </button>
+        </div>
+      </footer>
+    </main>
+
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>
