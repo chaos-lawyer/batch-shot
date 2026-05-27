@@ -1,5 +1,8 @@
 # BatchShot
 
+<img width="600" height="750" alt="image" src="https://github.com/user-attachments/assets/f8df2cd9-a9d0-490e-9ade-2d6c70dc2e76" />
+
+
 [中文](#中文) | [English](#english)
 
 ## 中文
