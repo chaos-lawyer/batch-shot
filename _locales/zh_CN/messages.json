@@ -20,11 +20,23 @@
   "historyUrlsButton": {
     "message": "显示 URL 历史"
   },
+  "extractLinksButton": {
+    "message": "抓取当前页正文链接"
+  },
+  "clearUrlsButton": {
+    "message": "清空 URL 列表"
+  },
   "historyTemplatesButton": {
     "message": "显示模板历史"
   },
+  "clearTemplateButton": {
+    "message": "清空 URL 模板"
+  },
   "historyTemplateItemsButton": {
     "message": "显示文本列表历史"
+  },
+  "clearTemplateItemsButton": {
+    "message": "清空文本列表"
   },
   "historyUrlsEmpty": {
     "message": "暂无 URL 历史。"
@@ -65,7 +77,7 @@
     "message": "URL 模板"
   },
   "urlTemplatePlaceholder": {
-    "message": "https://www.baidu.com/s?wd=%s"
+    "message": "https://www.google.com/search?q=%s\nhttps://www.baidu.com/s?wd=%s"
   },
   "urlTemplateItemsLabel": {
     "message": "文本列表"
@@ -74,7 +86,7 @@
     "message": "每行一个搜索词"
   },
   "urlPreviewHelp": {
-    "message": "%s 会替换为每一行文本"
+    "message": "每一行模板都会和每一行文本组合生成 URL"
   },
   "urlPreviewCount": {
     "message": "$COUNT$ 个 URL",
@@ -197,6 +209,78 @@
   "currentWindowTabsErrorStatus": {
     "message": "无法截取当前窗口标签页。"
   },
+  "extractingLinksStatus": {
+    "message": "正在抓取当前页链接..."
+  },
+  "extractedLinksStatus": {
+    "message": "已找到 $COUNT$ 个链接，请选择要填入的链接。",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "noLinksExtractedStatus": {
+    "message": "当前页未找到正文链接。"
+  },
+  "extractLinksUnsupportedPageStatus": {
+    "message": "只能从普通网页中抓取链接。"
+  },
+  "extractLinksErrorStatus": {
+    "message": "无法抓取当前页链接。"
+  },
+  "linkSelectorTitle": {
+    "message": "选择链接"
+  },
+  "linkSelectorSummary": {
+    "message": "已选择 $SELECTED$ / $TOTAL$",
+    "placeholders": {
+      "selected": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "linkSelectorSearchPlaceholder": {
+    "message": "搜索标题、域名或 URL"
+  },
+  "linkSelectorAllButton": {
+    "message": "全选"
+  },
+  "linkSelectorNoneButton": {
+    "message": "全不选"
+  },
+  "linkSelectorInvertButton": {
+    "message": "反选"
+  },
+  "linkSelectorCancelButton": {
+    "message": "取消"
+  },
+  "linkSelectorCloseButton": {
+    "message": "关闭"
+  },
+  "linkSelectorApplyButton": {
+    "message": "填入列表"
+  },
+  "linkSelectorEmpty": {
+    "message": "没有匹配的链接。"
+  },
+  "linkSelectorNoSelectionStatus": {
+    "message": "请至少选择一个链接。"
+  },
+  "linkSelectorAppliedStatus": {
+    "message": "已添加 $COUNT$ 个选中链接到 URL 列表。",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "inputClearedStatus": {
+    "message": "已清空输入。"
+  },
   "optionsTitle": {
     "message": "设置"
   },
@@ -252,7 +336,12 @@
     "message": "请至少添加一个 URL。"
   },
   "urlTemplateMissingPlaceholderError": {
-    "message": "模板需要包含 %s。"
+    "message": "模板第 $LINES$ 行需要包含 %s。",
+    "placeholders": {
+      "lines": {
+        "content": "$1"
+      }
+    }
   },
   "metadataEnabledLabel": {
     "message": "在图片上添加元信息"

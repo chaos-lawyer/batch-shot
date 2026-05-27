@@ -12,14 +12,28 @@ const elements = {
   templateModeButton: $('templateModeButton'),
   urlTemplate: $('urlTemplate'),
   urlTemplateHistoryButton: $('urlTemplateHistoryButton'),
+  urlTemplateClearButton: $('urlTemplateClearButton'),
   urlTemplateHistoryMenu: $('urlTemplateHistoryMenu'),
   urlTemplateItems: $('urlTemplateItems'),
   urlTemplateItemsHistoryButton: $('urlTemplateItemsHistoryButton'),
+  urlTemplateItemsClearButton: $('urlTemplateItemsClearButton'),
   urlTemplateItemsHistoryMenu: $('urlTemplateItemsHistoryMenu'),
   urlPreviewCount: $('urlPreviewCount'),
   urlPreviewList: $('urlPreviewList'),
+  extractLinksButton: $('extractLinksButton'),
   urlListHistoryButton: $('urlListHistoryButton'),
+  urlListClearButton: $('urlListClearButton'),
   urlListHistoryMenu: $('urlListHistoryMenu'),
+  linkSelectorPanel: $('linkSelectorPanel'),
+  linkSelectorSummary: $('linkSelectorSummary'),
+  linkSelectorCloseButton: $('linkSelectorCloseButton'),
+  linkSelectorSearch: $('linkSelectorSearch'),
+  linkSelectorAllButton: $('linkSelectorAllButton'),
+  linkSelectorNoneButton: $('linkSelectorNoneButton'),
+  linkSelectorInvertButton: $('linkSelectorInvertButton'),
+  linkSelectorList: $('linkSelectorList'),
+  linkSelectorCancelButton: $('linkSelectorCancelButton'),
+  linkSelectorApplyButton: $('linkSelectorApplyButton'),
   applyTemplateButton: $('applyTemplateButton'),
   captureSettings: $('captureSettings'),
   captureMode: $('captureMode'),
@@ -65,6 +79,7 @@ let inputHistory = {
   templateItems: []
 };
 let openHistoryType = '';
+let extractedLinkItems = [];
 
 function getSettings() {
   return {
@@ -114,6 +129,15 @@ async function restoreSettings() {
 function setRunning(isRunning, statusKey = isRunning ? 'runningStatus' : 'idleStatus', isPaused = false) {
   elements.currentTabButton.disabled = isRunning;
   elements.currentWindowTabsButton.disabled = isRunning;
+  elements.extractLinksButton.disabled = isRunning;
+  elements.urlListClearButton.disabled = isRunning;
+  elements.urlTemplateClearButton.disabled = isRunning;
+  elements.urlTemplateItemsClearButton.disabled = isRunning;
+  elements.linkSelectorSearch.disabled = isRunning;
+  elements.linkSelectorAllButton.disabled = isRunning;
+  elements.linkSelectorNoneButton.disabled = isRunning;
+  elements.linkSelectorInvertButton.disabled = isRunning;
+  elements.linkSelectorApplyButton.disabled = isRunning || !extractedLinkItems.some((item) => item.selected);
   elements.startButton.disabled = isRunning;
   elements.pauseButton.disabled = !isRunning;
   elements.stopButton.disabled = !isRunning;
@@ -132,41 +156,190 @@ function parseUrls(value) {
     .filter(Boolean);
 }
 
+function parseTemplateLines(value) {
+  return value
+    .split(/\r?\n/)
+    .map((line, index) => ({ line: line.trim(), number: index + 1 }))
+    .filter((template) => template.line);
+}
+
 function updateUrlCount() {
   const count = parseUrls(elements.urlList.value).length;
   elements.urlCountBadge.textContent = count;
   elements.urlCountBadge.classList.toggle('has-data', count > 0);
 }
 
-function buildTemplateUrls() {
-  const template = elements.urlTemplate.value.trim();
-  const items = parseUrls(elements.urlTemplateItems.value);
-
-  if (!template && !items.length) {
-    return { urls: [], errorKey: 'emptyUrlError' };
+async function clearInputValue(type) {
+  const config = HISTORY_CONFIG[type];
+  const input = config ? elements[config.input] : null;
+  if (!input?.value.trim()) {
+    return;
   }
 
-  if (!template.includes('%s')) {
-    return { urls: [], errorKey: 'urlTemplateMissingPlaceholderError' };
+  input.value = '';
+
+  if (type === 'urls') {
+    updateUrlCount();
+  } else {
+    updateTemplatePreview();
   }
+
+  await saveSettings();
+  closeHistoryMenus();
+  elements.statusText.textContent = message('inputClearedStatus');
+}
+
+function getFilteredLinkItems() {
+  const query = elements.linkSelectorSearch.value.trim().toLowerCase();
+  if (!query) {
+    return extractedLinkItems;
+  }
+
+  return extractedLinkItems.filter((item) => (
+    item.url.toLowerCase().includes(query)
+    || item.title.toLowerCase().includes(query)
+    || item.host.toLowerCase().includes(query)
+  ));
+}
+
+function updateLinkSelectorSummary() {
+  const selectedCount = extractedLinkItems.filter((item) => item.selected).length;
+  elements.linkSelectorSummary.textContent = message(
+    'linkSelectorSummary',
+    [String(selectedCount), String(extractedLinkItems.length)]
+  );
+  elements.linkSelectorApplyButton.disabled = selectedCount === 0;
+}
+
+function renderLinkSelector() {
+  const items = getFilteredLinkItems();
+  elements.linkSelectorList.replaceChildren();
 
   if (!items.length) {
+    const empty = document.createElement('p');
+    empty.className = 'link-selector-empty';
+    empty.textContent = message('linkSelectorEmpty');
+    elements.linkSelectorList.append(empty);
+    updateLinkSelectorSummary();
+    return;
+  }
+
+  items.forEach((item) => {
+    const row = document.createElement('label');
+    row.className = 'link-selector-row';
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.checked = item.selected;
+    checkbox.addEventListener('change', () => {
+      item.selected = checkbox.checked;
+      updateLinkSelectorSummary();
+    });
+
+    const body = document.createElement('span');
+    const title = document.createElement('span');
+    title.className = 'link-selector-title';
+    title.textContent = item.title || item.url;
+
+    const host = document.createElement('span');
+    host.className = 'link-selector-host';
+    host.textContent = item.host;
+
+    const url = document.createElement('span');
+    url.className = 'link-selector-url';
+    url.textContent = item.url;
+
+    body.append(title, host, url);
+    row.append(checkbox, body);
+    elements.linkSelectorList.append(row);
+  });
+
+  updateLinkSelectorSummary();
+}
+
+function showLinkSelector(items) {
+  closeHistoryMenus();
+  extractedLinkItems = items.map((item) => ({ ...item, selected: true }));
+  elements.linkSelectorSearch.value = '';
+  renderLinkSelector();
+  elements.linkSelectorPanel.hidden = false;
+  elements.linkSelectorSearch.focus();
+}
+
+function closeLinkSelector() {
+  elements.linkSelectorPanel.hidden = true;
+}
+
+function setFilteredLinkSelection(getNextSelected) {
+  getFilteredLinkItems().forEach((item) => {
+    item.selected = getNextSelected(item);
+  });
+  renderLinkSelector();
+}
+
+async function applySelectedLinks() {
+  const urls = extractedLinkItems
+    .filter((item) => item.selected)
+    .map((item) => item.url);
+
+  if (!urls.length) {
+    elements.statusText.textContent = message('linkSelectorNoSelectionStatus');
+    return;
+  }
+
+  if (elements.urlList.value.trim()) {
+    await addHistoryEntry('urls', elements.urlList.value);
+  }
+
+  elements.urlList.value = urls.join('\n');
+  updateUrlCount();
+  setUrlInputMode('list', false);
+  await saveSettings();
+  closeLinkSelector();
+  elements.statusText.textContent = message('linkSelectorAppliedStatus', String(urls.length));
+}
+
+function buildTemplateUrls() {
+  const templates = parseTemplateLines(elements.urlTemplate.value);
+  const items = parseUrls(elements.urlTemplateItems.value);
+
+  if (!templates.length && !items.length) {
     return { urls: [], errorKey: 'emptyUrlError' };
   }
 
+  if (!templates.length || !items.length) {
+    return { urls: [], errorKey: 'emptyUrlError' };
+  }
+
+  const missingPlaceholderLines = templates
+    .filter((template) => !template.line.includes('%s'))
+    .map((template) => template.number);
+
+  if (missingPlaceholderLines.length) {
+    return {
+      urls: [],
+      errorKey: 'urlTemplateMissingPlaceholderError',
+      errorArgs: missingPlaceholderLines.join(', ')
+    };
+  }
+
+  const urls = templates.flatMap((template) => (
+    items.map((item) => template.line.replaceAll('%s', item))
+  ));
+
   return {
-    urls: items.map((item) => template.replaceAll('%s', item)),
+    urls,
     errorKey: ''
   };
 }
 
 function updateTemplatePreview() {
-  const { urls, errorKey } = buildTemplateUrls();
+  const { urls, errorKey, errorArgs } = buildTemplateUrls();
   elements.applyTemplateButton.disabled = Boolean(errorKey);
   elements.urlPreviewList.replaceChildren();
 
   if (errorKey && (elements.urlTemplate.value || elements.urlTemplateItems.value)) {
-    elements.urlPreviewCount.textContent = message(errorKey);
+    elements.urlPreviewCount.textContent = message(errorKey, errorArgs);
     return;
   }
 
@@ -176,6 +349,55 @@ function updateTemplatePreview() {
     item.textContent = url;
     elements.urlPreviewList.append(item);
   });
+}
+
+function extractPageLinks() {
+  const containerSelectors = ['main', 'article', '[role="main"]'];
+  const containers = containerSelectors
+    .flatMap((selector) => Array.from(document.querySelectorAll(selector)))
+    .filter((node) => node instanceof HTMLElement);
+  const scope = containers.length ? containers : [document.body].filter(Boolean);
+  const ignoredRegionSelector = 'header, nav, footer, aside, script, style, noscript, template';
+  const currentUrl = new URL(location.href);
+  currentUrl.hash = '';
+  const seen = new Set();
+
+  return scope
+    .flatMap((node) => Array.from(node.querySelectorAll('a[href]')))
+    .filter((anchor) => !anchor.closest(ignoredRegionSelector))
+    .filter((anchor) => {
+      const rects = anchor.getClientRects();
+      return rects.length > 0 && getComputedStyle(anchor).visibility !== 'hidden';
+    })
+    .map((anchor) => {
+      const rawHref = anchor.getAttribute('href')?.trim() || '';
+      if (!rawHref || rawHref.startsWith('#')) {
+        return null;
+      }
+
+      try {
+        const url = new URL(rawHref, document.baseURI);
+        if (!['http:', 'https:'].includes(url.protocol)) {
+          return null;
+        }
+        url.hash = '';
+        return {
+          url: url.href,
+          host: url.hostname.replace(/^www\./, ''),
+          title: (anchor.textContent || '').replace(/\s+/g, ' ').trim()
+        };
+      } catch {
+        return null;
+      }
+    })
+    .filter((item) => item && item.url !== currentUrl.href)
+    .filter((item) => {
+      if (seen.has(item.url)) {
+        return false;
+      }
+      seen.add(item.url);
+      return true;
+    });
 }
 
 function normalizeHistory(history) {
@@ -243,7 +465,10 @@ async function rememberCurrentInputs() {
 function closeHistoryMenus() {
   openHistoryType = '';
   Object.values(HISTORY_CONFIG).forEach(({ button, menu }) => {
-    elements[menu].hidden = true;
+    const el = elements[menu];
+    el.hidden = true;
+    el.style.left = '';
+    el.style.right = '';
     elements[button].setAttribute('aria-expanded', 'false');
   });
 }
@@ -330,7 +555,24 @@ function openHistoryMenu(type) {
   }
 
   renderHistoryMenu(type);
-  elements[config.menu].hidden = false;
+  const menu = elements[config.menu];
+  menu.hidden = false;
+
+  // Adjust position to avoid overflowing the viewport
+  const rect = menu.getBoundingClientRect();
+  const viewportWidth = document.documentElement.clientWidth || 400;
+  const padding = 18; // page margin
+
+  if (rect.left < padding) {
+    const anchorRect = menu.parentElement.getBoundingClientRect();
+    menu.style.left = `${padding - anchorRect.left}px`;
+    menu.style.right = 'auto';
+  } else if (rect.right > viewportWidth - padding) {
+    const anchorRect = menu.parentElement.getBoundingClientRect();
+    menu.style.right = `${anchorRect.right - (viewportWidth - padding)}px`;
+    menu.style.left = 'auto';
+  }
+
   elements[config.button].setAttribute('aria-expanded', 'true');
   openHistoryType = type;
 }
@@ -398,7 +640,9 @@ function setUrlInputMode(mode, shouldSave = true) {
   elements.urlTemplatePane.hidden = urlInputMode !== 'template';
   elements.captureSettings.hidden = urlInputMode !== 'list';
   elements.urlCountBadge.hidden = urlInputMode !== 'list';
+  elements.extractLinksButton.hidden = urlInputMode !== 'list';
   elements.urlListHistoryButton.hidden = urlInputMode !== 'list';
+  elements.urlListClearButton.hidden = urlInputMode !== 'list';
   elements.listModeButton.classList.toggle('active', urlInputMode === 'list');
   elements.templateModeButton.classList.toggle('active', urlInputMode === 'template');
   elements.listModeButton.setAttribute('aria-selected', String(urlInputMode === 'list'));
@@ -414,9 +658,9 @@ function setUrlInputMode(mode, shouldSave = true) {
 }
 
 async function applyTemplateToList() {
-  const { urls, errorKey } = buildTemplateUrls();
+  const { urls, errorKey, errorArgs } = buildTemplateUrls();
   if (errorKey) {
-    elements.statusText.textContent = message(errorKey);
+    elements.statusText.textContent = message(errorKey, errorArgs);
     return;
   }
 
@@ -446,7 +690,10 @@ async function startCapture() {
   const urls = templateResult ? templateResult.urls : parseUrls(popupSettings.urls);
 
   if (!urls.length) {
-    elements.statusText.textContent = message(templateResult?.errorKey || 'emptyUrlError');
+    elements.statusText.textContent = message(
+      templateResult?.errorKey || 'emptyUrlError',
+      templateResult?.errorArgs
+    );
     return;
   }
 
@@ -507,6 +754,37 @@ async function captureCurrentWindowTabs() {
   }
 }
 
+async function extractLinksFromCurrentPage() {
+  elements.statusText.textContent = message('extractingLinksStatus');
+  elements.extractLinksButton.disabled = true;
+
+  try {
+    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!tab?.id || !/^https?:\/\//.test(tab.url || '')) {
+      elements.statusText.textContent = message('extractLinksUnsupportedPageStatus');
+      return;
+    }
+
+    const [result] = await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: extractPageLinks
+    });
+    const links = Array.isArray(result?.result) ? result.result : [];
+
+    if (!links.length) {
+      elements.statusText.textContent = message('noLinksExtractedStatus');
+      return;
+    }
+
+    showLinkSelector(links);
+    elements.statusText.textContent = message('extractedLinksStatus', String(links.length));
+  } catch (error) {
+    elements.statusText.textContent = error.message || message('extractLinksErrorStatus');
+  } finally {
+    elements.extractLinksButton.disabled = false;
+  }
+}
+
 async function stopCapture() {
   elements.statusText.textContent = message('stoppingStatus');
   await chrome.runtime.sendMessage({ action: 'stopBatch' });
@@ -526,14 +804,41 @@ async function openSettings() {
   await chrome.runtime.openOptionsPage();
 }
 
+function initTemplateResizing() {
+  const wrappers = document.querySelectorAll('.template-textarea-wrapper');
+  if (wrappers.length !== 2) {
+    return;
+  }
+  const [wrapperA, wrapperB] = wrappers;
+  let isSyncing = false;
+
+  const observer = new ResizeObserver((entries) => {
+    if (isSyncing) return;
+    isSyncing = true;
+    for (const entry of entries) {
+      const height = entry.target.getBoundingClientRect().height;
+      if (height === 0) {
+        continue;
+      }
+      wrapperA.style.height = `${height}px`;
+      wrapperB.style.height = `${height}px`;
+    }
+    isSyncing = false;
+  });
+
+  observer.observe(wrapperA);
+  observer.observe(wrapperB);
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   await loadInputHistory();
   await restoreSettings();
   await refreshState();
+  initTemplateResizing();
 });
 
 Object.values(elements).forEach((node) => {
-  if (node?.matches?.('textarea,input,select')) {
+  if (node?.matches?.('textarea,input,select') && !node.dataset.skipSave) {
     node.addEventListener('change', saveSettings);
     node.addEventListener('input', saveSettings);
   }
@@ -547,6 +852,17 @@ elements.templateModeButton.addEventListener('click', () => setUrlInputMode('tem
 elements.urlTemplate.addEventListener('input', updateTemplatePreview);
 elements.urlTemplateItems.addEventListener('input', updateTemplatePreview);
 elements.applyTemplateButton.addEventListener('click', applyTemplateToList);
+elements.extractLinksButton.addEventListener('click', extractLinksFromCurrentPage);
+elements.urlListClearButton.addEventListener('click', () => clearInputValue('urls'));
+elements.urlTemplateClearButton.addEventListener('click', () => clearInputValue('templates'));
+elements.urlTemplateItemsClearButton.addEventListener('click', () => clearInputValue('templateItems'));
+elements.linkSelectorSearch.addEventListener('input', renderLinkSelector);
+elements.linkSelectorAllButton.addEventListener('click', () => setFilteredLinkSelection(() => true));
+elements.linkSelectorNoneButton.addEventListener('click', () => setFilteredLinkSelection(() => false));
+elements.linkSelectorInvertButton.addEventListener('click', () => setFilteredLinkSelection((item) => !item.selected));
+elements.linkSelectorApplyButton.addEventListener('click', applySelectedLinks);
+elements.linkSelectorCancelButton.addEventListener('click', closeLinkSelector);
+elements.linkSelectorCloseButton.addEventListener('click', closeLinkSelector);
 Object.entries(HISTORY_CONFIG).forEach(([type, config]) => {
   elements[config.button].addEventListener('click', (event) => {
     event.stopPropagation();
@@ -592,6 +908,10 @@ document.addEventListener('click', closeHistoryMenus);
 
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') {
+    if (!elements.linkSelectorPanel.hidden) {
+      closeLinkSelector();
+      return;
+    }
     closeHistoryMenus();
   }
 });

@@ -453,6 +453,18 @@ small {
   padding-top: 16px;
 }
 
+.footer-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.version-string {
+  color: var(--text-muted);
+  font-size: 13px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
 .github-link {
   display: inline-flex;
   align-items: center;

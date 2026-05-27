@@ -20,11 +20,23 @@
   "historyUrlsButton": {
     "message": "Show URL history"
   },
+  "extractLinksButton": {
+    "message": "Extract links from current page"
+  },
+  "clearUrlsButton": {
+    "message": "Clear URL list"
+  },
   "historyTemplatesButton": {
     "message": "Show template history"
   },
+  "clearTemplateButton": {
+    "message": "Clear URL template"
+  },
   "historyTemplateItemsButton": {
     "message": "Show text list history"
+  },
+  "clearTemplateItemsButton": {
+    "message": "Clear text list"
   },
   "historyUrlsEmpty": {
     "message": "No URL history yet."
@@ -65,7 +77,7 @@
     "message": "URL template"
   },
   "urlTemplatePlaceholder": {
-    "message": "https://www.baidu.com/s?wd=%s"
+    "message": "https://www.google.com/search?q=%s\nhttps://www.baidu.com/s?wd=%s"
   },
   "urlTemplateItemsLabel": {
     "message": "Text list"
@@ -74,7 +86,7 @@
     "message": "One search term per line"
   },
   "urlPreviewHelp": {
-    "message": "%s is replaced with each text line"
+    "message": "Each template line is combined with each text line"
   },
   "urlPreviewCount": {
     "message": "$COUNT$ URL(s)",
@@ -197,6 +209,78 @@
   "currentWindowTabsErrorStatus": {
     "message": "Could not capture current window tabs."
   },
+  "extractingLinksStatus": {
+    "message": "Extracting links from current page..."
+  },
+  "extractedLinksStatus": {
+    "message": "$COUNT$ link(s) found. Choose which ones to add.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "noLinksExtractedStatus": {
+    "message": "No content links found on the current page."
+  },
+  "extractLinksUnsupportedPageStatus": {
+    "message": "Links can only be extracted from regular web pages."
+  },
+  "extractLinksErrorStatus": {
+    "message": "Could not extract links from the current page."
+  },
+  "linkSelectorTitle": {
+    "message": "Select links"
+  },
+  "linkSelectorSummary": {
+    "message": "$SELECTED$ of $TOTAL$ selected",
+    "placeholders": {
+      "selected": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      }
+    }
+  },
+  "linkSelectorSearchPlaceholder": {
+    "message": "Search title, domain, or URL"
+  },
+  "linkSelectorAllButton": {
+    "message": "All"
+  },
+  "linkSelectorNoneButton": {
+    "message": "None"
+  },
+  "linkSelectorInvertButton": {
+    "message": "Invert"
+  },
+  "linkSelectorCancelButton": {
+    "message": "Cancel"
+  },
+  "linkSelectorCloseButton": {
+    "message": "Close"
+  },
+  "linkSelectorApplyButton": {
+    "message": "Add to list"
+  },
+  "linkSelectorEmpty": {
+    "message": "No links match this search."
+  },
+  "linkSelectorNoSelectionStatus": {
+    "message": "Select at least one link."
+  },
+  "linkSelectorAppliedStatus": {
+    "message": "$COUNT$ selected link(s) added to the URL list.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "inputClearedStatus": {
+    "message": "Input cleared."
+  },
   "optionsTitle": {
     "message": "Settings"
   },
@@ -252,7 +336,12 @@
     "message": "Add at least one URL."
   },
   "urlTemplateMissingPlaceholderError": {
-    "message": "Template needs %s."
+    "message": "Template line(s) $LINES$ need %s.",
+    "placeholders": {
+      "lines": {
+        "content": "$1"
+      }
+    }
   },
   "metadataEnabledLabel": {
     "message": "Add metadata to image"

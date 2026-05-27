@@ -205,6 +205,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   await restoreSettings();
   await restoreShortcuts();
   document.documentElement.dataset.theme = elements.theme.value;
+  
+  const versionString = document.getElementById('versionString');
+  if (versionString) {
+    versionString.textContent = `v${chrome.runtime.getManifest().version}`;
+  }
 });
 
 SETTINGS_KEYS.forEach((key) => {

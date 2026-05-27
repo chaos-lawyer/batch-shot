@@ -292,10 +292,11 @@ URLs without a protocol are automatically completed with `https://`.
 
 Template mode is useful for generating search pages, product pages, document pages, or any patterned URL list.
 
-Example template:
+Example templates:
 
 ```text
 https://www.baidu.com/s?wd=%s
+https://example.com/search?q=%s
 ```
 
 Text list:
@@ -306,7 +307,7 @@ Chrome extension
 web screenshot
 ```
 
-BatchShot generates 3 URLs and can apply them to the capture queue.
+BatchShot combines each template line with each text line. Template lines without `%s` are rejected with a line-specific warning.
 
 #### Current Page and Current Window
 

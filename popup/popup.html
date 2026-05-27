@@ -9,9 +9,9 @@
   <body>
     <main class="shell">
       <header class="header">
-        <div>
+        <div class="header-title-group">
+          <img src="../icons/icon-48.png" alt="" class="header-icon">
           <h1 data-i18n="popupTitle">BatchShot</h1>
-          <p data-i18n="popupSubtitle">Capture URL lists in batches, with full-page stitching or viewport shots</p>
         </div>
         <div class="header-actions">
           <button id="currentTabButton" type="button" class="icon-button" data-i18n-title="currentTabButton" aria-label="Capture current page">
@@ -39,11 +39,24 @@
               <span id="urlCountBadge" class="count-badge" hidden>0</span>
             </label>
             <div class="history-anchor">
+              <button id="extractLinksButton" type="button" class="history-button" data-i18n-title="extractLinksButton" aria-label="Extract links from current page">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.1 0l2.8-2.8a5 5 0 0 0-7.1-7.1L11.2 4.7"></path>
+                  <path d="M14 11a5 5 0 0 0-7.1 0l-2.8 2.8a5 5 0 0 0 7.1 7.1l1.6-1.6"></path>
+                </svg>
+              </button>
               <button id="urlListHistoryButton" type="button" class="history-button" data-history="urls" data-i18n-title="historyUrlsButton" aria-label="Show URL history" aria-expanded="false">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M3 12a9 9 0 1 0 3-6.7"></path>
                   <path d="M3 3v6h6"></path>
                   <path d="M12 7v5l3 2"></path>
+                </svg>
+              </button>
+              <button id="urlListClearButton" type="button" class="history-button" data-clear-input="urls" data-i18n-title="clearUrlsButton" aria-label="Clear URL list">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"></path>
+                  <path d="M22 21H7"></path>
+                  <path d="m5 11 9 9"></path>
                 </svg>
               </button>
               <div id="urlListHistoryMenu" class="history-menu" hidden></div>
@@ -60,38 +73,58 @@
         </div>
 
         <div id="urlTemplatePane" class="url-pane template-pane" hidden>
-          <div class="field compact">
-            <div class="field-label-row">
-              <label for="urlTemplate" data-i18n="urlTemplateLabel">URL template</label>
-              <div class="history-anchor">
-                <button id="urlTemplateHistoryButton" type="button" class="history-button" data-history="templates" data-i18n-title="historyTemplatesButton" aria-label="Show template history" aria-expanded="false">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 12a9 9 0 1 0 3-6.7"></path>
-                    <path d="M3 3v6h6"></path>
-                    <path d="M12 7v5l3 2"></path>
-                  </svg>
-                </button>
-                <div id="urlTemplateHistoryMenu" class="history-menu" hidden></div>
+          <div class="template-inputs-row">
+            <div class="field compact">
+              <div class="field-label-row">
+                <label for="urlTemplate" data-i18n="urlTemplateLabel">URL template</label>
+                <div class="history-anchor">
+                  <button id="urlTemplateHistoryButton" type="button" class="history-button" data-history="templates" data-i18n-title="historyTemplatesButton" aria-label="Show template history" aria-expanded="false">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+                      <path d="M3 3v6h6"></path>
+                      <path d="M12 7v5l3 2"></path>
+                    </svg>
+                  </button>
+                  <button id="urlTemplateClearButton" type="button" class="history-button" data-clear-input="templates" data-i18n-title="clearTemplateButton" aria-label="Clear URL template">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"></path>
+                      <path d="M22 21H7"></path>
+                      <path d="m5 11 9 9"></path>
+                    </svg>
+                  </button>
+                  <div id="urlTemplateHistoryMenu" class="history-menu" hidden></div>
+                </div>
+              </div>
+              <div class="template-textarea-wrapper">
+                <textarea id="urlTemplate" spellcheck="false" data-i18n-placeholder="urlTemplatePlaceholder" wrap="off" class="no-wrap"></textarea>
               </div>
             </div>
-            <input id="urlTemplate" type="text" spellcheck="false" data-i18n-placeholder="urlTemplatePlaceholder">
-          </div>
 
-          <div class="field compact">
-            <div class="field-label-row">
-              <label for="urlTemplateItems" data-i18n="urlTemplateItemsLabel">Text list</label>
-              <div class="history-anchor">
-                <button id="urlTemplateItemsHistoryButton" type="button" class="history-button" data-history="templateItems" data-i18n-title="historyTemplateItemsButton" aria-label="Show text list history" aria-expanded="false">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M3 12a9 9 0 1 0 3-6.7"></path>
-                    <path d="M3 3v6h6"></path>
-                    <path d="M12 7v5l3 2"></path>
-                  </svg>
-                </button>
-                <div id="urlTemplateItemsHistoryMenu" class="history-menu" hidden></div>
+            <div class="field compact">
+              <div class="field-label-row">
+                <label for="urlTemplateItems" data-i18n="urlTemplateItemsLabel">Text list</label>
+                <div class="history-anchor">
+                  <button id="urlTemplateItemsHistoryButton" type="button" class="history-button" data-history="templateItems" data-i18n-title="historyTemplateItemsButton" aria-label="Show text list history" aria-expanded="false">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M3 12a9 9 0 1 0 3-6.7"></path>
+                      <path d="M3 3v6h6"></path>
+                      <path d="M12 7v5l3 2"></path>
+                    </svg>
+                  </button>
+                  <button id="urlTemplateItemsClearButton" type="button" class="history-button" data-clear-input="templateItems" data-i18n-title="clearTemplateItemsButton" aria-label="Clear text list">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"></path>
+                      <path d="M22 21H7"></path>
+                      <path d="m5 11 9 9"></path>
+                    </svg>
+                  </button>
+                  <div id="urlTemplateItemsHistoryMenu" class="history-menu" hidden></div>
+                </div>
+              </div>
+              <div class="template-textarea-wrapper">
+                <textarea id="urlTemplateItems" spellcheck="false" data-i18n-placeholder="urlTemplateItemsPlaceholder" wrap="off" class="no-wrap"></textarea>
               </div>
             </div>
-            <textarea id="urlTemplateItems" rows="5" spellcheck="false" data-i18n-placeholder="urlTemplateItemsPlaceholder"></textarea>
           </div>
 
           <div class="builder-preview">
@@ -102,6 +135,32 @@
             <button id="applyTemplateButton" type="button" class="secondary neutral compact-button" data-i18n="applyTemplateButton">Apply to list</button>
           </div>
           <ol id="urlPreviewList" class="preview-list"></ol>
+        </div>
+      </section>
+
+      <section id="linkSelectorPanel" class="link-selector-panel" aria-labelledby="linkSelectorTitle" hidden>
+        <div class="link-selector-head">
+          <div>
+            <h2 id="linkSelectorTitle" data-i18n="linkSelectorTitle">Select links</h2>
+            <p id="linkSelectorSummary">0 selected</p>
+          </div>
+          <button id="linkSelectorCloseButton" type="button" class="history-button" data-i18n-title="linkSelectorCloseButton" aria-label="Close">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="link-selector-tools">
+          <input id="linkSelectorSearch" type="search" spellcheck="false" data-skip-save="true" data-i18n-placeholder="linkSelectorSearchPlaceholder">
+          <button id="linkSelectorAllButton" type="button" class="filter-button" data-i18n="linkSelectorAllButton">All</button>
+          <button id="linkSelectorNoneButton" type="button" class="filter-button" data-i18n="linkSelectorNoneButton">None</button>
+          <button id="linkSelectorInvertButton" type="button" class="filter-button" data-i18n="linkSelectorInvertButton">Invert</button>
+        </div>
+        <div id="linkSelectorList" class="link-selector-list"></div>
+        <div class="link-selector-foot">
+          <button id="linkSelectorCancelButton" type="button" class="secondary neutral compact-button" data-i18n="linkSelectorCancelButton">Cancel</button>
+          <button id="linkSelectorApplyButton" type="button" class="compact-button" data-i18n="linkSelectorApplyButton" disabled>Add to list</button>
         </div>
       </section>
 
