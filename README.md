@@ -99,17 +99,22 @@ BatchShot 会生成 3 个 URL，并可一键应用到截图队列。
 - Filename：设置文件名模板。
 - Filename date/time format：设置文件名中的日期时间格式。
 
-文件名模板支持：
+下载文件夹和文件名模板都支持以下占位符，文件夹中可以用 `/` 生成多级子目录，例如 `BatchShot/{date}/{域名}`：
 
 | 占位符 | 含义 |
 | --- | --- |
 | `{index}` / `{序号}` | 当前截图序号 |
+| `{total}` / `{总数}` | 当前任务总数 |
 | `{host}` / `{域名}` | 页面域名 |
 | `{title}` / `{标题}` | 页面标题 |
+| `{keyword}` / `{关键词}` | URL 模板模式中的搜索关键词 |
 | `{folder}` / `{文件夹}` | 下载文件夹 |
 | `{datetime}` / `{日期时间}` | 完整日期时间 |
 | `{date}` / `{日期}` | 日期 |
 | `{time}` / `{时间}` | 时间 |
+| `{year}` / `{年}` | 年 |
+| `{month}` / `{月}` | 月 |
+| `{day}` / `{日}` | 日 |
 | `{url}` / `{网址}` | 页面 URL |
 
 #### 元信息
@@ -326,17 +331,22 @@ Click the settings button at the bottom of the popup to open the settings page.
 - Filename: configure the filename pattern.
 - Filename date/time format: configure date and time formatting in filenames.
 
-Supported filename placeholders:
+The download folder and filename patterns both support these placeholders. Use `/` in the folder to create nested subfolders, for example `BatchShot/{date}/{domain}`:
 
 | Placeholder | Meaning |
 | --- | --- |
 | `{index}` / `{序号}` | Capture index |
+| `{total}` / `{总数}` | Total captures in the task |
 | `{host}` / `{域名}` | Page host |
 | `{title}` / `{标题}` | Page title |
+| `{keyword}` / `{关键词}` | Search keyword from URL template mode |
 | `{folder}` / `{文件夹}` | Download folder |
 | `{datetime}` / `{日期时间}` | Full date and time |
 | `{date}` / `{日期}` | Date |
 | `{time}` / `{时间}` | Time |
+| `{year}` / `{年}` | Year |
+| `{month}` / `{月}` | Month |
+| `{day}` / `{日}` | Day |
 | `{url}` / `{网址}` | Page URL |
 
 #### Metadata

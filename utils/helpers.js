@@ -20,6 +20,14 @@ export function sanitizeFilename(value) {
     .slice(0, 150) || 'screenshot';
 }
 
+export function sanitizePath(value) {
+  return String(value ?? '')
+    .split(/[\\/]+/)
+    .map((part) => sanitizeFilename(part))
+    .filter(Boolean)
+    .join('/');
+}
+
 function pad(value) {
   return String(value).padStart(2, '0');
 }
@@ -34,49 +42,99 @@ export function formatDateTime(date, format) {
     .replaceAll('ss', pad(date.getSeconds()));
 }
 
-export function buildFilename(url, index, options, context = {}) {
+const PATH_TEMPLATE_ALIASES = {
+  index: ['index', '序号', '编号'],
+  total: ['total', '总数', '总计'],
+  host: ['host', 'hostname', 'domain', '域名', '主机名', '网站'],
+  folder: ['folder', '文件夹', '目录'],
+  datetime: ['datetime', 'dateTime', '日期时间', '时间戳'],
+  date: ['date', '日期'],
+  time: ['time', '时间'],
+  year: ['year', '年份', '年'],
+  month: ['month', '月份', '月'],
+  day: ['day', '日期日', '日'],
+  title: ['title', '标题', '页面标题'],
+  keyword: ['keyword', 'searchKeyword', 'query', '搜索关键词', '关键词', '搜索词'],
+  url: ['url', '网址', '链接', '地址']
+};
+
+const SEARCH_KEYWORD_PARAMS = [
+  'q',
+  'query',
+  'keyword',
+  'keywords',
+  'search',
+  'search_query',
+  'term',
+  'wd',
+  'word',
+  'text',
+  'k',
+  'p'
+];
+
+function searchKeywordFromUrl(parsed) {
+  const params = parsed.searchParams;
+  const key = SEARCH_KEYWORD_PARAMS.find((name) => params.get(name));
+
+  return key ? params.get(key) : '';
+}
+
+function pathTemplateValues(url, index, total, options, context = {}, folder = '') {
   const parsed = new URL(url);
   const now = new Date();
   const datetime = formatDateTime(now, options.filenameDateTimeFormat || 'YYYY-MM-DD_HHmmss');
   const date = formatDateTime(now, 'YYYY-MM-DD');
   const time = formatDateTime(now, 'HHmmss');
-  const extension = options.format === 'jpg' ? 'jpg' : options.format;
-  const folder = sanitizeFilename(String(options.folder ?? '').trim());
-  const values = {
+
+  return {
     index: String(index + 1).padStart(3, '0'),
+    total: String(total ?? ''),
     host: parsed.hostname.replace(/^www\./, ''),
     folder: folder || 'download',
     datetime,
     date,
     time,
+    year: formatDateTime(now, 'YYYY'),
+    month: formatDateTime(now, 'MM'),
+    day: formatDateTime(now, 'DD'),
     title: context.title || '',
+    keyword: context.keyword || context.searchKeyword || searchKeywordFromUrl(parsed),
     url
   };
-  const aliases = {
-    index: ['index', '序号', '编号'],
-    host: ['host', 'hostname', 'domain', '域名', '主机名', '网站'],
-    folder: ['folder', '文件夹', '目录'],
-    datetime: ['datetime', 'dateTime', '日期时间', '时间戳'],
-    date: ['date', '日期'],
-    time: ['time', '时间'],
-    title: ['title', '标题', '页面标题'],
-    url: ['url', '网址', '链接', '地址']
-  };
-  let basename = options.filenamePattern || '{index}-{host}';
+}
 
-  Object.entries(aliases).forEach(([key, names]) => {
+function renderPathTemplate(template, values) {
+  let rendered = String(template ?? '');
+
+  Object.entries(PATH_TEMPLATE_ALIASES).forEach(([key, names]) => {
     names.forEach((name) => {
-      basename = basename.replaceAll(`{${name}}`, values[key]);
+      rendered = rendered.replaceAll(`{${name}}`, values[key]);
     });
   });
 
+  return rendered;
+}
+
+export function buildFolderPath(folder, url, index, total, options, context = {}) {
+  const values = pathTemplateValues(url, index, total, options, context, '');
+
+  return sanitizePath(renderPathTemplate(String(folder ?? '').trim(), values));
+}
+
+export function buildFilename(url, index, options, context = {}) {
+  const total = context.total ?? options.total ?? '';
+  const extension = options.format === 'jpg' ? 'jpg' : options.format;
+  const folder = buildFolderPath(options.folder, url, index, total, options, context);
+  const values = pathTemplateValues(url, index, total, options, context, folder);
+  const basename = renderPathTemplate(options.filenamePattern || '{index}-{host}', values);
   const filename = `${sanitizeFilename(basename)}.${extension}`;
 
   return folder ? `${folder}/${filename}` : filename;
 }
 
 export function buildDownloadPath(folder, filename) {
-  const sanitizedFolder = sanitizeFilename(String(folder ?? '').trim());
+  const sanitizedFolder = sanitizePath(String(folder ?? '').trim());
   const sanitizedFilename = sanitizeFilename(filename);
 
   return sanitizedFolder ? `${sanitizedFolder}/${sanitizedFilename}` : sanitizedFilename;

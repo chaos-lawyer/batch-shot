@@ -130,16 +130,16 @@
     "message": "Folder"
   },
   "folderPlaceholder": {
-    "message": "BatchShot"
+    "message": "BatchShot/{date}/{domain}"
   },
   "folderTooltip": {
-    "message": "Leave empty to save in the Downloads folder root, or enter a folder name such as BatchShot to save there."
+    "message": "Leave empty to save in the Downloads folder root, or use placeholders such as {date}/{domain}/{keyword} for subfolders."
   },
   "filenameLabel": {
     "message": "Filename"
   },
   "filenameHelp": {
-    "message": "Use {index}, {host}, {title}, {folder}, {datetime}"
+    "message": "Use {index}, {total}, {host}, {title}, {keyword}, {folder}, {datetime}, {date}, {time}, {year}, {month}, {day}, {url}"
   },
   "filenameDateTimeFormatLabel": {
     "message": "Filename date/time format"
@@ -368,7 +368,7 @@
     "message": "Fields and order"
   },
   "metadataFieldsHelp": {
-    "message": "Supports capturedAt/time, url, title, host/domain, index, total"
+    "message": "Supports capturedAt/time, url, title, host/domain, index, total, keyword"
   },
   "metadataDateTimeFormatLabel": {
     "message": "Metadata date/time format"

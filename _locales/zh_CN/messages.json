@@ -130,16 +130,16 @@
     "message": "文件夹"
   },
   "folderPlaceholder": {
-    "message": "BatchShot"
+    "message": "BatchShot/{date}/{域名}"
   },
   "folderTooltip": {
-    "message": "留空会保存到下载文件夹根目录；填写文件夹名（如 BatchShot）会保存到该子文件夹。"
+    "message": "留空会保存到下载文件夹根目录；可用 {date}/{域名}/{关键词} 等参数生成子文件夹。"
   },
   "filenameLabel": {
     "message": "文件名"
   },
   "filenameHelp": {
-    "message": "可用 {index}/{序号}、{host}/{域名}、{title}/{标题}、{folder}/{文件夹}、{datetime}/{日期时间}"
+    "message": "可用 {index}/{序号}、{total}/{总数}、{host}/{域名}、{title}/{标题}、{keyword}/{关键词}、{folder}/{文件夹}、{datetime}/{日期时间}、{date}/{日期}、{time}/{时间}、{year}/{年}、{month}/{月}、{day}/{日}、{url}/{网址}"
   },
   "filenameDateTimeFormatLabel": {
     "message": "文件名日期时间格式"
@@ -368,7 +368,7 @@
     "message": "字段和顺序"
   },
   "metadataFieldsHelp": {
-    "message": "支持 capturedAt/截图时间、url/网址、title/标题、host/域名、index/序号、total/总数"
+    "message": "支持 capturedAt/截图时间、url/网址、title/标题、host/域名、index/序号、total/总数、keyword/关键词"
   },
   "metadataDateTimeFormatLabel": {
     "message": "元信息日期时间格式"

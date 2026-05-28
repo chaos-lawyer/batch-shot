@@ -189,6 +189,10 @@ const METADATA_FIELDS = {
   total: {
     label: { en: 'Total', zh_CN: '总数' },
     aliases: ['total', '总数', '总计', '总数量']
+  },
+  keyword: {
+    label: { en: 'Keyword', zh_CN: '关键词' },
+    aliases: ['keyword', 'searchKeyword', 'query', '搜索关键词', '关键词', '搜索词']
   }
 };
 
@@ -226,7 +230,8 @@ function getMetadataRows(options) {
     title: context.title,
     host: context.host,
     index: context.index,
-    total: context.total
+    total: context.total,
+    keyword: context.keyword
   };
 
   return String(options.metadataFields || 'capturedAt,url')

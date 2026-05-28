@@ -323,12 +323,16 @@ function buildTemplateUrls() {
     };
   }
 
-  const urls = templates.flatMap((template) => (
-    items.map((item) => template.line.replaceAll('%s', item))
+  const entries = templates.flatMap((template) => (
+    items.map((item) => ({
+      url: template.line.replaceAll('%s', item),
+      keyword: item
+    }))
   ));
 
   return {
-    urls,
+    urls: entries.map((entry) => entry.url),
+    urlContexts: entries.map((entry) => ({ keyword: entry.keyword })),
     errorKey: ''
   };
 }
@@ -688,6 +692,7 @@ async function startCapture() {
   const popupSettings = getSettings();
   const templateResult = urlInputMode === 'template' ? buildTemplateUrls() : null;
   const urls = templateResult ? templateResult.urls : parseUrls(popupSettings.urls);
+  const urlContexts = templateResult ? templateResult.urlContexts : [];
 
   if (!urls.length) {
     elements.statusText.textContent = message(
@@ -702,7 +707,7 @@ async function startCapture() {
   setRunning(true);
   await chrome.runtime.sendMessage({
     action: 'startBatch',
-    payload: { ...settings, urls }
+    payload: { ...settings, urls, urlContexts }
   });
 }
 

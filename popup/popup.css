@@ -100,7 +100,7 @@
 
 body {
   width: 400px;
-  height: 500px;
+  height: 530px;
   margin: 0;
   overflow: hidden;
   color: var(--text-main);
@@ -205,6 +205,10 @@ small,
   min-height: 206px;
 }
 
+#urlListPane {
+  min-height: 166px;
+}
+
 .url-pane.has-no-wrap,
 .template-textarea-wrapper {
   display: flex;
@@ -221,8 +225,12 @@ small,
   resize: vertical;
 }
 
+#urlListPane.has-no-wrap {
+  height: 166px;
+}
+
 .template-textarea-wrapper {
-  height: 120px;
+  height: 150px;
   resize: vertical;
 }
 
@@ -256,7 +264,7 @@ small,
 }
 
 #urlList {
-  height: 220px;
+  height: 150px;
 }
 
 .no-wrap {
@@ -430,6 +438,10 @@ button.filter-button:hover:not(:disabled) {
   gap: 12px;
 }
 
+#captureSettings {
+  flex-wrap: wrap;
+}
+
 .grid.three {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -441,7 +453,11 @@ button.filter-button:hover:not(:disabled) {
 }
 
 .grid .delay-field {
-  flex: 0 0 78px;
+  flex: 0 0 112px;
+}
+
+.grid .folder-field {
+  flex: 0 0 100%;
 }
 
 label {
@@ -564,7 +580,7 @@ select:focus {
 }
 
 .preview-list {
-  height: 68px;
+  height: 78px;
   min-height: 38px;
   max-height: 140px;
   margin: 0;

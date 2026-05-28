@@ -1,4 +1,4 @@
-import { buildDownloadPath, buildFilename, csvEscape, normalizeUrl } from '../utils/helpers.js';
+import { buildDownloadPath, buildFilename, buildFolderPath, csvEscape, normalizeUrl } from '../utils/helpers.js';
 import { getReportColumns } from '../utils/report-fields.js';
 import { loadSettings } from '../utils/settings.js';
 import { createXlsxReportDataUrl } from '../utils/xlsx.js';
@@ -248,6 +248,7 @@ async function captureTabToDownload(tab, index, total, options) {
   const freshTab = await activateTab(tab);
   const url = freshTab.url || tab.url;
   const parsedUrl = new URL(url);
+  const urlContext = options.urlContexts?.[index] || {};
   const captureOptions = {
     ...options,
     metadataContext: {
@@ -256,13 +257,18 @@ async function captureTabToDownload(tab, index, total, options) {
       title: freshTab.title || '',
       host: parsedUrl.hostname,
       index: index + 1,
-      total
+      total,
+      keyword: urlContext.keyword || ''
     }
   };
   const dataUrl = options.captureMode === 'viewport'
     ? await captureViewport(freshTab, captureOptions)
     : await captureFullPage(freshTab, captureOptions);
-  const filename = buildFilename(url, index, options, { title: freshTab.title || '' });
+  const filename = buildFilename(url, index, options, {
+    title: freshTab.title || '',
+    total,
+    keyword: urlContext.keyword || ''
+  });
 
   await downloadDataUrl(dataUrl, filename);
   return { url, filename, title: freshTab.title || '' };
@@ -400,7 +406,20 @@ async function downloadReport(rows, options) {
   const columns = getReportColumns(options.reportFields);
   const header = columns.map((column) => column.label);
   const reportTimestamp = new Date().toISOString().replace(/[:.]/g, '-');
-  const reportName = buildDownloadPath(options.folder, `report-${reportTimestamp}.${extension}`);
+  const firstRow = rows[0] || {};
+  const reportFolder = buildFolderPath(
+    options.folder,
+    firstRow.url || 'https://batchshot.local/',
+    0,
+    rows.length,
+    options,
+    {
+      title: firstRow.title || '',
+      total: rows.length,
+      keyword: options.urlContexts?.[0]?.keyword || ''
+    }
+  );
+  const reportName = buildDownloadPath(reportFolder, `report-${reportTimestamp}.${extension}`);
   const dataUrl = isXlsx
     ? createXlsxReportDataUrl(rows, columns)
     : `data:${mimeType},${encodeURIComponent([
