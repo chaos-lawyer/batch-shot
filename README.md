@@ -225,20 +225,6 @@ BatchShot/
 node scripts/generate-icons.mjs
 ```
 
-### 手动测试建议
-
-发布前建议至少验证：
-
-- 单个短页面的可视区截图。
-- 单个长页面的整页截图。
-- 多个 URL 的批量截图。
-- URL 模板生成和应用。
-- PNG、JPG、PDF 输出。
-- CSV 和 XLSX 报告。
-- 元信息横幅的顶部和底部位置。
-- 暂停、继续和停止任务。
-- 中英文界面和深浅色主题。
-
 ### 许可证
 
 本项目基于 [MIT License](LICENSE) 开源。
@@ -465,20 +451,6 @@ Generate icons:
 ```sh
 node scripts/generate-icons.mjs
 ```
-
-### Manual Test Checklist
-
-Before publishing, verify at least:
-
-- Viewport capture on a short page.
-- Full-page capture on a long page.
-- Batch capture with multiple URLs.
-- URL template generation and apply flow.
-- PNG, JPG, and PDF output.
-- CSV and XLSX reports.
-- Metadata banner at both top and bottom positions.
-- Pause, resume, and stop controls.
-- English and Chinese UI, plus light and dark themes.
 
 ### License
 
