@@ -1,3 +1,5 @@
+import { formatDateTime } from './date-format.js';
+
 export function normalizeUrl(rawUrl) {
   const value = rawUrl.trim();
   if (!value) {
@@ -26,20 +28,6 @@ export function sanitizePath(value) {
     .map((part) => sanitizeFilename(part))
     .filter(Boolean)
     .join('/');
-}
-
-function pad(value) {
-  return String(value).padStart(2, '0');
-}
-
-export function formatDateTime(date, format) {
-  return (format || '')
-    .replaceAll('YYYY', String(date.getFullYear()))
-    .replaceAll('MM', pad(date.getMonth() + 1))
-    .replaceAll('DD', pad(date.getDate()))
-    .replaceAll('HH', pad(date.getHours()))
-    .replaceAll('mm', pad(date.getMinutes()))
-    .replaceAll('ss', pad(date.getSeconds()));
 }
 
 const PATH_TEMPLATE_ALIASES = {

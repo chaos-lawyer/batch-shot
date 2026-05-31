@@ -162,6 +162,21 @@
   "othersSectionTitle": {
     "message": "其他"
   },
+  "iconClickActionLabel": {
+    "message": "点击扩展图标"
+  },
+  "iconClickActionPopup": {
+    "message": "打开弹出面板"
+  },
+  "iconClickActionCurrentPage": {
+    "message": "截取当前页"
+  },
+  "iconClickActionAllPages": {
+    "message": "截取当前窗口全部页面"
+  },
+  "iconClickActionHelp": {
+    "message": "同样适用于 Chrome 的扩展图标快捷键。"
+  },
   "closeBatchTabsAfterCaptureLabel": {
     "message": "批量截图后关闭对应页面"
   },
@@ -179,6 +194,9 @@
   },
   "settingsButton": {
     "message": "设置"
+  },
+  "contextMenuOpenPopup": {
+    "message": "打开弹出面板"
   },
   "currentTabButton": {
     "message": "截取当前页"
@@ -208,6 +226,43 @@
   },
   "currentWindowTabsErrorStatus": {
     "message": "无法截取当前窗口标签页。"
+  },
+  "batchAlreadyRunningError": {
+    "message": "已有截图任务正在运行。"
+  },
+  "noBatchRunningError": {
+    "message": "当前没有正在运行的截图任务。"
+  },
+  "noActivePageError": {
+    "message": "没有可截图的活动页面。"
+  },
+  "noCapturableTabsError": {
+    "message": "当前窗口没有可截图的标签页。"
+  },
+  "pageLoadTimeoutError": {
+    "message": "页面加载超时。"
+  },
+  "capturePrepareError": {
+    "message": "无法准备页面截图。"
+  },
+  "captureStoppedError": {
+    "message": "截图任务已停止。"
+  },
+  "stitchError": {
+    "message": "无法拼接截图。$DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "unknownCaptureError": {
+    "message": "截图失败。$DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
   },
   "extractingLinksStatus": {
     "message": "正在抓取当前页链接..."
@@ -322,6 +377,42 @@
   },
   "runningStatus": {
     "message": "正在截图..."
+  },
+  "batchProgressStatus": {
+    "message": "$INDEX$/$TOTAL$ $URL$",
+    "placeholders": {
+      "index": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "url": {
+        "content": "$3"
+      }
+    }
+  },
+  "batchDoneStatus": {
+    "message": "完成。成功 $SUCCESSFUL$ 张，失败 $FAILED$ 个。",
+    "placeholders": {
+      "successful": {
+        "content": "$1"
+      },
+      "failed": {
+        "content": "$2"
+      }
+    }
+  },
+  "batchDoneWithReportStatus": {
+    "message": "完成。成功 $SUCCESSFUL$ 张，失败 $FAILED$ 个。报告已下载。",
+    "placeholders": {
+      "successful": {
+        "content": "$1"
+      },
+      "failed": {
+        "content": "$2"
+      }
+    }
   },
   "pausedStatus": {
     "message": "已暂停。"

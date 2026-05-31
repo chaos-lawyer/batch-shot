@@ -1,34 +1,39 @@
 import { DEFAULT_SETTINGS, loadSettings, resetSettings, saveSettings } from '../utils/settings.js';
 import { applyI18n, initI18n, message } from '../utils/i18n.js';
+import { clampInteger } from '../utils/number.js';
 
-const SETTINGS_KEYS = [
-  'theme',
-  'appLanguage',
-  'format',
-  'screenshotQuality',
-  'urlListWrap',
-  'reportEnabled',
-  'reportFormat',
-  'reportFields',
-  'closeBatchTabsAfterCapture',
-  'historyLimit',
-  'filenamePattern',
-  'filenameDateTimeFormat',
-  'metadataEnabled',
-  'metadataPosition',
-  'metadataLayout',
-  'metadataFields',
-  'metadataDateTimeFormat',
-  'metadataFontSize',
-  'metadataPadding',
-  'metadataGap',
-  'metadataTextColor',
-  'metadataBackgroundColor',
-  'metadataLabelsEnabled',
-  'metadataBoldLabels',
-  'metadataSeparator'
+const ACTION_POPUP_URL = 'popup/popup.html';
+
+const SETTINGS_FIELDS = [
+  { key: 'theme', type: 'value' },
+  { key: 'appLanguage', type: 'value' },
+  { key: 'iconClickAction', type: 'value' },
+  { key: 'format', type: 'value' },
+  { key: 'screenshotQuality', type: 'number', min: 1, max: 100 },
+  { key: 'urlListWrap', type: 'checked' },
+  { key: 'reportEnabled', type: 'checked' },
+  { key: 'reportFormat', type: 'value' },
+  { key: 'reportFields', type: 'text' },
+  { key: 'closeBatchTabsAfterCapture', type: 'checked' },
+  { key: 'historyLimit', type: 'number', min: 1, max: 50 },
+  { key: 'filenamePattern', type: 'text' },
+  { key: 'filenameDateTimeFormat', type: 'text' },
+  { key: 'metadataEnabled', type: 'checked' },
+  { key: 'metadataPosition', type: 'value' },
+  { key: 'metadataLayout', type: 'value' },
+  { key: 'metadataFields', type: 'text' },
+  { key: 'metadataDateTimeFormat', type: 'text' },
+  { key: 'metadataFontSize', type: 'number' },
+  { key: 'metadataPadding', type: 'number' },
+  { key: 'metadataGap', type: 'number' },
+  { key: 'metadataTextColor', type: 'value', fallback: true },
+  { key: 'metadataBackgroundColor', type: 'value', fallback: true },
+  { key: 'metadataLabelsEnabled', type: 'checked' },
+  { key: 'metadataBoldLabels', type: 'checked' },
+  { key: 'metadataSeparator', type: 'value' }
 ];
 
+const SETTINGS_KEYS = SETTINGS_FIELDS.map((field) => field.key);
 const $ = (id) => document.getElementById(id);
 
 const elements = Object.fromEntries([
@@ -50,75 +55,50 @@ function setSaveState(key) {
   elements.saveState.textContent = message(key);
 }
 
-function getNumber(id) {
-  return Number(elements[id].value) || DEFAULT_SETTINGS[id];
-}
-
-function getClampedNumber(id, min, max) {
-  const value = Number(elements[id].value);
+function readNumberField(field) {
+  const value = Number(elements[field.key].value);
   if (!Number.isFinite(value)) {
-    return DEFAULT_SETTINGS[id];
+    return DEFAULT_SETTINGS[field.key];
   }
 
-  return Math.min(max, Math.max(min, Math.round(value)));
+  if (Number.isFinite(field.min) && Number.isFinite(field.max)) {
+    return clampInteger(value, DEFAULT_SETTINGS[field.key], field.min, field.max);
+  }
+  return value || DEFAULT_SETTINGS[field.key];
+}
+
+function readField(field) {
+  const element = elements[field.key];
+  if (field.type === 'checked') {
+    return element.checked;
+  }
+  if (field.type === 'number') {
+    return readNumberField(field);
+  }
+  if (field.type === 'text') {
+    return element.value.trim() || DEFAULT_SETTINGS[field.key];
+  }
+  return field.fallback
+    ? element.value || DEFAULT_SETTINGS[field.key]
+    : element.value;
 }
 
 function readForm() {
-  return {
-    theme: elements.theme.value,
-    appLanguage: elements.appLanguage.value,
-    format: elements.format.value,
-    screenshotQuality: getClampedNumber('screenshotQuality', 1, 100),
-    urlListWrap: elements.urlListWrap.checked,
-    reportEnabled: elements.reportEnabled.checked,
-    reportFormat: elements.reportFormat.value,
-    reportFields: elements.reportFields.value.trim() || DEFAULT_SETTINGS.reportFields,
-    closeBatchTabsAfterCapture: elements.closeBatchTabsAfterCapture.checked,
-    historyLimit: getClampedNumber('historyLimit', 1, 50),
-    filenamePattern: elements.filenamePattern.value.trim() || DEFAULT_SETTINGS.filenamePattern,
-    filenameDateTimeFormat: elements.filenameDateTimeFormat.value.trim() || DEFAULT_SETTINGS.filenameDateTimeFormat,
-    metadataEnabled: elements.metadataEnabled.checked,
-    metadataPosition: elements.metadataPosition.value,
-    metadataLayout: elements.metadataLayout.value,
-    metadataFields: elements.metadataFields.value.trim() || DEFAULT_SETTINGS.metadataFields,
-    metadataDateTimeFormat: elements.metadataDateTimeFormat.value.trim() || DEFAULT_SETTINGS.metadataDateTimeFormat,
-    metadataFontSize: getNumber('metadataFontSize'),
-    metadataPadding: getNumber('metadataPadding'),
-    metadataGap: getNumber('metadataGap'),
-    metadataTextColor: elements.metadataTextColor.value || DEFAULT_SETTINGS.metadataTextColor,
-    metadataBackgroundColor: elements.metadataBackgroundColor.value || DEFAULT_SETTINGS.metadataBackgroundColor,
-    metadataLabelsEnabled: elements.metadataLabelsEnabled.checked,
-    metadataBoldLabels: elements.metadataBoldLabels.checked,
-    metadataSeparator: elements.metadataSeparator.value
-  };
+  return Object.fromEntries(SETTINGS_FIELDS.map((field) => [field.key, readField(field)]));
+}
+
+function writeField(settings, field) {
+  const element = elements[field.key];
+  if (field.type === 'checked') {
+    element.checked = Boolean(settings[field.key]);
+    return;
+  }
+
+  element.value = settings[field.key];
 }
 
 function writeForm(settings) {
-  elements.theme.value = settings.theme;
-  elements.appLanguage.value = settings.appLanguage;
-  elements.format.value = settings.format;
-  elements.screenshotQuality.value = settings.screenshotQuality;
-  elements.urlListWrap.checked = Boolean(settings.urlListWrap);
-  elements.reportEnabled.checked = Boolean(settings.reportEnabled);
-  elements.reportFormat.value = settings.reportFormat;
-  elements.reportFields.value = settings.reportFields;
-  elements.closeBatchTabsAfterCapture.checked = Boolean(settings.closeBatchTabsAfterCapture);
-  elements.historyLimit.value = settings.historyLimit;
-  elements.filenamePattern.value = settings.filenamePattern;
-  elements.filenameDateTimeFormat.value = settings.filenameDateTimeFormat;
-  elements.metadataEnabled.checked = Boolean(settings.metadataEnabled);
-  elements.metadataPosition.value = settings.metadataPosition;
-  elements.metadataLayout.value = settings.metadataLayout;
-  elements.metadataFields.value = settings.metadataFields;
-  elements.metadataDateTimeFormat.value = settings.metadataDateTimeFormat;
-  elements.metadataFontSize.value = settings.metadataFontSize;
-  elements.metadataPadding.value = settings.metadataPadding;
-  elements.metadataGap.value = settings.metadataGap;
-  elements.metadataTextColor.value = settings.metadataTextColor;
-  elements.metadataBackgroundColor.value = settings.metadataBackgroundColor;
-  elements.metadataLabelsEnabled.checked = Boolean(settings.metadataLabelsEnabled);
-  elements.metadataBoldLabels.checked = Boolean(settings.metadataBoldLabels);
-  elements.metadataSeparator.value = settings.metadataSeparator;
+  SETTINGS_FIELDS.forEach((field) => writeField(settings, field));
   updateScreenshotQualityValue();
   updateReportControls();
   updateMetadataControls();
@@ -172,10 +152,26 @@ async function openChromeShortcuts() {
   await chrome.tabs.create({ url: 'chrome://extensions/shortcuts' });
 }
 
+async function syncActionPopup(settings) {
+  if (!chrome.action?.setPopup) {
+    return;
+  }
+
+  await chrome.action.setPopup({
+    popup: settings.iconClickAction === 'popup' ? ACTION_POPUP_URL : ''
+  });
+}
+
+async function syncActionUi(settings) {
+  await syncActionPopup(settings);
+  await chrome.runtime.sendMessage({ action: 'syncActionUi' }).catch(() => {});
+}
+
 async function persistForm() {
   clearTimeout(saveTimer);
   setSaveState('savingStatus');
-  await saveSettings(readForm());
+  const settings = await saveSettings(readForm());
+  await syncActionUi(settings);
   setSaveState('savedStatus');
 }
 
@@ -187,17 +183,27 @@ function scheduleSave() {
   }, 180);
 }
 
+function bindSaveEvents() {
+  SETTINGS_FIELDS.forEach(({ key }) => {
+    const node = elements[key];
+    node.addEventListener('change', scheduleSave);
+    node.addEventListener('input', scheduleSave);
+  });
+}
+
 async function restoreSettings() {
   const settings = await loadSettings();
   await initI18n(settings.appLanguage);
   applyI18n();
   writeForm(settings);
+  await syncActionUi(settings);
   setSaveState('savedStatus');
 }
 
 async function resetOptions() {
   const settings = await resetSettings(SETTINGS_KEYS);
   writeForm(settings);
+  await syncActionUi(settings);
   setSaveState('savedStatus');
 }
 
@@ -212,11 +218,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 });
 
-SETTINGS_KEYS.forEach((key) => {
-  const node = elements[key];
-  node.addEventListener('change', scheduleSave);
-  node.addEventListener('input', scheduleSave);
-});
+bindSaveEvents();
 
 elements.theme.addEventListener('change', () => {
   document.documentElement.dataset.theme = elements.theme.value;

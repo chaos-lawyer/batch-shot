@@ -1,4 +1,5 @@
 import { DEFAULT_REPORT_FIELDS, normalizeReportFields } from './report-fields.js';
+import { clampInteger } from './number.js';
 
 export const DEFAULT_SETTINGS = {
   theme: 'auto',
@@ -9,6 +10,7 @@ export const DEFAULT_SETTINGS = {
   urlTemplate: '',
   urlTemplateItems: '',
   captureMode: 'fullPage',
+  iconClickAction: 'popup',
   format: 'png',
   screenshotQuality: 92,
   delay: 1,
@@ -47,18 +49,22 @@ function migrateSettings(settings) {
   const reportFormat = ['csv', 'xlsx'].includes(settings.reportFormat)
     ? settings.reportFormat
     : DEFAULT_SETTINGS.reportFormat;
+  const iconClickAction = ['popup', 'captureCurrentPage', 'captureAllPages'].includes(settings.iconClickAction)
+    ? settings.iconClickAction
+    : DEFAULT_SETTINGS.iconClickAction;
 
   return {
     ...settings,
     appLanguage,
     format,
+    iconClickAction,
     reportFormat,
     reportFields: normalizeReportFields(settings.reportFields),
     screenshotQuality: Number.isFinite(screenshotQuality)
-      ? Math.min(100, Math.max(1, Math.round(screenshotQuality)))
+      ? clampInteger(screenshotQuality, DEFAULT_SETTINGS.screenshotQuality, 1, 100)
       : DEFAULT_SETTINGS.screenshotQuality,
     historyLimit: Number.isFinite(historyLimit)
-      ? Math.min(50, Math.max(1, Math.round(historyLimit)))
+      ? clampInteger(historyLimit, DEFAULT_SETTINGS.historyLimit, 1, 50)
       : DEFAULT_SETTINGS.historyLimit,
     filenameDateTimeFormat: settings.filenameDateTimeFormat
       || [settings.filenameDateFormat, settings.filenameTimeFormat].filter(Boolean).join('_')

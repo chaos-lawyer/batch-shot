@@ -162,6 +162,21 @@
   "othersSectionTitle": {
     "message": "Others"
   },
+  "iconClickActionLabel": {
+    "message": "Extension icon click"
+  },
+  "iconClickActionPopup": {
+    "message": "Open popup"
+  },
+  "iconClickActionCurrentPage": {
+    "message": "Capture current page"
+  },
+  "iconClickActionAllPages": {
+    "message": "Capture all pages in current window"
+  },
+  "iconClickActionHelp": {
+    "message": "Also applies to Chrome's extension action shortcut."
+  },
   "closeBatchTabsAfterCaptureLabel": {
     "message": "Close each page after batch capture"
   },
@@ -179,6 +194,9 @@
   },
   "settingsButton": {
     "message": "Settings"
+  },
+  "contextMenuOpenPopup": {
+    "message": "Open popup"
   },
   "currentTabButton": {
     "message": "Capture current page"
@@ -208,6 +226,43 @@
   },
   "currentWindowTabsErrorStatus": {
     "message": "Could not capture current window tabs."
+  },
+  "batchAlreadyRunningError": {
+    "message": "A capture task is already running."
+  },
+  "noBatchRunningError": {
+    "message": "No capture task is running."
+  },
+  "noActivePageError": {
+    "message": "No active page to capture."
+  },
+  "noCapturableTabsError": {
+    "message": "No capturable tabs in the current window."
+  },
+  "pageLoadTimeoutError": {
+    "message": "Page load timed out."
+  },
+  "capturePrepareError": {
+    "message": "Could not prepare the page for capture."
+  },
+  "captureStoppedError": {
+    "message": "Capture stopped."
+  },
+  "stitchError": {
+    "message": "Could not stitch screenshots. $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
+  },
+  "unknownCaptureError": {
+    "message": "Capture failed. $DETAIL$",
+    "placeholders": {
+      "detail": {
+        "content": "$1"
+      }
+    }
   },
   "extractingLinksStatus": {
     "message": "Extracting links from current page..."
@@ -322,6 +377,42 @@
   },
   "runningStatus": {
     "message": "Capturing..."
+  },
+  "batchProgressStatus": {
+    "message": "$INDEX$/$TOTAL$ $URL$",
+    "placeholders": {
+      "index": {
+        "content": "$1"
+      },
+      "total": {
+        "content": "$2"
+      },
+      "url": {
+        "content": "$3"
+      }
+    }
+  },
+  "batchDoneStatus": {
+    "message": "Done. $SUCCESSFUL$ screenshot(s), $FAILED$ failure(s).",
+    "placeholders": {
+      "successful": {
+        "content": "$1"
+      },
+      "failed": {
+        "content": "$2"
+      }
+    }
+  },
+  "batchDoneWithReportStatus": {
+    "message": "Done. $SUCCESSFUL$ screenshot(s), $FAILED$ failure(s). Report downloaded.",
+    "placeholders": {
+      "successful": {
+        "content": "$1"
+      },
+      "failed": {
+        "content": "$2"
+      }
+    }
   },
   "pausedStatus": {
     "message": "Paused."

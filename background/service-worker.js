@@ -1,29 +1,63 @@
 import { buildDownloadPath, buildFilename, buildFolderPath, csvEscape, normalizeUrl } from '../utils/helpers.js';
+import { clampInteger } from '../utils/number.js';
 import { getReportColumns } from '../utils/report-fields.js';
 import { loadSettings } from '../utils/settings.js';
 import { createXlsxReportDataUrl } from '../utils/xlsx.js';
+import { createBatchStatusState, createReportRow, runCaptureJobs } from './capture-flow.js';
 
 const OFFSCREEN_URL = 'offscreen/offscreen.html';
 const CAPTURE_SETTLE_MS = 250;
 const MIN_CAPTURE_INTERVAL_MS = 700;
+const ACTION_POPUP_URL = 'popup/popup.html';
+const ACTION_MENU_OPEN_POPUP = 'open-popup';
 
 let lastCaptureAt = 0;
 
-let batchState = {
-  running: false,
-  paused: false,
-  stopping: false,
-  statusText: ''
-};
+const batchStatus = createBatchStatusState((state) => {
+  chrome.runtime.sendMessage({ action: 'batchStatus', ...state }).catch(() => {});
+});
+
+const getBatchState = () => batchStatus.getState();
 
 const CAPTURABLE_PROTOCOLS = new Set(['http:', 'https:', 'file:']);
+
+class StatusError extends Error {
+  constructor(statusKey, statusArgs = []) {
+    super(statusKey);
+    this.statusKey = statusKey;
+    this.statusArgs = statusArgs;
+  }
+}
+
+function statusError(statusKey, statusArgs = []) {
+  return new StatusError(statusKey, statusArgs);
+}
+
+function statusFromError(error, fallbackKey = 'unknownCaptureError') {
+  if (error?.statusKey) {
+    return {
+      statusKey: error.statusKey,
+      statusArgs: error.statusArgs || []
+    };
+  }
+
+  return {
+    statusKey: fallbackKey,
+    statusArgs: [String(error?.message || '')]
+  };
+}
+
+function errorResponse(error, fallbackKey = 'unknownCaptureError') {
+  const status = statusFromError(error, fallbackKey);
+  return { ok: false, ...status };
+}
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function waitWhilePaused() {
-  while (batchState.paused && !batchState.stopping) {
+  while (getBatchState().paused && !getBatchState().stopping) {
     await sleep(250);
   }
 }
@@ -32,7 +66,7 @@ async function sleepWithControls(ms) {
   let remaining = Math.max(0, ms);
 
   while (remaining > 0) {
-    if (batchState.stopping) {
+    if (getBatchState().stopping) {
       return;
     }
 
@@ -67,17 +101,63 @@ async function captureVisibleTab(tab, options = { format: 'png' }) {
 }
 
 function getCaptureQuality(options) {
-  const quality = Number(options.screenshotQuality);
-  if (!Number.isFinite(quality)) {
-    return 92;
-  }
-
-  return Math.min(100, Math.max(1, Math.round(quality)));
+  return clampInteger(options.screenshotQuality, 92, 1, 100);
 }
 
-function setStatus(statusText, running = batchState.running, paused = batchState.paused) {
-  batchState = { ...batchState, statusText, running, paused };
-  chrome.runtime.sendMessage({ action: 'batchStatus', statusText, running, paused }).catch(() => {});
+const setStatus = (...args) => batchStatus.setStatus(...args);
+
+async function syncActionPopup(settings) {
+  await chrome.action.setPopup({
+    popup: settings.iconClickAction === 'popup' ? ACTION_POPUP_URL : ''
+  });
+}
+
+async function syncActionContextMenus(settings) {
+  await chrome.contextMenus.removeAll();
+
+  if (settings.iconClickAction === 'popup') {
+    return;
+  }
+
+  chrome.contextMenus.create({
+    id: ACTION_MENU_OPEN_POPUP,
+    contexts: ['action'],
+    title: chrome.i18n.getMessage('contextMenuOpenPopup') || 'Open popup'
+  });
+}
+
+async function syncActionUi(settings) {
+  await syncActionPopup(settings);
+  await syncActionContextMenus(settings);
+}
+
+function openStandalonePopupWindow() {
+  return chrome.windows.create({
+    url: chrome.runtime.getURL(ACTION_POPUP_URL),
+    type: 'popup',
+    width: 420,
+    height: 720,
+    focused: true
+  });
+}
+
+async function openActionPopupFromMenu() {
+  if (!chrome.action?.openPopup) {
+    await openStandalonePopupWindow();
+    return;
+  }
+
+  try {
+    await chrome.action.setPopup({ popup: ACTION_POPUP_URL });
+    await chrome.action.openPopup();
+  } catch (_error) {
+    await openStandalonePopupWindow();
+  } finally {
+    const settings = await loadSettings().catch(() => null);
+    if (settings) {
+      await syncActionPopup(settings).catch((error) => setStatus(statusFromError(error), false));
+    }
+  }
 }
 
 async function ensureOffscreenDocument() {
@@ -118,7 +198,7 @@ async function waitForTabComplete(tabId, timeoutMs = 45000) {
   await new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
       chrome.tabs.onUpdated.removeListener(listener);
-      reject(new Error('Page load timed out'));
+      reject(statusError('pageLoadTimeoutError'));
     }, timeoutMs);
 
     function listener(updatedTabId, changeInfo) {
@@ -172,7 +252,7 @@ async function captureViewport(tab, options) {
     });
 
     if (!stitchResponse?.ok) {
-      throw new Error(stitchResponse?.error || 'Could not convert viewport screenshot');
+      throw statusError('stitchError', [stitchResponse?.error || '']);
     }
 
     return stitchResponse.dataUrl;
@@ -191,7 +271,7 @@ async function captureViewport(tab, options) {
 async function captureFullPage(tab, options) {
   const prep = await sendTabMessage(tab.id, { action: 'prepare' });
   if (!prep?.ok) {
-    throw new Error('Could not prepare page for capture');
+    throw statusError('capturePrepareError');
   }
 
   const metrics = prep.metrics;
@@ -199,8 +279,8 @@ async function captureFullPage(tab, options) {
   const segments = [];
 
   for (let frame = 0; frame < frameCount; frame += 1) {
-    if (batchState.stopping) {
-      throw new Error('Stopped');
+    if (getBatchState().stopping) {
+      throw statusError('captureStoppedError');
     }
 
     await waitWhilePaused();
@@ -229,7 +309,7 @@ async function captureFullPage(tab, options) {
   });
 
   if (!stitchResponse?.ok) {
-    throw new Error(stitchResponse?.error || 'Could not stitch screenshots');
+    throw statusError('stitchError', [stitchResponse?.error || '']);
   }
 
   return stitchResponse.dataUrl;
@@ -244,11 +324,10 @@ async function downloadDataUrl(dataUrl, filename) {
   });
 }
 
-async function captureTabToDownload(tab, index, total, options) {
+async function captureTabToDownload(tab, index, total, options, urlContext = {}) {
   const freshTab = await activateTab(tab);
   const url = freshTab.url || tab.url;
   const parsedUrl = new URL(url);
-  const urlContext = options.urlContexts?.[index] || {};
   const captureOptions = {
     ...options,
     metadataContext: {
@@ -274,126 +353,149 @@ async function captureTabToDownload(tab, index, total, options) {
   return { url, filename, title: freshTab.title || '' };
 }
 
-async function processUrl(rawUrl, index, total, options) {
-  const url = normalizeUrl(rawUrl);
-  const tab = await chrome.tabs.create({ url, active: true });
-  let filename = '';
-  let title = '';
+function createUrlJobs(urls, options) {
+  return urls.map((rawUrl, index) => ({
+    kind: 'url',
+    url: normalizeUrl(rawUrl),
+    urlContext: options.urlContexts?.[index] || {},
+    closeAfterCapture: Boolean(options.closeBatchTabsAfterCapture)
+  }));
+}
 
-  try {
-    setStatus(`${index + 1}/${total} ${url}`, true);
-    await waitForTabComplete(tab.id);
-    await sleepWithControls(Math.max(0, Number(options.delay) || 0) * 1000);
+function createTabJobs(tabs, options = {}) {
+  return tabs.map((tab, index) => ({
+    kind: 'tab',
+    tab,
+    url: tab.url,
+    title: tab.title || '',
+    urlContext: options.urlContexts?.[index] || {},
+    closeAfterCapture: Boolean(options.closeAfterCapture)
+  }));
+}
 
-    const result = await captureTabToDownload(tab, index, total, options);
-    filename = result.filename;
-    title = result.title;
+async function prepareCaptureJob(job) {
+  if (job.kind === 'url') {
+    const tab = await chrome.tabs.create({ url: job.url, active: true });
+    return { ...job, tab, url: tab.url || job.url };
+  }
 
-    return { index: index + 1, url, title, filename, status: 'ok', error: '' };
-  } catch (error) {
-    const latestTab = await chrome.tabs.get(tab.id).catch(() => null);
-    title = title || latestTab?.title || '';
-    return { index: index + 1, url, title, filename, status: 'error', error: error.message };
-  } finally {
-    await sendTabMessage(tab.id, { action: 'cleanup' }).catch(() => {});
-    if (options.closeBatchTabsAfterCapture) {
-      await chrome.tabs.remove(tab.id).catch(() => {});
-    }
+  return job;
+}
+
+async function cleanupCaptureJob(job) {
+  if (!job.tab?.id) {
+    return;
+  }
+
+  await sendTabMessage(job.tab.id, { action: 'cleanup' }).catch(() => {});
+  if (job.closeAfterCapture) {
+    await chrome.tabs.remove(job.tab.id).catch(() => {});
   }
 }
 
+async function captureSingleJob(job, index, total, options) {
+  let activeJob = job;
+  let filename = '';
+  let title = job.title || '';
+  let url = job.url;
+
+  try {
+    activeJob = await prepareCaptureJob(job);
+    url = activeJob.url || activeJob.tab?.url || url;
+    batchStatus.updateProgress(index, total, url);
+
+    if (activeJob.tab?.id && activeJob.waitForLoad !== false) {
+      await waitForTabComplete(activeJob.tab.id);
+    }
+
+    if (activeJob.applyDelay !== false) {
+      await sleepWithControls(Math.max(0, Number(options.delay) || 0) * 1000);
+    }
+
+    const result = await captureTabToDownload(activeJob.tab, index, total, options, activeJob.urlContext);
+    url = result.url;
+    filename = result.filename;
+    title = result.title;
+
+    return createReportRow({ index, url, title, filename, status: 'ok' });
+  } catch (error) {
+    const latestTab = activeJob.tab?.id ? await chrome.tabs.get(activeJob.tab.id).catch(() => null) : null;
+    url = latestTab?.url || url;
+    title = title || latestTab?.title || '';
+    const status = statusFromError(error);
+    return createReportRow({ index, url, title, filename, status: 'error', error: status.statusKey });
+  } finally {
+    await cleanupCaptureJob(activeJob);
+  }
+}
+
+const runCaptureJobList = (jobs, options) => runCaptureJobs(jobs, options, {
+  shouldStop: () => getBatchState().stopping,
+  waitWhilePaused,
+  captureSingleJob
+});
+
 async function captureCurrentTab(options) {
-  if (batchState.running) {
-    throw new Error('Batch already running');
+  if (getBatchState().running) {
+    throw statusError('batchAlreadyRunningError');
   }
 
   const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id || !tab.url) {
-    throw new Error('No active page to capture');
+    throw statusError('noActivePageError');
   }
 
-  batchState = { running: true, paused: false, stopping: false, statusText: 'Capturing current page...' };
-  setStatus('Capturing current page...', true);
+  const jobs = createTabJobs([tab], { closeAfterCapture: false })
+    .map((job) => ({ ...job, applyDelay: false, waitForLoad: false }));
+  batchStatus.start('currentTabRunningStatus');
 
   try {
     await ensureOffscreenDocument();
-    await captureTabToDownload(tab, 0, 1, options);
-    setStatus('Current page screenshot downloaded.', false);
+    const rows = await runCaptureJobList(jobs, options);
+    const failed = rows.find((row) => row.status === 'error');
+    if (failed) {
+      throw statusError(failed.error || 'unknownCaptureError');
+    }
+    setStatus({ statusKey: 'currentTabDoneStatus' }, false, false);
   } finally {
-    await sendTabMessage(tab.id, { action: 'cleanup' }).catch(() => {});
     await closeOffscreenDocument().catch(() => {});
-    batchState.running = false;
-    batchState.paused = false;
-    batchState.stopping = false;
+    batchStatus.reset();
   }
 }
 
 async function captureCurrentWindowTabs(options) {
-  if (batchState.running) {
-    throw new Error('Batch already running');
+  if (getBatchState().running) {
+    throw statusError('batchAlreadyRunningError');
   }
 
   const currentWindowTabs = await chrome.tabs.query({ currentWindow: true });
   const tabs = currentWindowTabs.filter(isCapturableTab);
   if (!tabs.length) {
-    throw new Error('No capturable tabs in the current window');
+    throw statusError('noCapturableTabsError');
   }
 
   const originalTab = currentWindowTabs.find((tab) => tab.active);
-  const rows = [];
-  batchState = { running: true, paused: false, stopping: false, statusText: 'Capturing current window tabs...' };
-  setStatus('Capturing current window tabs...', true);
+  const jobs = createTabJobs(tabs, { closeAfterCapture: false });
+  let rows = [];
+  batchStatus.start('currentWindowTabsRunningStatus');
 
   try {
     await ensureOffscreenDocument();
-
-    for (let index = 0; index < tabs.length; index += 1) {
-      if (batchState.stopping) {
-        break;
-      }
-
-      await waitWhilePaused();
-
-      const tab = tabs[index];
-      let filename = '';
-      let title = tab.title || '';
-      const url = tab.url;
-      setStatus(`${index + 1}/${tabs.length} ${url}`, true);
-
-      try {
-        await waitForTabComplete(tab.id);
-        await sleepWithControls(Math.max(0, Number(options.delay) || 0) * 1000);
-        const result = await captureTabToDownload(tab, index, tabs.length, options);
-        filename = result.filename;
-        title = result.title;
-        rows.push({ index: index + 1, url, title, filename, status: 'ok', error: '' });
-      } catch (error) {
-        const latestTab = await chrome.tabs.get(tab.id).catch(() => null);
-        title = latestTab?.title || title;
-        rows.push({ index: index + 1, url, title, filename, status: 'error', error: error.message });
-      } finally {
-        await sendTabMessage(tab.id, { action: 'cleanup' }).catch(() => {});
-      }
-    }
+    rows = await runCaptureJobList(jobs, options);
 
     if (options.reportEnabled) {
       await downloadReport(rows, options);
     }
 
     const successful = rows.filter((row) => row.status === 'ok').length;
-    const failed = rows.length - successful;
-    const reportStatus = options.reportEnabled ? ' Report downloaded.' : '';
-    setStatus(`Done. ${successful} screenshot(s), ${failed} failure(s).${reportStatus}`, false, false);
-
+    batchStatus.finish(rows, options.reportEnabled);
     return successful;
   } finally {
     if (originalTab?.id) {
       await activateTab(originalTab).catch(() => {});
     }
     await closeOffscreenDocument().catch(() => {});
-    batchState.running = false;
-    batchState.paused = false;
-    batchState.stopping = false;
+    batchStatus.reset();
   }
 }
 
@@ -436,65 +538,57 @@ async function downloadReport(rows, options) {
 }
 
 async function runBatch(options) {
-  const rows = [];
-  batchState = { running: true, paused: false, stopping: false, statusText: 'Capturing...' };
+  const jobs = createUrlJobs(options.urls, options);
+  batchStatus.start('runningStatus');
 
   try {
     await ensureOffscreenDocument();
-
-    for (let index = 0; index < options.urls.length; index += 1) {
-      if (batchState.stopping) {
-        break;
-      }
-      await waitWhilePaused();
-      rows.push(await processUrl(options.urls[index], index, options.urls.length, options));
-    }
+    const rows = await runCaptureJobList(jobs, options);
 
     if (options.reportEnabled) {
       await downloadReport(rows, options);
     }
-    const successful = rows.filter((row) => row.status === 'ok').length;
-    const failed = rows.length - successful;
-    const reportStatus = options.reportEnabled ? ' Report downloaded.' : '';
-    setStatus(`Done. ${successful} screenshot(s), ${failed} failure(s).${reportStatus}`, false, false);
+    batchStatus.finish(rows, options.reportEnabled);
   } catch (error) {
-    setStatus(error.message, false, false);
+    setStatus(statusFromError(error), false, false);
   } finally {
     await closeOffscreenDocument().catch(() => {});
-    batchState.running = false;
-    batchState.paused = false;
-    batchState.stopping = false;
+    batchStatus.reset();
   }
 }
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.action === 'getState') {
-    sendResponse(batchState);
+    sendResponse(getBatchState());
     return false;
   }
 
+  if (message.action === 'syncActionUi') {
+    loadSettings()
+      .then(syncActionUi)
+      .then(() => sendResponse({ ok: true }))
+      .catch((error) => sendResponse(errorResponse(error)));
+    return true;
+  }
+
   if (message.action === 'stopBatch') {
-    batchState.stopping = true;
-    setStatus('Stopping after current cleanup...', true, false);
+    batchStatus.requestStop();
     sendResponse({ ok: true });
     return false;
   }
 
   if (message.action === 'togglePauseBatch') {
-    if (!batchState.running || batchState.stopping) {
-      sendResponse({ ok: false, error: 'No batch is running' });
+    if (!batchStatus.togglePause()) {
+      sendResponse({ ok: false, statusKey: 'noBatchRunningError', statusArgs: [] });
       return false;
     }
-
-    const nextPaused = !batchState.paused;
-    setStatus(nextPaused ? 'Paused.' : 'Capturing...', true, nextPaused);
     sendResponse({ ok: true });
     return false;
   }
 
   if (message.action === 'startBatch') {
-    if (batchState.running) {
-      sendResponse({ ok: false, error: 'Batch already running' });
+    if (getBatchState().running) {
+      sendResponse({ ok: false, statusKey: 'batchAlreadyRunningError', statusArgs: [] });
       return false;
     }
 
@@ -507,8 +601,9 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     captureCurrentTab(message.payload)
       .then(() => sendResponse({ ok: true }))
       .catch((error) => {
-        setStatus(error.message, false);
-        sendResponse({ ok: false, error: error.message });
+        const response = errorResponse(error);
+        setStatus(response, false);
+        sendResponse(response);
       });
     return true;
   }
@@ -517,13 +612,36 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     captureCurrentWindowTabs(message.payload)
       .then((count) => sendResponse({ ok: true, count }))
       .catch((error) => {
-        setStatus(error.message, false);
-        sendResponse({ ok: false, error: error.message });
+        const response = errorResponse(error);
+        setStatus(response, false);
+        sendResponse(response);
       });
     return true;
   }
 
   return false;
+});
+
+chrome.action.onClicked.addListener(() => {
+  loadSettings()
+    .then(async (settings) => {
+      await syncActionPopup(settings);
+
+      if (settings.iconClickAction === 'popup') {
+        if (chrome.action.openPopup) {
+          await chrome.action.openPopup();
+        }
+        return;
+      }
+
+      if (settings.iconClickAction === 'captureAllPages') {
+        await captureCurrentWindowTabs(settings);
+        return;
+      }
+
+      await captureCurrentTab(settings);
+    })
+    .catch((error) => setStatus(statusFromError(error), false));
 });
 
 chrome.commands.onCommand.addListener((command) => {
@@ -539,5 +657,39 @@ chrome.commands.onCommand.addListener((command) => {
 
       return captureCurrentTab(settings);
     })
-    .catch((error) => setStatus(error.message, false));
+    .catch((error) => setStatus(statusFromError(error), false));
 });
+
+chrome.contextMenus.onClicked.addListener((info) => {
+  if (info.menuItemId === ACTION_MENU_OPEN_POPUP) {
+    openActionPopupFromMenu()
+      .catch((error) => setStatus(statusFromError(error), false));
+    return;
+  }
+});
+
+chrome.runtime.onInstalled.addListener(() => {
+  loadSettings()
+    .then(syncActionUi)
+    .catch((error) => setStatus(statusFromError(error), false));
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  loadSettings()
+    .then(syncActionUi)
+    .catch((error) => setStatus(statusFromError(error), false));
+});
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName !== 'local' || !changes.settings) {
+    return;
+  }
+
+  loadSettings()
+    .then(syncActionUi)
+    .catch((error) => setStatus(statusFromError(error), false));
+});
+
+loadSettings()
+  .then(syncActionUi)
+  .catch((error) => setStatus(statusFromError(error), false));
