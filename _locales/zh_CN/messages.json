@@ -126,6 +126,93 @@
   "delayTooltip": {
     "message": "页面加载完成后等待多久再截图，单位为秒。"
   },
+  "scheduleLabel": {
+    "message": "定时"
+  },
+  "scheduleButton": {
+    "message": "设置定时"
+  },
+  "scheduleNewButton": {
+    "message": "新建"
+  },
+  "scheduleUpdateButton": {
+    "message": "更新定时"
+  },
+  "scheduleButtonActive": {
+    "message": "已有 $COUNT$ 个定时任务",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "cancelScheduleButton": {
+    "message": "取消定时截图"
+  },
+  "scheduledTaskSavedStatus": {
+    "message": "已设置 $TIME$ 定时截图。",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "scheduledTaskUpdatedStatus": {
+    "message": "已更新为 $TIME$ 定时截图。",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "scheduledTaskPanelEmpty": {
+    "message": "当前没有定时任务。"
+  },
+  "scheduledTaskPanelNew": {
+    "message": "从当前 URL 列表新建定时任务。"
+  },
+  "scheduledTaskPanelCurrent": {
+    "message": "当前定时：$TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "scheduledTaskUrlCount": {
+    "message": "$COUNT$ 个 URL",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "scheduledTaskMoreUrls": {
+    "message": "...以及另外 $COUNT$ 个",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "scheduledTaskCanceledStatus": {
+    "message": "已取消定时截图。"
+  },
+  "scheduledTaskMissingTimeError": {
+    "message": "请先选择启动时间。"
+  },
+  "scheduledTaskPastError": {
+    "message": "请选择未来的启动时间。"
+  },
+  "scheduledTaskError": {
+    "message": "无法设置定时截图。"
+  },
+  "scheduledTaskCancelError": {
+    "message": "无法取消定时截图。"
+  },
+  "scheduledTaskSkippedRunning": {
+    "message": "定时截图已跳过，因为已有任务正在运行。"
+  },
   "folderLabel": {
     "message": "文件夹"
   },

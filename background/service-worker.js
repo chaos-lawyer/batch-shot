@@ -4,6 +4,7 @@ import { getReportColumns } from '../utils/report-fields.js';
 import { loadSettings } from '../utils/settings.js';
 import { createXlsxReportDataUrl } from '../utils/xlsx.js';
 import { createBatchStatusState, createReportRow, runCaptureJobs } from './capture-flow.js';
+import { createScheduledTaskController } from './scheduled-task.js';
 
 const OFFSCREEN_URL = 'offscreen/offscreen.html';
 const CAPTURE_SETTLE_MS = 250;
@@ -557,6 +558,12 @@ async function runBatch(options) {
   }
 }
 
+const scheduledTasks = createScheduledTaskController({
+  getBatchState,
+  runBatch,
+  setStatus
+});
+
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.action === 'getState') {
     sendResponse(getBatchState());
@@ -568,6 +575,27 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       .then(syncActionUi)
       .then(() => sendResponse({ ok: true }))
       .catch((error) => sendResponse(errorResponse(error)));
+    return true;
+  }
+
+  if (message.action === 'getScheduledBatch') {
+    scheduledTasks.getScheduledTasks()
+      .then((tasks) => sendResponse({ ok: true, tasks, task: tasks[0] || null }))
+      .catch((error) => sendResponse(errorResponse(error)));
+    return true;
+  }
+
+  if (message.action === 'scheduleBatch') {
+    scheduledTasks.scheduleBatch(message.payload.options, message.payload.scheduledAt, message.payload.taskId)
+      .then((response) => sendResponse(response))
+      .catch((error) => sendResponse(errorResponse(error, 'scheduledTaskError')));
+    return true;
+  }
+
+  if (message.action === 'cancelScheduledBatch') {
+    scheduledTasks.clearScheduledTask(message.payload?.taskId)
+      .then((tasks) => sendResponse({ ok: true, tasks }))
+      .catch((error) => sendResponse(errorResponse(error, 'scheduledTaskCancelError')));
     return true;
   }
 
@@ -622,6 +650,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   return false;
 });
 
+chrome.alarms.onAlarm.addListener((alarm) => {
+  scheduledTasks.handleAlarm(alarm)
+    .catch((error) => setStatus(statusFromError(error), false));
+});
+
 chrome.action.onClicked.addListener(() => {
   loadSettings()
     .then(async (settings) => {
@@ -671,12 +704,14 @@ chrome.contextMenus.onClicked.addListener((info) => {
 chrome.runtime.onInstalled.addListener(() => {
   loadSettings()
     .then(syncActionUi)
+    .then(() => scheduledTasks.restoreScheduledAlarm())
     .catch((error) => setStatus(statusFromError(error), false));
 });
 
 chrome.runtime.onStartup.addListener(() => {
   loadSettings()
     .then(syncActionUi)
+    .then(() => scheduledTasks.restoreScheduledAlarm())
     .catch((error) => setStatus(statusFromError(error), false));
 });
 
@@ -692,4 +727,5 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 
 loadSettings()
   .then(syncActionUi)
+  .then(() => scheduledTasks.restoreScheduledAlarm())
   .catch((error) => setStatus(statusFromError(error), false));

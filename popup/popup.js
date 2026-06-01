@@ -4,6 +4,7 @@ import { createCaptureActions } from './capture-actions.js';
 import { getPopupElements } from './dom.js';
 import { createInputHistory } from './history.js';
 import { createLinkSelector } from './link-selector.js';
+import { createScheduleActions } from './schedule.js';
 import { bindAutoSaveEvents, createPopupUiState, initTemplateResizing } from './ui-state.js';
 import { createUrlInput } from './url-input.js';
 
@@ -89,6 +90,17 @@ const captureActions = createCaptureActions({
   setStatus
 });
 
+const scheduleActions = createScheduleActions({
+  elements,
+  persistSettings,
+  getSettings: () => urlInput.getSettings(),
+  getUrlInputMode: () => urlInput.getMode(),
+  parseUrls: urlInput.parseUrls,
+  buildTemplateUrls: urlInput.buildTemplateUrls,
+  rememberCurrentInputs: history.rememberCurrentInputs,
+  setStatus
+});
+
 async function restoreSettings() {
   const merged = await loadSettings();
   await initI18n(merged.appLanguage);
@@ -105,6 +117,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await history.loadInputHistory();
   await restoreSettings();
   await refreshState();
+  await scheduleActions.refreshScheduledTask();
   initTemplateResizing();
 });
 
@@ -113,6 +126,7 @@ urlInput.bindUrlInputEvents();
 history.bindHistoryEvents();
 linkSelector.bindLinkSelectorEvents();
 captureActions.bindCaptureEvents();
+scheduleActions.bindScheduleEvents();
 
 chrome.runtime.onMessage.addListener((statusMessage) => {
   if (statusMessage.action !== 'batchStatus') return;

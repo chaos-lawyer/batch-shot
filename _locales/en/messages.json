@@ -126,6 +126,93 @@
   "delayTooltip": {
     "message": "Wait this many seconds after a page loads before taking the screenshot."
   },
+  "scheduleLabel": {
+    "message": "Schedule"
+  },
+  "scheduleButton": {
+    "message": "Schedule"
+  },
+  "scheduleNewButton": {
+    "message": "New"
+  },
+  "scheduleUpdateButton": {
+    "message": "Update"
+  },
+  "scheduleButtonActive": {
+    "message": "$COUNT$ scheduled capture(s)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "cancelScheduleButton": {
+    "message": "Cancel scheduled capture"
+  },
+  "scheduledTaskSavedStatus": {
+    "message": "Capture scheduled for $TIME$.",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "scheduledTaskUpdatedStatus": {
+    "message": "Scheduled capture updated to $TIME$.",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "scheduledTaskPanelEmpty": {
+    "message": "No scheduled capture."
+  },
+  "scheduledTaskPanelNew": {
+    "message": "New schedule from the current URL list."
+  },
+  "scheduledTaskPanelCurrent": {
+    "message": "Current schedule: $TIME$",
+    "placeholders": {
+      "time": {
+        "content": "$1"
+      }
+    }
+  },
+  "scheduledTaskUrlCount": {
+    "message": "$COUNT$ URL(s)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "scheduledTaskMoreUrls": {
+    "message": "...and $COUNT$ more",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "scheduledTaskCanceledStatus": {
+    "message": "Scheduled capture canceled."
+  },
+  "scheduledTaskMissingTimeError": {
+    "message": "Choose a start time first."
+  },
+  "scheduledTaskPastError": {
+    "message": "Choose a future start time."
+  },
+  "scheduledTaskError": {
+    "message": "Could not schedule the capture."
+  },
+  "scheduledTaskCancelError": {
+    "message": "Could not cancel the scheduled capture."
+  },
+  "scheduledTaskSkippedRunning": {
+    "message": "Scheduled capture skipped because another task is running."
+  },
   "folderLabel": {
     "message": "Folder"
   },

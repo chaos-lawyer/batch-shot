@@ -453,11 +453,133 @@ button.filter-button:hover:not(:disabled) {
 }
 
 .grid .delay-field {
-  flex: 0 0 112px;
+  flex: 0 0 96px;
 }
 
 .grid .folder-field {
   flex: 0 0 100%;
+}
+
+#scheduleButton.is-active {
+  color: var(--accent);
+  background: var(--tab-active-bg);
+  border-color: rgba(37, 99, 235, 0.24);
+}
+
+.schedule-panel {
+  position: fixed;
+  right: 18px;
+  bottom: 72px;
+  left: 18px;
+  z-index: 15;
+  display: grid;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-shell);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.2);
+}
+
+.schedule-panel-head,
+.schedule-panel-body {
+  display: flex;
+  align-items: center;
+}
+
+.schedule-panel-head {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.schedule-panel-body {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.schedule-summary {
+  flex: 0 0 100%;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.schedule-task-list,
+.schedule-url-preview {
+  flex: 0 0 100%;
+}
+
+.schedule-task-list {
+  display: grid;
+  gap: 6px;
+  max-height: 116px;
+  overflow-y: auto;
+}
+
+.schedule-task-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  align-items: center;
+  width: 100%;
+  min-height: 34px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text-main);
+  background: var(--bg-input);
+  box-shadow: none;
+  text-align: left;
+}
+
+.schedule-task-item.is-selected {
+  border-color: rgba(37, 99, 235, 0.35);
+  background: var(--tab-active-bg);
+}
+
+.schedule-task-time,
+.schedule-task-count,
+.schedule-url-preview li {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.schedule-task-time {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.schedule-task-count,
+.schedule-url-preview {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.schedule-url-preview {
+  margin: 0;
+  padding-left: 0;
+}
+
+.schedule-url-preview ol {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.schedule-panel-body input {
+  min-width: 0;
+  flex: 1;
+  height: 38px;
+  padding-inline: 8px;
+  font-size: 12px;
+}
+
+.schedule-panel-body button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+#cancelScheduleButton {
+  flex-basis: 100%;
 }
 
 label {
@@ -664,6 +786,27 @@ small {
 
 .actions button:hover:not(:disabled) {
   transform: translateY(-1px);
+}
+
+.split-button-group {
+  display: flex;
+}
+
+.split-button-group button:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  width: 36px; /* Match standard action button width */
+}
+
+.split-button-group button:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  width: 36px; /* Match standard action button width */
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.split-button-group button:hover:not(:disabled) {
+  z-index: 1; /* keep border on hover if needed */
 }
 
 button {
