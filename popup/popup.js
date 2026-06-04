@@ -107,6 +107,7 @@ async function restoreSettings() {
   applyI18n();
   historyLimit = merged.historyLimit;
   urlInput.restoreUrlSettings(merged);
+  scheduleActions.setScheduleEnabled(merged.scheduledTasksEnabled);
 
   if (merged.theme) {
     document.documentElement.dataset.theme = merged.theme;
@@ -137,6 +138,18 @@ chrome.runtime.onMessage.addListener((statusMessage) => {
     statusArgs: statusMessage.statusArgs || [],
     statusText: statusMessage.statusText || ''
   });
+});
+
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName !== 'local' || !changes.settings) {
+    return;
+  }
+
+  const isEnabled = Boolean(changes.settings.newValue?.scheduledTasksEnabled);
+  scheduleActions.setScheduleEnabled(isEnabled);
+  if (isEnabled) {
+    scheduleActions.refreshScheduledTask().catch(() => {});
+  }
 });
 
 document.addEventListener('click', () => history.closeHistoryMenus());

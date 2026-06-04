@@ -123,6 +123,13 @@ export function createScheduledTaskController({
     return tasks;
   }
 
+  async function clearScheduledAlarms() {
+    const tasks = await getScheduledTasks();
+    await chromeApi.alarms.clear(LEGACY_SCHEDULED_BATCH_ALARM);
+    await Promise.all(tasks.map((task) => chromeApi.alarms.clear(alarmNameForTask(task.id))));
+    return tasks;
+  }
+
   async function handleAlarm(alarm) {
     const isLegacyAlarm = alarm.name === LEGACY_SCHEDULED_BATCH_ALARM;
     const taskId = isLegacyAlarm ? '' : taskIdFromAlarmName(alarm.name);
@@ -150,6 +157,7 @@ export function createScheduledTaskController({
     getScheduledTasks,
     scheduleBatch,
     clearScheduledTask,
+    clearScheduledAlarms,
     restoreScheduledAlarm,
     handleAlarm
   };

@@ -4,7 +4,11 @@ import { getReportColumns } from '../utils/report-fields.js';
 import { loadSettings } from '../utils/settings.js';
 import { createXlsxReportDataUrl } from '../utils/xlsx.js';
 import { createBatchStatusState, createReportRow, runCaptureJobs } from './capture-flow.js';
-import { createScheduledTaskController } from './scheduled-task.js';
+import {
+  LEGACY_SCHEDULED_BATCH_ALARM,
+  SCHEDULED_BATCH_ALARM_PREFIX,
+  createScheduledTaskController
+} from './scheduled-task.js';
 
 const OFFSCREEN_URL = 'offscreen/offscreen.html';
 const CAPTURE_SETTLE_MS = 250;
@@ -21,6 +25,11 @@ const batchStatus = createBatchStatusState((state) => {
 const getBatchState = () => batchStatus.getState();
 
 const CAPTURABLE_PROTOCOLS = new Set(['http:', 'https:', 'file:']);
+
+function isScheduledBatchAlarm(alarm) {
+  return alarm?.name === LEGACY_SCHEDULED_BATCH_ALARM
+    || String(alarm?.name || '').startsWith(SCHEDULED_BATCH_ALARM_PREFIX);
+}
 
 class StatusError extends Error {
   constructor(statusKey, statusArgs = []) {
@@ -564,6 +573,14 @@ const scheduledTasks = createScheduledTaskController({
   setStatus
 });
 
+async function restoreScheduledAlarmIfEnabled(settings) {
+  if (!settings.scheduledTasksEnabled) {
+    return scheduledTasks.clearScheduledAlarms();
+  }
+
+  return scheduledTasks.restoreScheduledAlarm();
+}
+
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.action === 'getState') {
     sendResponse(getBatchState());
@@ -586,7 +603,13 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   }
 
   if (message.action === 'scheduleBatch') {
-    scheduledTasks.scheduleBatch(message.payload.options, message.payload.scheduledAt, message.payload.taskId)
+    loadSettings()
+      .then((settings) => {
+        if (!settings.scheduledTasksEnabled) {
+          return { ok: false, statusKey: 'scheduledTasksDisabledError', statusArgs: [] };
+        }
+        return scheduledTasks.scheduleBatch(message.payload.options, message.payload.scheduledAt, message.payload.taskId);
+      })
       .then((response) => sendResponse(response))
       .catch((error) => sendResponse(errorResponse(error, 'scheduledTaskError')));
     return true;
@@ -651,7 +674,13 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
-  scheduledTasks.handleAlarm(alarm)
+  loadSettings()
+    .then((settings) => {
+      if (isScheduledBatchAlarm(alarm) && !settings.scheduledTasksEnabled) {
+        return;
+      }
+      return scheduledTasks.handleAlarm(alarm);
+    })
     .catch((error) => setStatus(statusFromError(error), false));
 });
 
@@ -703,15 +732,19 @@ chrome.contextMenus.onClicked.addListener((info) => {
 
 chrome.runtime.onInstalled.addListener(() => {
   loadSettings()
-    .then(syncActionUi)
-    .then(() => scheduledTasks.restoreScheduledAlarm())
+    .then(async (settings) => {
+      await syncActionUi(settings);
+      await restoreScheduledAlarmIfEnabled(settings);
+    })
     .catch((error) => setStatus(statusFromError(error), false));
 });
 
 chrome.runtime.onStartup.addListener(() => {
   loadSettings()
-    .then(syncActionUi)
-    .then(() => scheduledTasks.restoreScheduledAlarm())
+    .then(async (settings) => {
+      await syncActionUi(settings);
+      await restoreScheduledAlarmIfEnabled(settings);
+    })
     .catch((error) => setStatus(statusFromError(error), false));
 });
 
@@ -721,11 +754,16 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   }
 
   loadSettings()
-    .then(syncActionUi)
+    .then(async (settings) => {
+      await syncActionUi(settings);
+      await restoreScheduledAlarmIfEnabled(settings);
+    })
     .catch((error) => setStatus(statusFromError(error), false));
 });
 
 loadSettings()
-  .then(syncActionUi)
-  .then(() => scheduledTasks.restoreScheduledAlarm())
+  .then(async (settings) => {
+    await syncActionUi(settings);
+    await restoreScheduledAlarmIfEnabled(settings);
+  })
   .catch((error) => setStatus(statusFromError(error), false));

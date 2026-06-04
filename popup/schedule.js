@@ -35,6 +35,7 @@ export function createScheduleActions({
 }) {
   let scheduledTasks = [];
   let selectedTaskId = '';
+  let isScheduleEnabled = false;
 
   function selectedTask() {
     return scheduledTasks.find((task) => task.id === selectedTaskId) || null;
@@ -49,6 +50,10 @@ export function createScheduleActions({
   }
 
   function setSchedulePanelOpen(isOpen) {
+    if (!isScheduleEnabled) {
+      isOpen = false;
+    }
+
     elements.schedulePanel.hidden = !isOpen;
     elements.scheduleButton.setAttribute('aria-expanded', String(isOpen));
 
@@ -142,8 +147,24 @@ export function createScheduleActions({
   }
 
   async function refreshScheduledTask() {
+    if (!isScheduleEnabled) {
+      renderScheduledTasks([]);
+      return;
+    }
+
     const response = await chrome.runtime.sendMessage({ action: 'getScheduledBatch' });
     renderScheduledTasks(response?.tasks || (response?.task ? [response.task] : []));
+  }
+
+  function setScheduleEnabled(isEnabled) {
+    isScheduleEnabled = Boolean(isEnabled);
+    elements.scheduleButton.hidden = !isScheduleEnabled;
+    elements.scheduleButton.parentElement?.classList.toggle('has-schedule-trigger', isScheduleEnabled);
+
+    if (!isScheduleEnabled) {
+      setSchedulePanelOpen(false);
+      renderScheduledTasks([]);
+    }
   }
 
   function clearSelectionForNewTask() {
@@ -259,6 +280,7 @@ export function createScheduleActions({
 
   return {
     bindScheduleEvents,
-    refreshScheduledTask
+    refreshScheduledTask,
+    setScheduleEnabled
   };
 }

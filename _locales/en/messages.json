@@ -207,6 +207,9 @@
   "scheduledTaskError": {
     "message": "Could not schedule the capture."
   },
+  "scheduledTasksDisabledError": {
+    "message": "Scheduled captures are disabled in settings."
+  },
   "scheduledTaskCancelError": {
     "message": "Could not cancel the scheduled capture."
   },
@@ -263,6 +266,9 @@
   },
   "iconClickActionHelp": {
     "message": "Also applies to Chrome's extension action shortcut."
+  },
+  "scheduledTasksEnabledLabel": {
+    "message": "Enable scheduled captures"
   },
   "closeBatchTabsAfterCaptureLabel": {
     "message": "Close each page after batch capture"

@@ -11,6 +11,7 @@ export const DEFAULT_SETTINGS = {
   urlTemplateItems: '',
   captureMode: 'fullPage',
   iconClickAction: 'popup',
+  scheduledTasksEnabled: false,
   format: 'png',
   screenshotQuality: 92,
   delay: 1,

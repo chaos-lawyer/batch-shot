@@ -8,6 +8,7 @@ const SETTINGS_FIELDS = [
   { key: 'theme', type: 'value' },
   { key: 'appLanguage', type: 'value' },
   { key: 'iconClickAction', type: 'value' },
+  { key: 'scheduledTasksEnabled', type: 'checked' },
   { key: 'format', type: 'value' },
   { key: 'screenshotQuality', type: 'number', min: 1, max: 100 },
   { key: 'urlListWrap', type: 'checked' },

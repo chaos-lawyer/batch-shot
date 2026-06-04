@@ -207,6 +207,9 @@
   "scheduledTaskError": {
     "message": "无法设置定时截图。"
   },
+  "scheduledTasksDisabledError": {
+    "message": "定时截图已在设置中关闭。"
+  },
   "scheduledTaskCancelError": {
     "message": "无法取消定时截图。"
   },
@@ -263,6 +266,9 @@
   },
   "iconClickActionHelp": {
     "message": "同样适用于 Chrome 的扩展图标快捷键。"
+  },
+  "scheduledTasksEnabledLabel": {
+    "message": "启用定时截图"
   },
   "closeBatchTabsAfterCaptureLabel": {
     "message": "批量截图后关闭对应页面"

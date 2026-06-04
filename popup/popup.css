@@ -793,12 +793,16 @@ small {
 }
 
 .split-button-group button:first-child {
-  border-top-right-radius: 0;
-  border-bottom-right-radius: 0;
+  border-radius: 8px;
   width: 36px; /* Match standard action button width */
 }
 
-.split-button-group button:last-child {
+.split-button-group.has-schedule-trigger button:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.split-button-group.has-schedule-trigger button:last-child {
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
   width: 36px; /* Match standard action button width */
