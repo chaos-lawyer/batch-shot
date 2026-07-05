@@ -719,7 +719,7 @@ select:focus {
   text-align: left;
 }
 
-.builder-preview:hover {
+.builder-preview:hover:not(:disabled) {
   background: var(--tab-hover);
 }
 

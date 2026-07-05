@@ -21,7 +21,7 @@ function taskIdFromAlarmName(name) {
     : '';
 }
 
-function createTask(options, scheduledAt, id = createTaskId()) {
+function summarizeScheduledOptions(options) {
   const urls = Array.isArray(options.urls) ? options.urls : [];
   const jobs = Array.isArray(options.jobs) ? options.jobs : [];
   const searchKeywords = Array.isArray(options.searchKeywordsList)
@@ -39,6 +39,12 @@ function createTask(options, scheduledAt, id = createTaskId()) {
     ? searchKeywords.slice(0, 3).map((keyword) => `${options.searchStartUrl} - ${keyword}`)
     : urls.slice(0, 3);
 
+  return { urlCount, urlPreview };
+}
+
+function createTask(options, scheduledAt, id = createTaskId()) {
+  const { urlCount, urlPreview } = summarizeScheduledOptions(options);
+
   return {
     id,
     options,
@@ -54,22 +60,7 @@ function normalizeTask(task) {
     return null;
   }
 
-  const urls = Array.isArray(task.options.urls) ? task.options.urls : [];
-  const jobs = Array.isArray(task.options.jobs) ? task.options.jobs : [];
-  const searchKeywords = Array.isArray(task.options.searchKeywordsList)
-    ? task.options.searchKeywordsList
-    : String(task.options.searchKeywords || '')
-      .split(/\r?\n/)
-      .map((line) => line.trim())
-      .filter(Boolean);
-  const urlCount = jobs.length || (task.options.urlInputMode === 'searchBox' ? searchKeywords.length : urls.length);
-  const urlPreview = jobs.length
-    ? jobs.slice(0, 3).map((job) => job.kind === 'search'
-      ? `${job.url} - ${job.search?.keyword || ''}`
-      : job.url)
-    : task.options.urlInputMode === 'searchBox'
-    ? searchKeywords.slice(0, 3).map((keyword) => `${task.options.searchStartUrl} - ${keyword}`)
-    : urls.slice(0, 3);
+  const { urlCount, urlPreview } = summarizeScheduledOptions(task.options);
 
   return {
     ...task,
@@ -171,9 +162,15 @@ export function createScheduledTaskController({
 
     const tasks = await getScheduledTasks();
     const task = isLegacyAlarm ? tasks[0] : tasks.find((item) => item.id === taskId);
-    await saveTasks(tasks.filter((item) => item.id !== task?.id));
 
-    const hasExplicitJobs = Array.isArray(task?.options?.jobs) && task.options.jobs.length;
+    if (!task) {
+      await chromeApi.alarms.clear(alarm.name);
+      return;
+    }
+
+    await saveTasks(tasks.filter((item) => item.id !== task.id));
+
+    const hasExplicitJobs = Array.isArray(task.options?.jobs) && task.options.jobs.length;
     const hasUrlJobs = Array.isArray(task?.options?.urls) && task.options.urls.length;
     const hasSearchJobs = task?.options?.urlInputMode === 'searchBox'
       && (

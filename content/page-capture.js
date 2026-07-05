@@ -277,7 +277,11 @@ function getSearchInputSelector() {
   return { ok: true, selector };
 }
 
-function i18nMessage(key, fallback) {
+function i18nMessage(key, fallback, provided = '') {
+  if (provided) {
+    return provided;
+  }
+
   try {
     return chrome.i18n.getMessage(key) || fallback;
   } catch (_error) {
@@ -285,7 +289,7 @@ function i18nMessage(key, fallback) {
   }
 }
 
-function createPickerBar() {
+function createPickerBar(messages = {}) {
   const bar = document.createElement('div');
   const text = document.createElement('span');
   const skipButton = document.createElement('button');
@@ -311,10 +315,11 @@ function createPickerBar() {
 
   text.textContent = i18nMessage(
     'buttonPickerPrompt',
-    'Click the search button, or skip to submit with Enter.'
+    'Click the search button, or skip to submit with Enter.',
+    messages.prompt
   );
   skipButton.type = 'button';
-  skipButton.textContent = i18nMessage('buttonPickerSkip', 'Skip');
+  skipButton.textContent = i18nMessage('buttonPickerSkip', 'Skip', messages.skip);
   skipButton.style.cssText = [
     'height:28px',
     'padding:0 10px',
@@ -331,13 +336,13 @@ function createPickerBar() {
   return { bar, skipButton };
 }
 
-function pickSearchButtonSelector() {
+function pickSearchButtonSelector(messages = {}) {
   if (activePickerCleanup) {
     activePickerCleanup();
   }
 
   return new Promise((resolve) => {
-    const { bar, skipButton } = createPickerBar();
+    const { bar, skipButton } = createPickerBar(messages);
     let hoverTarget = null;
 
     function cleanup() {
@@ -439,7 +444,7 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   }
 
   if (message.action === 'pickSearchButtonSelector') {
-    pickSearchButtonSelector().then((response) => sendResponse(response));
+    pickSearchButtonSelector(message.payload || {}).then((response) => sendResponse(response));
     return true;
   }
 

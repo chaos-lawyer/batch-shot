@@ -1,4 +1,4 @@
-import { DEFAULT_SETTINGS } from '../utils/settings.js';
+import { DEFAULT_SETTINGS, DEFAULT_URL_TEMPLATE_DELIMITER } from '../utils/settings.js';
 import { message } from '../utils/i18n.js';
 
 export function parseUrls(value) {
@@ -32,7 +32,7 @@ function splitSearchTemplateLine(line, delimiter) {
   };
 }
 
-export function buildTemplateUrlsFromValues(templateValue, itemsValue, delimiter = '\\') {
+export function buildTemplateUrlsFromValues(templateValue, itemsValue, delimiter = DEFAULT_URL_TEMPLATE_DELIMITER) {
   const templates = parseTemplateLines(templateValue);
   const items = parseUrls(itemsValue);
 
@@ -113,8 +113,6 @@ export function createUrlInput({
 }) {
   let urlInputMode = DEFAULT_SETTINGS.urlInputMode;
   let urlTemplateDelimiter = DEFAULT_SETTINGS.urlTemplateDelimiter;
-  let captureMode = DEFAULT_SETTINGS.captureMode;
-  let isPreviewExpanded = false;
   function getMode() {
     return urlInputMode;
   }
@@ -126,7 +124,6 @@ export function createUrlInput({
       urlTemplate: elements.urlTemplate.value,
       urlTemplateItems: elements.urlTemplateItems.value,
       urlTemplateDelimiter,
-      captureMode,
       delay: Number(elements.delay.value) || 0,
       folder: elements.folder.value.trim()
     };
@@ -202,10 +199,13 @@ export function createUrlInput({
 
     if (errorKey && (elements.urlTemplate.value || elements.urlTemplateItems.value)) {
       elements.urlPreviewCount.textContent = message(errorKey, errorArgs);
+      elements.showPreviewButton.disabled = true;
       return;
     }
 
-    elements.urlPreviewCount.textContent = message('templatePreviewCount', String(urls.length + searchJobs.length));
+    const total = urls.length + searchJobs.length;
+    elements.urlPreviewCount.textContent = message('templatePreviewCount', String(total));
+    elements.showPreviewButton.disabled = total === 0;
   }
 
   function setUrlInputMode(mode, shouldSave = true) {
@@ -243,7 +243,6 @@ export function createUrlInput({
     updateTemplateCounts();
     setUrlInputMode(settings.urlInputMode || DEFAULT_SETTINGS.urlInputMode, false);
     updateTemplatePreview();
-    captureMode = settings.captureMode || DEFAULT_SETTINGS.captureMode;
     elements.delay.value = settings.delay;
     elements.folder.value = settings.folder;
   }

@@ -1,6 +1,8 @@
 import { DEFAULT_REPORT_FIELDS, normalizeReportFields } from './report-fields.js';
 import { clampInteger } from './number.js';
 
+export const DEFAULT_URL_TEMPLATE_DELIMITER = ' :: ';
+
 export const DEFAULT_SETTINGS = {
   theme: 'auto',
   appLanguage: 'auto',
@@ -9,7 +11,7 @@ export const DEFAULT_SETTINGS = {
   urlListWrap: true,
   urlTemplate: '',
   urlTemplateItems: '',
-  urlTemplateDelimiter: ' :: ',
+  urlTemplateDelimiter: DEFAULT_URL_TEMPLATE_DELIMITER,
   searchStartUrl: '',
   searchInputSelector: '',
   searchSubmitMode: 'enter',
