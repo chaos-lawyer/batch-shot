@@ -1,7 +1,6 @@
 # BatchShot
 
-<img width="600" height="750" alt="image" src="https://github.com/user-attachments/assets/f8df2cd9-a9d0-490e-9ade-2d6c70dc2e76" />
-
+<img width="600" height="795" alt="image" src="https://github.com/user-attachments/assets/9fe1f6d8-bb9a-4ffc-859f-58f001657935" />
 
 [中文](#中文) | [English](#english)
 
