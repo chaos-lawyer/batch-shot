@@ -14,6 +14,7 @@ BatchShot 是一个基于 Chrome Extension Manifest V3 的批量网页截图工�
 
 - 批量截图：一行一个 URL，自动按队列处理。
 - URL 模板：使用 `%s` 占位符批量生成 URL。
+- CSS 选择器搜索模板：为不支持 URL 参数搜索的网站填写搜索框并截图。
 - 当前页面截图：一键截取当前标签页。
 - 当前窗口截图：一键截取当前窗口的所有可截图标签页。
 - 截图模式：支持整页截图和当前可视区截图。
@@ -54,10 +55,11 @@ BatchShot 是一个基于 Chrome Extension Manifest V3 的批量网页截图工�
 
 模板模式适合批量生成搜索页、商品页、文档页等规律 URL。
 
-例如模板：
+普通 URL 模板使用 `%s` 作为关键词占位符。例如模板：
 
 ```text
 https://www.baidu.com/s?wd=%s
+https://example.com/search?q=%s
 ```
 
 文本列表：
@@ -68,7 +70,24 @@ Chrome extension
 web screenshot
 ```
 
-BatchShot 会生成 3 个 URL，并可一键应用到截图队列。
+BatchShot 会把每一行模板和每一行文本组合成截图任务。
+
+如果网站不能通过 URL 参数搜索，也可以用 CSS 选择器创建搜索模板。默认格式是：
+
+```text
+起始页面 URL :: 搜索输入框 CSS 选择器 :: 可选的提交按钮 CSS 选择器
+```
+
+示例：
+
+```text
+https://example.com :: input[name="q"]
+https://example.com :: input[name="q"] :: button[type="submit"]
+```
+
+运行时，BatchShot 会为文本列表中的每个关键词打开起始页面，找到搜索输入框，填入关键词，然后按 Enter 提交；如果提供了按钮选择器，则点击该按钮提交。搜索完成后会继续使用当前的截图模式、文件名、元信息和报告设置。
+
+模板模式中可以混合普通 URL 模板和 CSS 选择器搜索模板。搜索模板的分隔符默认是 ` :: `，可在设置页中修改。
 
 #### 当前页面和当前窗口
 
@@ -172,7 +191,8 @@ BatchShot 需要以下 Chrome 扩展权限：
 - 截图过程中会激活被截图标签页，这是 `chrome.tabs.captureVisibleTab()` 的浏览器限制。
 - Chrome 内置页面、扩展页面、受保护页面和无权限访问的页面可能无法截图。
 - 超长页面会生成较大的 canvas，可能受到浏览器内存限制。
-- 动态加载、懒加载或无限滚动页面可能需要更长的 Delay。
+- 动态加载、懒加载、搜索结果页或无限滚动页面可能需要更长的 Delay。
+- CSS 选择器搜索模板不支持跨域 iframe、Shadow DOM、验证码或复杂多步骤搜索流程。
 - 整页截图会隐藏 fixed 和 sticky 元素，以避免页头、悬浮按钮在每一屏重复出现；如果页面重要内容本身使用这些定位方式，截图中可能不会显示。
 
 ### 项目结构
@@ -245,6 +265,7 @@ You can paste a list of URLs or generate URLs from a template. BatchShot opens e
 
 - Batch capture: paste one URL per line and process the queue automatically.
 - URL templates: generate URL lists with the `%s` placeholder.
+- CSS selector search templates: fill a site's search box and capture the results when URL-based search is not available.
 - Current page capture: capture the active tab with one click.
 - Current window capture: capture all capturable tabs in the current window.
 - Capture modes: full-page screenshots or viewport screenshots.
@@ -285,7 +306,7 @@ URLs without a protocol are automatically completed with `https://`.
 
 Template mode is useful for generating search pages, product pages, document pages, or any patterned URL list.
 
-Example templates:
+Regular URL templates use `%s` as the keyword placeholder. Example templates:
 
 ```text
 https://www.baidu.com/s?wd=%s
@@ -300,7 +321,24 @@ Chrome extension
 web screenshot
 ```
 
-BatchShot combines each template line with each text line. Template lines without `%s` are rejected with a line-specific warning.
+BatchShot combines each template line with each text line.
+
+For sites that cannot search reliably through URL parameters, you can also create a search template with CSS selectors. The default format is:
+
+```text
+Start page URL :: search input CSS selector :: optional submit button CSS selector
+```
+
+Examples:
+
+```text
+https://example.com :: input[name="q"]
+https://example.com :: input[name="q"] :: button[type="submit"]
+```
+
+For each keyword in the text list, BatchShot opens the start page, finds the search input, fills the keyword, and submits with Enter. If a button selector is provided, BatchShot clicks that button instead. After submission, it uses the current capture mode, filename, metadata, and report settings.
+
+Template mode can mix regular URL templates and CSS selector search templates. The search template delimiter defaults to ` :: ` and can be changed in Settings.
 
 #### Current Page and Current Window
 
@@ -404,7 +442,8 @@ BatchShot does not upload screenshot content. Screenshots and reports are downlo
 - Capture tabs are activated during screenshot tasks because of the `chrome.tabs.captureVisibleTab()` browser API.
 - Chrome internal pages, extension pages, protected pages, and pages without sufficient access permissions may not be capturable.
 - Very long pages create large canvases and may hit browser memory limits.
-- Dynamic, lazy-loaded, or infinite-scroll pages may require a longer Delay setting.
+- Dynamic, lazy-loaded, search result, or infinite-scroll pages may require a longer Delay setting.
+- CSS selector search templates do not support cross-origin iframes, Shadow DOM, CAPTCHAs, or complex multi-step search flows.
 - Full-page capture hides fixed and sticky elements to avoid repeated headers and floating buttons. If important content uses fixed or sticky positioning, it may be missing from the screenshot.
 
 ### Project Structure
