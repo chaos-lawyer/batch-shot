@@ -97,6 +97,10 @@ export function createInputHistory({
       return;
     }
 
+    if (urlInputAdapter.getMode() === 'searchBox') {
+      return;
+    }
+
     await addHistoryEntry('urls', elements.urlList.value);
   }
 

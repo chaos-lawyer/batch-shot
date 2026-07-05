@@ -1,7 +1,7 @@
 import { buildDownloadPath, buildFilename, buildFolderPath, csvEscape, normalizeUrl } from '../utils/helpers.js';
 import { clampInteger } from '../utils/number.js';
 import { getReportColumns } from '../utils/report-fields.js';
-import { loadSettings } from '../utils/settings.js';
+import { loadSettings, saveSettings } from '../utils/settings.js';
 import { createXlsxReportDataUrl } from '../utils/xlsx.js';
 import { createBatchStatusState, createReportRow, runCaptureJobs } from './capture-flow.js';
 import {
@@ -15,6 +15,7 @@ const CAPTURE_SETTLE_MS = 250;
 const MIN_CAPTURE_INTERVAL_MS = 700;
 const ACTION_POPUP_URL = 'popup/popup.html';
 const ACTION_MENU_OPEN_POPUP = 'open-popup';
+const ACTION_MENU_ADD_SEARCH_TEMPLATE = 'add-search-template';
 
 let lastCaptureAt = 0;
 
@@ -125,15 +126,19 @@ async function syncActionPopup(settings) {
 async function syncActionContextMenus(settings) {
   await chrome.contextMenus.removeAll();
 
-  if (settings.iconClickAction === 'popup') {
-    return;
-  }
-
   chrome.contextMenus.create({
-    id: ACTION_MENU_OPEN_POPUP,
-    contexts: ['action'],
-    title: chrome.i18n.getMessage('contextMenuOpenPopup') || 'Open popup'
+    id: ACTION_MENU_ADD_SEARCH_TEMPLATE,
+    contexts: ['page', 'editable'],
+    title: chrome.i18n.getMessage('contextMenuAddSearchTemplate') || 'Add search box to BatchShot template'
   });
+
+  if (settings.iconClickAction !== 'popup') {
+    chrome.contextMenus.create({
+      id: ACTION_MENU_OPEN_POPUP,
+      contexts: ['action'],
+      title: chrome.i18n.getMessage('contextMenuOpenPopup') || 'Open popup'
+    });
+  }
 }
 
 async function syncActionUi(settings) {
@@ -170,6 +175,39 @@ async function openActionPopupFromMenu() {
   }
 }
 
+async function appendSearchTemplateFromContextMenu(tab) {
+  if (!tab?.id) {
+    [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  }
+
+  if (!tab?.id || !tab.url) {
+    throw statusError('noActivePageError');
+  }
+
+  const response = await sendTabMessage(tab.id, { action: 'getSearchInputSelector' });
+  if (!response?.ok) {
+    throw statusError(response?.statusKey || 'searchInputSelectorError');
+  }
+  const buttonResponse = await sendTabMessage(tab.id, { action: 'pickSearchButtonSelector' });
+  if (!buttonResponse?.ok) {
+    throw statusError(buttonResponse?.statusKey || 'searchButtonSelectorError');
+  }
+
+  const settings = await loadSettings();
+  const delimiter = settings.urlTemplateDelimiter || ' :: ';
+  const line = buttonResponse.selector
+    ? `${tab.url}${delimiter}${response.selector}${delimiter}${buttonResponse.selector}`
+    : `${tab.url}${delimiter}${response.selector}`;
+  const currentTemplate = String(settings.urlTemplate || '').trimEnd();
+  const nextTemplate = currentTemplate ? `${currentTemplate}\n${line}` : line;
+
+  await saveSettings({
+    urlTemplate: nextTemplate,
+    urlInputMode: 'template'
+  });
+  await openActionPopupFromMenu();
+}
+
 async function ensureOffscreenDocument() {
   const url = chrome.runtime.getURL(OFFSCREEN_URL);
   const contexts = await chrome.runtime.getContexts({
@@ -199,7 +237,7 @@ async function closeOffscreenDocument() {
   }
 }
 
-async function waitForTabComplete(tabId, timeoutMs = 45000) {
+async function waitForTabComplete(tabId, timeoutMs = 45000, timeoutStatusKey = 'pageLoadTimeoutError') {
   const initial = await chrome.tabs.get(tabId);
   if (initial.status === 'complete') {
     return;
@@ -208,7 +246,7 @@ async function waitForTabComplete(tabId, timeoutMs = 45000) {
   await new Promise((resolve, reject) => {
     const timeout = setTimeout(() => {
       chrome.tabs.onUpdated.removeListener(listener);
-      reject(statusError('pageLoadTimeoutError'));
+      reject(statusError(timeoutStatusKey));
     }, timeoutMs);
 
     function listener(updatedTabId, changeInfo) {
@@ -372,6 +410,97 @@ function createUrlJobs(urls, options) {
   }));
 }
 
+function normalizeSearchJob(job, options) {
+  const inputSelector = String(job.search?.inputSelector || '').trim();
+  const submitMode = job.search?.submitMode === 'button' ? 'button' : 'enter';
+  const buttonSelector = String(job.search?.buttonSelector || '').trim();
+
+  if (!inputSelector) {
+    throw statusError('searchInputSelectorError');
+  }
+
+  if (submitMode === 'button' && !buttonSelector) {
+    throw statusError('searchButtonSelectorError');
+  }
+
+  return {
+    kind: 'search',
+    url: normalizeUrl(job.url),
+    urlContext: job.urlContext || {},
+    search: {
+      keyword: String(job.search?.keyword ?? job.urlContext?.keyword ?? ''),
+      inputSelector,
+      submitMode,
+      buttonSelector
+    },
+    closeAfterCapture: Boolean(options.closeBatchTabsAfterCapture),
+    applyDelay: false,
+    waitForLoad: false,
+    searchResultDelay: options.searchResultDelay ?? options.delay
+  };
+}
+
+function createExplicitJobs(options) {
+  return options.jobs.map((job, index) => {
+    if (job.kind === 'search') {
+      return normalizeSearchJob(job, options);
+    }
+
+    return {
+      kind: 'url',
+      url: normalizeUrl(job.url),
+      urlContext: job.urlContext || options.urlContexts?.[index] || {},
+      closeAfterCapture: Boolean(options.closeBatchTabsAfterCapture)
+    };
+  });
+}
+
+function createSearchJobs(options) {
+  const keywords = Array.isArray(options.searchKeywordsList)
+    ? options.searchKeywordsList
+    : String(options.searchKeywords || '')
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+  let startUrl = '';
+  const inputSelector = String(options.searchInputSelector || '').trim();
+  const submitMode = options.searchSubmitMode === 'button' ? 'button' : 'enter';
+  const buttonSelector = String(options.searchButtonSelector || '').trim();
+
+  try {
+    startUrl = normalizeUrl(options.searchStartUrl || '');
+  } catch (_error) {
+    throw statusError('searchStartUrlError');
+  }
+
+  if (!keywords.length) {
+    throw statusError('searchKeywordsEmptyError');
+  }
+
+  if (!inputSelector) {
+    throw statusError('searchInputSelectorError');
+  }
+
+  if (submitMode === 'button' && !buttonSelector) {
+    throw statusError('searchButtonSelectorError');
+  }
+
+  return keywords.map((keyword) => ({
+    kind: 'search',
+    url: startUrl,
+    urlContext: { keyword },
+    search: {
+      keyword,
+      inputSelector,
+      submitMode,
+      buttonSelector
+    },
+    closeAfterCapture: Boolean(options.closeBatchTabsAfterCapture),
+    applyDelay: false,
+    waitForLoad: false
+  }));
+}
+
 function createTabJobs(tabs, options = {}) {
   return tabs.map((tab, index) => ({
     kind: 'tab',
@@ -387,6 +516,26 @@ async function prepareCaptureJob(job) {
   if (job.kind === 'url') {
     const tab = await chrome.tabs.create({ url: job.url, active: true });
     return { ...job, tab, url: tab.url || job.url };
+  }
+
+  if (job.kind === 'search') {
+    const tab = await chrome.tabs.create({ url: job.url, active: true });
+    await waitForTabComplete(tab.id, 45000, 'searchPageLoadTimeoutError');
+
+    const response = await sendTabMessage(tab.id, {
+      action: 'performSearch',
+      payload: job.search
+    });
+
+    if (!response?.ok) {
+      throw statusError(response?.statusKey || 'searchSubmitError');
+    }
+
+    await sleepWithControls(300);
+    await waitForTabComplete(tab.id, 45000, 'searchPageLoadTimeoutError');
+    await sleepWithControls(Math.max(0, Number(job.searchResultDelay ?? 0)) * 1000);
+    const latestTab = await chrome.tabs.get(tab.id).catch(() => tab);
+    return { ...job, tab: latestTab, url: latestTab.url || tab.url || job.url };
   }
 
   return job;
@@ -548,7 +697,19 @@ async function downloadReport(rows, options) {
 }
 
 async function runBatch(options) {
-  const jobs = createUrlJobs(options.urls, options);
+  let jobs = [];
+
+  if (Array.isArray(options.jobs) && options.jobs.length) {
+    jobs = createExplicitJobs(options);
+  } else if (options.urlInputMode === 'searchBox') {
+    jobs = createSearchJobs(options).map((job) => ({
+      ...job,
+      searchResultDelay: options.searchResultDelay ?? options.delay
+    }));
+  } else {
+    jobs = createUrlJobs(options.urls, options);
+  }
+
   batchStatus.start('runningStatus');
 
   try {
@@ -722,7 +883,13 @@ chrome.commands.onCommand.addListener((command) => {
     .catch((error) => setStatus(statusFromError(error), false));
 });
 
-chrome.contextMenus.onClicked.addListener((info) => {
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === ACTION_MENU_ADD_SEARCH_TEMPLATE) {
+    Promise.resolve(appendSearchTemplateFromContextMenu(tab))
+      .catch((error) => setStatus(statusFromError(error), false));
+    return;
+  }
+
   if (info.menuItemId === ACTION_MENU_OPEN_POPUP) {
     openActionPopupFromMenu()
       .catch((error) => setStatus(statusFromError(error), false));

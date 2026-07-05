@@ -12,6 +12,8 @@ const SETTINGS_FIELDS = [
   { key: 'format', type: 'value' },
   { key: 'screenshotQuality', type: 'number', min: 1, max: 100 },
   { key: 'urlListWrap', type: 'checked' },
+  { key: 'urlTemplateDelimiter', type: 'value', fallback: true },
+  { key: 'captureMode', type: 'value' },
   { key: 'reportEnabled', type: 'checked' },
   { key: 'reportFormat', type: 'value' },
   { key: 'reportFields', type: 'text' },

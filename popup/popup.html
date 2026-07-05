@@ -31,8 +31,12 @@
         </div>
       </header>
 
-      <section class="field url-section">
+      <section id="urlSection" class="field url-section">
         <div class="section-head">
+          <div class="segmented" role="tablist" aria-label="URL input mode">
+            <button id="listModeButton" type="button" role="tab" class="mode-tab active" data-mode="list" data-i18n="urlModeList">List</button>
+            <button id="templateModeButton" type="button" role="tab" class="mode-tab" data-mode="template" data-i18n="urlModeTemplate">Template</button>
+          </div>
           <div class="label-actions">
             <label for="urlList" class="inline-label">
               <span data-i18n="urlListLabel">URLs</span>
@@ -62,10 +66,6 @@
               <div id="urlListHistoryMenu" class="history-menu" hidden></div>
             </div>
           </div>
-          <div class="segmented" role="tablist" aria-label="URL input mode">
-            <button id="listModeButton" type="button" role="tab" class="mode-tab active" data-mode="list" data-i18n="urlModeList">List</button>
-            <button id="templateModeButton" type="button" role="tab" class="mode-tab" data-mode="template" data-i18n="urlModeTemplate">Template</button>
-          </div>
         </div>
 
         <div id="urlListPane" class="url-pane">
@@ -76,7 +76,8 @@
           <div class="template-inputs-row">
             <div class="field compact">
               <div class="field-label-row">
-                <label for="urlTemplate" data-i18n="urlTemplateLabel">URL template</label>
+                <label id="urlTemplateLabel" for="urlTemplate" data-i18n="urlTemplateLabel">URL template</label>
+                <span id="urlTemplateCountBadge" class="count-badge">0</span>
                 <div class="history-anchor">
                   <button id="urlTemplateHistoryButton" type="button" class="history-button" data-history="templates" data-i18n-title="historyTemplatesButton" aria-label="Show template history" aria-expanded="false">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -103,6 +104,7 @@
             <div class="field compact">
               <div class="field-label-row">
                 <label for="urlTemplateItems" data-i18n="urlTemplateItemsLabel">Text list</label>
+                <span id="urlTemplateItemsCountBadge" class="count-badge">0</span>
                 <div class="history-anchor">
                   <button id="urlTemplateItemsHistoryButton" type="button" class="history-button" data-history="templateItems" data-i18n-title="historyTemplateItemsButton" aria-label="Show text list history" aria-expanded="false">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -127,14 +129,16 @@
             </div>
           </div>
 
-          <div class="builder-preview">
-            <div>
+          <button id="showPreviewButton" type="button" class="builder-preview" aria-haspopup="dialog" aria-controls="urlPreviewPanel">
+            <span class="preview-summary">
+              <span class="preview-kicker" data-i18n="templatePreviewLabel">Preview</span>
               <strong id="urlPreviewCount">0 URLs</strong>
-              <small data-i18n="urlPreviewHelp">Generated with %s encoded safely.</small>
-            </div>
-            <button id="applyTemplateButton" type="button" class="secondary neutral compact-button" data-i18n="applyTemplateButton">Apply to list</button>
-          </div>
-          <ol id="urlPreviewList" class="preview-list"></ol>
+            </span>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: var(--text-muted)">
+              <path d="M5 12h14"></path>
+              <path d="m12 5 7 7-7 7"></path>
+            </svg>
+          </button>
         </div>
       </section>
 
@@ -164,18 +168,26 @@
         </div>
       </section>
 
+      <section id="urlPreviewPanel" class="link-selector-panel url-preview-panel" aria-labelledby="previewPanelTitle" hidden>
+        <div class="link-selector-head">
+          <div>
+            <h2 id="previewPanelTitle" data-i18n="previewPanelTitle">Generated URLs</h2>
+            <p id="previewPanelSummary">0 URLs</p>
+          </div>
+          <button id="previewPanelCloseButton" type="button" class="history-button" data-i18n-title="closePreviewButton" aria-label="Close preview">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 6 6 18"></path>
+              <path d="m6 6 12 12"></path>
+            </svg>
+          </button>
+        </div>
+        <div id="previewPanelList" class="link-selector-list url-preview-list"></div>
+      </section>
+
       <section id="captureSettings" class="grid">
         <div class="field folder-field">
           <label for="folder" data-i18n="folderLabel" data-i18n-title="folderTooltip">Folder</label>
           <input id="folder" type="text" data-i18n-placeholder="folderPlaceholder" data-i18n-title="folderTooltip">
-        </div>
-
-        <div class="field">
-          <label for="captureMode" data-i18n="captureModeLabel">Capture</label>
-          <select id="captureMode">
-            <option value="fullPage" data-i18n="modeFullPage">Full page</option>
-            <option value="viewport" data-i18n="modeViewport">Viewport</option>
-          </select>
         </div>
 
         <div class="field delay-field">

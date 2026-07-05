@@ -43,9 +43,7 @@ const history = createInputHistory({
 const urlInput = createUrlInput({
   elements,
   saveSettings,
-  addHistoryEntry: history.addHistoryEntry,
-  closeHistoryMenus: history.closeHistoryMenus,
-  setStatus
+  closeHistoryMenus: history.closeHistoryMenus
 });
 settingsAdapter.getSettings = urlInput.getSettings;
 urlInputAdapter.getMode = urlInput.getMode;
@@ -163,5 +161,11 @@ document.addEventListener('keydown', (event) => {
     linkSelector.closeLinkSelector();
     return;
   }
+  
+  if (!elements.urlPreviewPanel.hidden) {
+    urlInput.closePreviewPanel();
+    return;
+  }
+  
   history.closeHistoryMenus();
 });

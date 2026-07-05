@@ -147,6 +147,30 @@
       <section class="section">
         <h2 data-i18n="reportSectionTitle">Report</h2>
 
+        <div class="field">
+          <label for="captureMode" data-i18n="captureModeLabel">Capture</label>
+          <select id="captureMode">
+            <option value="fullPage" data-i18n="modeFullPage">Full page</option>
+            <option value="viewport" data-i18n="modeViewport">Viewport</option>
+          </select>
+        </div>
+
+        <label class="check-row">
+          <input id="scheduledTasksEnabled" type="checkbox">
+          <span data-i18n="scheduledTasksEnabledLabel">Enable scheduled captures</span>
+        </label>
+
+        <label class="check-row">
+          <input id="closeBatchTabsAfterCapture" type="checkbox">
+          <span data-i18n="closeBatchTabsAfterCaptureLabel">Close each page after batch capture</span>
+        </label>
+
+        <div class="field">
+          <label for="urlTemplateDelimiter" data-i18n="urlTemplateDelimiterLabel">Template search delimiter</label>
+          <input id="urlTemplateDelimiter" type="text" value=" :: " spellcheck="false">
+          <small data-i18n="urlTemplateDelimiterHelp">Separates the start URL and CSS input selector in Template search lines.</small>
+        </div>
+
         <label class="check-row">
           <input id="reportEnabled" type="checkbox" aria-controls="reportControls" aria-expanded="false">
           <span data-i18n="reportEnabledLabel">Export screenshot report</span>
@@ -183,16 +207,6 @@
           </select>
           <small data-i18n="iconClickActionHelp">Also applies to Chrome's extension action shortcut.</small>
         </div>
-
-        <label class="check-row">
-          <input id="scheduledTasksEnabled" type="checkbox">
-          <span data-i18n="scheduledTasksEnabledLabel">Enable scheduled captures</span>
-        </label>
-
-        <label class="check-row">
-          <input id="closeBatchTabsAfterCapture" type="checkbox">
-          <span data-i18n="closeBatchTabsAfterCaptureLabel">Close each page after batch capture</span>
-        </label>
 
         <label class="check-row">
           <input id="urlListWrap" type="checkbox">

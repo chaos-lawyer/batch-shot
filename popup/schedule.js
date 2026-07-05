@@ -1,4 +1,5 @@
 import { message } from '../utils/i18n.js';
+import { buildBatchOptions } from './batch-options.js';
 
 function toDatetimeLocalValue(timestamp) {
   const date = new Date(timestamp);
@@ -192,21 +193,16 @@ export function createScheduleActions({
 
     if (!options) {
       const popupSettings = getSettings();
-      const templateResult = getUrlInputMode() === 'template' ? buildTemplateUrls() : null;
-      const urls = templateResult ? templateResult.urls : parseUrls(popupSettings.urls);
-      const urlContexts = templateResult ? templateResult.urlContexts : [];
+      const batchResult = buildBatchOptions(popupSettings, getUrlInputMode(), parseUrls, buildTemplateUrls);
 
-      if (!urls.length) {
-        setStatus(message(
-          templateResult?.errorKey || 'emptyUrlError',
-          templateResult?.errorArgs
-        ));
+      if (!batchResult.options) {
+        setStatus(message(batchResult.errorKey, batchResult.errorArgs));
         return;
       }
 
       const settings = await persistSettings(popupSettings);
       await rememberCurrentInputs();
-      options = { ...settings, urls, urlContexts };
+      options = { ...settings, ...batchResult.options };
     }
 
     const response = await chrome.runtime.sendMessage({

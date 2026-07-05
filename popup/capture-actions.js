@@ -1,4 +1,5 @@
 import { message } from '../utils/i18n.js';
+import { buildBatchOptions } from './batch-options.js';
 
 export function createCaptureActions({
   elements,
@@ -23,15 +24,10 @@ export function createCaptureActions({
 
   async function startCapture() {
     const popupSettings = getSettings();
-    const templateResult = getUrlInputMode() === 'template' ? buildTemplateUrls() : null;
-    const urls = templateResult ? templateResult.urls : parseUrls(popupSettings.urls);
-    const urlContexts = templateResult ? templateResult.urlContexts : [];
+    const batchResult = buildBatchOptions(popupSettings, getUrlInputMode(), parseUrls, buildTemplateUrls);
 
-    if (!urls.length) {
-      setStatus(message(
-        templateResult?.errorKey || 'emptyUrlError',
-        templateResult?.errorArgs
-      ));
+    if (!batchResult.options) {
+      setStatus(message(batchResult.errorKey, batchResult.errorArgs));
       return;
     }
 
@@ -40,7 +36,7 @@ export function createCaptureActions({
     setRunning({ running: true });
     const response = await chrome.runtime.sendMessage({
       action: 'startBatch',
-      payload: { ...settings, urls, urlContexts }
+      payload: { ...settings, ...batchResult.options }
     });
 
     if (!response?.ok) {

@@ -9,6 +9,13 @@ export const DEFAULT_SETTINGS = {
   urlListWrap: true,
   urlTemplate: '',
   urlTemplateItems: '',
+  urlTemplateDelimiter: ' :: ',
+  searchStartUrl: '',
+  searchInputSelector: '',
+  searchSubmitMode: 'enter',
+  searchButtonSelector: '',
+  searchKeywords: '',
+  searchResultDelay: 2,
   captureMode: 'fullPage',
   iconClickAction: 'popup',
   scheduledTasksEnabled: false,
@@ -53,12 +60,28 @@ function migrateSettings(settings) {
   const iconClickAction = ['popup', 'captureCurrentPage', 'captureAllPages'].includes(settings.iconClickAction)
     ? settings.iconClickAction
     : DEFAULT_SETTINGS.iconClickAction;
+  const urlInputMode = ['list', 'template'].includes(settings.urlInputMode)
+    ? settings.urlInputMode
+    : DEFAULT_SETTINGS.urlInputMode;
+  const captureMode = ['fullPage', 'viewport'].includes(settings.captureMode)
+    ? settings.captureMode
+    : DEFAULT_SETTINGS.captureMode;
+  const searchSubmitMode = ['enter', 'button'].includes(settings.searchSubmitMode)
+    ? settings.searchSubmitMode
+    : DEFAULT_SETTINGS.searchSubmitMode;
+  const urlTemplateDelimiter = settings.urlTemplateDelimiter && settings.urlTemplateDelimiter !== '\\'
+    ? settings.urlTemplateDelimiter
+    : DEFAULT_SETTINGS.urlTemplateDelimiter;
 
   return {
     ...settings,
     appLanguage,
     format,
     iconClickAction,
+    urlInputMode,
+    captureMode,
+    searchSubmitMode,
+    urlTemplateDelimiter,
     reportFormat,
     reportFields: normalizeReportFields(settings.reportFields),
     screenshotQuality: Number.isFinite(screenshotQuality)

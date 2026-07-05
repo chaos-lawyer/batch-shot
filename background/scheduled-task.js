@@ -23,13 +23,29 @@ function taskIdFromAlarmName(name) {
 
 function createTask(options, scheduledAt, id = createTaskId()) {
   const urls = Array.isArray(options.urls) ? options.urls : [];
+  const jobs = Array.isArray(options.jobs) ? options.jobs : [];
+  const searchKeywords = Array.isArray(options.searchKeywordsList)
+    ? options.searchKeywordsList
+    : String(options.searchKeywords || '')
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+  const urlCount = jobs.length || (options.urlInputMode === 'searchBox' ? searchKeywords.length : urls.length);
+  const urlPreview = jobs.length
+    ? jobs.slice(0, 3).map((job) => job.kind === 'search'
+      ? `${job.url} - ${job.search?.keyword || ''}`
+      : job.url)
+    : options.urlInputMode === 'searchBox'
+    ? searchKeywords.slice(0, 3).map((keyword) => `${options.searchStartUrl} - ${keyword}`)
+    : urls.slice(0, 3);
+
   return {
     id,
     options,
     scheduledAt,
     createdAt: Date.now(),
-    urlCount: urls.length,
-    urlPreview: urls.slice(0, 3)
+    urlCount,
+    urlPreview
   };
 }
 
@@ -39,11 +55,27 @@ function normalizeTask(task) {
   }
 
   const urls = Array.isArray(task.options.urls) ? task.options.urls : [];
+  const jobs = Array.isArray(task.options.jobs) ? task.options.jobs : [];
+  const searchKeywords = Array.isArray(task.options.searchKeywordsList)
+    ? task.options.searchKeywordsList
+    : String(task.options.searchKeywords || '')
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter(Boolean);
+  const urlCount = jobs.length || (task.options.urlInputMode === 'searchBox' ? searchKeywords.length : urls.length);
+  const urlPreview = jobs.length
+    ? jobs.slice(0, 3).map((job) => job.kind === 'search'
+      ? `${job.url} - ${job.search?.keyword || ''}`
+      : job.url)
+    : task.options.urlInputMode === 'searchBox'
+    ? searchKeywords.slice(0, 3).map((keyword) => `${task.options.searchStartUrl} - ${keyword}`)
+    : urls.slice(0, 3);
+
   return {
     ...task,
     id: task.id || createTaskId(),
-    urlCount: Number(task.urlCount) || urls.length,
-    urlPreview: Array.isArray(task.urlPreview) ? task.urlPreview.slice(0, 3) : urls.slice(0, 3)
+    urlCount: Number(task.urlCount) || urlCount,
+    urlPreview: Array.isArray(task.urlPreview) ? task.urlPreview.slice(0, 3) : urlPreview
   };
 }
 
@@ -141,7 +173,15 @@ export function createScheduledTaskController({
     const task = isLegacyAlarm ? tasks[0] : tasks.find((item) => item.id === taskId);
     await saveTasks(tasks.filter((item) => item.id !== task?.id));
 
-    if (!task?.options?.urls?.length) {
+    const hasExplicitJobs = Array.isArray(task?.options?.jobs) && task.options.jobs.length;
+    const hasUrlJobs = Array.isArray(task?.options?.urls) && task.options.urls.length;
+    const hasSearchJobs = task?.options?.urlInputMode === 'searchBox'
+      && (
+        (Array.isArray(task.options.searchKeywordsList) && task.options.searchKeywordsList.length)
+        || String(task.options.searchKeywords || '').trim()
+      );
+
+    if (!hasExplicitJobs && !hasUrlJobs && !hasSearchJobs) {
       return;
     }
 

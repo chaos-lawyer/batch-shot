@@ -77,7 +77,7 @@
     "message": "URL 模板"
   },
   "urlTemplatePlaceholder": {
-    "message": "https://www.google.com/search?q=%s\nhttps://www.baidu.com/s?wd=%s"
+    "message": "https://www.google.com/search?q=%s\nhttps://example.com :: input[name=\"q\"] :: button[type=\"submit\"]"
   },
   "urlTemplateItemsLabel": {
     "message": "文本列表"
@@ -85,8 +85,22 @@
   "urlTemplateItemsPlaceholder": {
     "message": "每行一个搜索词"
   },
+  "templatePreviewLabel": {
+    "message": "预览"
+  },
   "urlPreviewHelp": {
-    "message": "每一行模板都会和每一行文本组合生成 URL"
+    "message": "URL 模板使用 %s；搜索模板使用 URL$DELIMITER$输入框 CSS 选择器$DELIMITER$可选提交按钮 CSS 选择器。",
+    "placeholders": {
+      "delimiter": {
+        "content": "$1"
+      }
+    }
+  },
+  "urlTemplateDelimiterLabel": {
+    "message": "模板搜索连接符"
+  },
+  "urlTemplateDelimiterHelp": {
+    "message": "用于分隔搜索模板里的起始 URL、输入框选择器和可选按钮选择器，例如：https://example.com :: input[name=\"q\"] :: button[type=\"submit\"]。"
   },
   "urlPreviewCount": {
     "message": "$COUNT$ 个 URL",
@@ -96,8 +110,13 @@
       }
     }
   },
-  "applyTemplateButton": {
-    "message": "应用到列表"
+  "templatePreviewCount": {
+    "message": "$COUNT$ 个任务",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
   },
   "captureModeLabel": {
     "message": "截图模式"
@@ -247,7 +266,7 @@
     "message": "可用 序号、网址、页面标题、状态、文件名、错误，也支持 index、url、title、status、filename、error。"
   },
   "reportSectionTitle": {
-    "message": "报告"
+    "message": "截图"
   },
   "othersSectionTitle": {
     "message": "其他"
@@ -290,6 +309,15 @@
   },
   "contextMenuOpenPopup": {
     "message": "打开弹出面板"
+  },
+  "contextMenuAddSearchTemplate": {
+    "message": "添加搜索框到 BatchShot 模板"
+  },
+  "buttonPickerPrompt": {
+    "message": "点击查询按钮，或跳过以使用回车提交。"
+  },
+  "buttonPickerSkip": {
+    "message": "跳过"
   },
   "currentTabButton": {
     "message": "截取当前页"
@@ -334,6 +362,30 @@
   },
   "pageLoadTimeoutError": {
     "message": "页面加载超时。"
+  },
+  "searchStartUrlError": {
+    "message": "请输入有效的搜索起始 URL。"
+  },
+  "searchKeywordsEmptyError": {
+    "message": "请至少添加一个关键词。"
+  },
+  "searchInputSelectorError": {
+    "message": "请输入有效的搜索输入框选择器。"
+  },
+  "searchInputNotFoundError": {
+    "message": "未找到搜索输入框。"
+  },
+  "searchButtonSelectorError": {
+    "message": "请输入有效的搜索按钮选择器。"
+  },
+  "searchButtonNotFoundError": {
+    "message": "未找到搜索按钮。"
+  },
+  "searchSubmitError": {
+    "message": "无法提交搜索。"
+  },
+  "searchPageLoadTimeoutError": {
+    "message": "搜索页面加载超时。"
   },
   "capturePrepareError": {
     "message": "无法准备页面截图。"
@@ -519,8 +571,22 @@
   "emptyUrlError": {
     "message": "请至少添加一个 URL。"
   },
+  "urlTemplateEmptyTemplateError": {
+    "message": "请至少添加一个 URL 模板。"
+  },
+  "urlTemplateEmptyItemsError": {
+    "message": "请至少添加一个文本项。"
+  },
   "urlTemplateMissingPlaceholderError": {
     "message": "模板第 $LINES$ 行需要包含 %s。",
+    "placeholders": {
+      "lines": {
+        "content": "$1"
+      }
+    }
+  },
+  "urlTemplateSearchFormatError": {
+    "message": "搜索模板第 $LINES$ 行需要包含 URL、连接符、输入框选择器，以及可选按钮选择器。",
     "placeholders": {
       "lines": {
         "content": "$1"
