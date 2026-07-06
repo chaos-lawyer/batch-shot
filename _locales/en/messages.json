@@ -58,6 +58,12 @@
   "historyDeleteButton": {
     "message": "Delete"
   },
+  "historyPinButton": {
+    "message": "Pin"
+  },
+  "historyUnpinButton": {
+    "message": "Unpin"
+  },
   "historyRenameButton": {
     "message": "Rename"
   },

@@ -1,5 +1,5 @@
 import { message } from '../utils/i18n.js';
-import { el, iconButton } from './dom-helpers.js';
+import { el, iconButton, icon } from './dom-helpers.js';
 
 const HISTORY_STORAGE_KEY = 'inputHistory';
 
@@ -44,7 +44,8 @@ export function createInputHistory({
       .map((entry) => ({
         value: String(entry.value),
         name: String(entry.name || ''),
-        updatedAt: entry.updatedAt || ''
+        updatedAt: entry.updatedAt || '',
+        pinned: !!entry.pinned
       }));
 
     return {
@@ -82,10 +83,13 @@ export function createInputHistory({
 
     const existing = inputHistory[type].find((entry) => entry.value === trimmed);
     const withoutDuplicate = inputHistory[type].filter((entry) => entry.value !== trimmed);
-    inputHistory[type] = [
-      { value: trimmed, name: existing?.name || '', updatedAt: new Date().toISOString() },
-      ...withoutDuplicate
-    ].slice(0, getHistoryLimit());
+    const newEntry = { value: trimmed, name: existing?.name || '', updatedAt: new Date().toISOString(), pinned: !!existing?.pinned };
+    
+    const newList = [newEntry, ...withoutDuplicate];
+    const pinned = newList.filter(e => e.pinned);
+    const unpinned = newList.filter(e => !e.pinned).slice(0, getHistoryLimit());
+    
+    inputHistory[type] = [...pinned, ...unpinned];
     await saveInputHistory();
     renderHistoryMenu(type);
   }
@@ -147,7 +151,16 @@ export function createInputHistory({
 
   function createHistoryRow(type, entry, index) {
     const summary = summarizeHistoryValue(entry.value);
-    return el('div', { className: 'history-row' }, [
+    const isPinned = entry.pinned;
+    
+    const props = { className: `history-row${isPinned ? ' is-draggable' : ''}` };
+    if (isPinned) {
+      props.attrs = { draggable: 'true' };
+      props.dataset = { historyType: type, historyIndex: String(index) };
+    }
+
+    return el('div', props, [
+      isPinned ? el('div', { className: 'history-drag-handle' }, [icon('grip-vertical', 14)]) : el('div', { className: 'history-drag-placeholder' }),
       el('button', {
         type: 'button',
         className: 'history-item',
@@ -156,18 +169,29 @@ export function createInputHistory({
         el('span', { className: 'history-title', textContent: entry.name || summary.title }),
         el('span', { className: 'history-meta', textContent: entry.name ? summary.title : summary.meta })
       ]),
+      createHistoryAction('pin', type, index, isPinned),
       createHistoryAction('rename', type, index),
       createHistoryAction('delete', type, index)
     ]);
   }
 
-  function createHistoryAction(action, type, index) {
-    const messageKey = action === 'rename' ? 'historyRenameButton' : 'historyDeleteButton';
+  function createHistoryAction(action, type, index, isPinned = false) {
+    let messageKey, iconName;
+    if (action === 'rename') {
+      messageKey = 'historyRenameButton';
+      iconName = 'rename';
+    } else if (action === 'delete') {
+      messageKey = 'historyDeleteButton';
+      iconName = 'delete';
+    } else if (action === 'pin') {
+      messageKey = isPinned ? 'historyUnpinButton' : 'historyPinButton';
+      iconName = isPinned ? 'pin-filled' : 'pin';
+    }
     return iconButton({
-      className: 'history-action-button',
+      className: `history-action-button ${action === 'pin' && isPinned ? 'is-pinned' : ''}`,
       title: message(messageKey),
       dataset: historyDataset(action, type, index),
-      iconName: action === 'rename' ? 'rename' : 'delete'
+      iconName: iconName
     });
   }
 
@@ -263,7 +287,23 @@ export function createInputHistory({
       return;
     }
 
-    inputHistory[type] = [];
+    inputHistory[type] = inputHistory[type].filter(e => e.pinned);
+    await saveInputHistory();
+    renderHistoryMenu(type);
+  }
+
+  async function togglePinHistoryEntry(type, index) {
+    const entry = inputHistory[type]?.[index];
+    if (!entry) {
+      return;
+    }
+
+    entry.pinned = !entry.pinned;
+    
+    const pinned = inputHistory[type].filter(e => e.pinned);
+    const unpinned = inputHistory[type].filter(e => !e.pinned);
+    inputHistory[type] = [...pinned, ...unpinned];
+    
     await saveInputHistory();
     renderHistoryMenu(type);
   }
@@ -311,9 +351,77 @@ export function createInputHistory({
           renameHistoryEntry(actionType, index);
         } else if (action === 'delete') {
           deleteHistoryEntry(actionType, index);
+        } else if (action === 'pin') {
+          togglePinHistoryEntry(actionType, index);
         } else if (action === 'clear') {
           clearHistory(actionType);
         }
+      });
+
+      elements[config.menu].addEventListener('dragstart', (event) => {
+        const row = event.target.closest('.history-row.is-draggable');
+        if (!row) return;
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', row.dataset.historyIndex);
+        row.classList.add('is-dragging');
+      });
+
+      elements[config.menu].addEventListener('dragover', (event) => {
+        const row = event.target.closest('.history-row.is-draggable');
+        if (row) {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = 'move';
+          const rect = row.getBoundingClientRect();
+          const midY = rect.top + rect.height / 2;
+          if (event.clientY < midY) {
+            row.classList.add('drag-over-top');
+            row.classList.remove('drag-over-bottom');
+          } else {
+            row.classList.add('drag-over-bottom');
+            row.classList.remove('drag-over-top');
+          }
+        }
+      });
+
+      elements[config.menu].addEventListener('dragleave', (event) => {
+        const row = event.target.closest('.history-row.is-draggable');
+        if (row && !row.contains(event.relatedTarget)) {
+          row.classList.remove('drag-over-top', 'drag-over-bottom');
+        }
+      });
+
+      elements[config.menu].addEventListener('dragend', (event) => {
+        const row = event.target.closest('.history-row.is-draggable');
+        if (row) row.classList.remove('is-dragging');
+        elements[config.menu].querySelectorAll('.history-row').forEach(r => {
+          r.classList.remove('drag-over-top', 'drag-over-bottom');
+        });
+      });
+
+      elements[config.menu].addEventListener('drop', (event) => {
+        event.preventDefault();
+        const targetRow = event.target.closest('.history-row.is-draggable');
+        if (!targetRow) return;
+        
+        targetRow.classList.remove('drag-over-top', 'drag-over-bottom');
+        const fromIndex = parseInt(event.dataTransfer.getData('text/plain'), 10);
+        const toIndex = parseInt(targetRow.dataset.historyIndex, 10);
+        
+        if (isNaN(fromIndex) || isNaN(toIndex) || fromIndex === toIndex) return;
+        
+        const list = inputHistory[type];
+        const rect = targetRow.getBoundingClientRect();
+        const midY = rect.top + rect.height / 2;
+        let finalIndex = event.clientY < midY ? toIndex : toIndex + 1;
+        
+        if (fromIndex < finalIndex) {
+          finalIndex--;
+        }
+        
+        const [movedItem] = list.splice(fromIndex, 1);
+        list.splice(finalIndex, 0, movedItem);
+        
+        saveInputHistory().then(() => renderHistoryMenu(type));
       });
     });
 

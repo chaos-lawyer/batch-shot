@@ -58,6 +58,12 @@
   "historyDeleteButton": {
     "message": "删除"
   },
+  "historyPinButton": {
+    "message": "置顶"
+  },
+  "historyUnpinButton": {
+    "message": "取消置顶"
+  },
   "historyRenameButton": {
     "message": "重命名"
   },

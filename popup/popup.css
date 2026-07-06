@@ -1055,9 +1055,42 @@ button.history-button[aria-expanded="true"] {
 
 .history-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 28px 28px;
+  grid-template-columns: 14px minmax(0, 1fr) 28px 28px 28px;
   align-items: center;
   gap: 4px;
+}
+
+.history-drag-handle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: grab;
+  opacity: 0.5;
+}
+
+.history-drag-handle:hover {
+  opacity: 1;
+}
+
+.history-row.is-draggable:active .history-drag-handle {
+  cursor: grabbing;
+}
+
+.history-drag-placeholder {
+  width: 14px;
+}
+
+.history-row.is-dragging {
+  opacity: 0.5;
+}
+
+.history-row.drag-over-top {
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+
+.history-row.drag-over-bottom {
+  box-shadow: inset 0 -2px 0 var(--accent);
 }
 
 button.history-item,
@@ -1114,6 +1147,10 @@ button.history-action-button {
   justify-content: center;
   border-radius: 6px;
   color: var(--text-muted);
+}
+
+button.history-action-button.is-pinned {
+  color: var(--accent);
 }
 
 button.history-clear {
