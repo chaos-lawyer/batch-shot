@@ -42,11 +42,16 @@ function summarizeScheduledOptions(options) {
   return { urlCount, urlPreview };
 }
 
-function createTask(options, scheduledAt, id = createTaskId()) {
+function normalizeTaskName(name) {
+  return String(name || '').trim();
+}
+
+function createTask(options, scheduledAt, id = createTaskId(), name = '') {
   const { urlCount, urlPreview } = summarizeScheduledOptions(options);
 
   return {
     id,
+    name: normalizeTaskName(name),
     options,
     scheduledAt,
     createdAt: Date.now(),
@@ -65,6 +70,7 @@ function normalizeTask(task) {
   return {
     ...task,
     id: task.id || createTaskId(),
+    name: normalizeTaskName(task.name),
     urlCount: Number(task.urlCount) || urlCount,
     urlPreview: Array.isArray(task.urlPreview) ? task.urlPreview.slice(0, 3) : urlPreview
   };
@@ -117,7 +123,7 @@ export function createScheduledTaskController({
     return saveTasks(tasks.filter((task) => task.id !== taskId));
   }
 
-  async function scheduleBatch(options, scheduledAt, taskId = '') {
+  async function scheduleBatch(options, scheduledAt, taskId = '', taskName = '') {
     const when = Number(scheduledAt);
     if (!Number.isFinite(when) || when <= Date.now()) {
       return { ok: false, statusKey: 'scheduledTaskPastError', statusArgs: [] };
@@ -125,7 +131,7 @@ export function createScheduledTaskController({
 
     const tasks = await getScheduledTasks();
     const existingTask = taskId ? tasks.find((task) => task.id === taskId) : null;
-    const task = createTask(options, when, existingTask?.id);
+    const task = createTask(options, when, existingTask?.id, normalizeTaskName(taskName) || existingTask?.name || '');
     const nextTasks = existingTask
       ? tasks.map((item) => (item.id === existingTask.id ? task : item))
       : [...tasks, task];

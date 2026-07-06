@@ -10,13 +10,35 @@ function loadImage(dataUrl) {
   });
 }
 
+function getSegmentScale(image, metrics) {
+  const fallback = Number(metrics.devicePixelRatio) || 1;
+  const scaleX = metrics.viewportWidth
+    ? image.width / metrics.viewportWidth
+    : fallback;
+  const scaleY = metrics.viewportHeight
+    ? image.height / metrics.viewportHeight
+    : fallback;
+
+  return {
+    x: Number.isFinite(scaleX) && scaleX > 0 ? scaleX : fallback,
+    y: Number.isFinite(scaleY) && scaleY > 0 ? scaleY : fallback
+  };
+}
+
 export async function stitchImages(segments, metrics, options) {
-  const { scrollHeight, viewportHeight, viewportWidth, devicePixelRatio: dpr } = metrics;
+  const images = await Promise.all(segments.map((segment) => loadImage(segment.dataUrl)));
+  const firstImage = images[0];
+  const scale = firstImage ? getSegmentScale(firstImage, metrics) : {
+    x: Number(metrics.devicePixelRatio) || 1,
+    y: Number(metrics.devicePixelRatio) || 1
+  };
+  const metadataScale = Math.max(scale.x, scale.y);
+  const { scrollHeight, scrollWidth, viewportWidth } = metrics;
   const measuringCanvas = document.createElement('canvas');
   const measuringContext = measuringCanvas.getContext('2d');
-  const baseWidth = Math.round(viewportWidth * dpr);
-  const baseHeight = Math.round(scrollHeight * dpr);
-  const scaledMetadataOptions = scaleMetadataOptions(options, dpr);
+  const baseWidth = Math.round((scrollWidth || viewportWidth) * scale.x);
+  const baseHeight = Math.round(scrollHeight * scale.y);
+  const scaledMetadataOptions = scaleMetadataOptions(options, metadataScale);
   const metadataBand = getMetadataBand(measuringContext, scaledMetadataOptions, baseWidth);
   const metadataHeight = metadataBand ? metadataBand.height : 0;
   const imageOffsetY = metadataBand && options.metadataPosition !== 'bottom' ? metadataHeight : 0;
@@ -34,35 +56,27 @@ export async function stitchImages(segments, metrics, options) {
 
   for (let i = 0; i < segments.length; i += 1) {
     const segment = segments[i];
-    const image = await loadImage(segment.dataUrl);
-    const destY = Math.round(segment.actualScrollY * dpr) + imageOffsetY;
+    const image = images[i];
+    const destX = Math.round((segment.actualScrollX || 0) * scale.x);
+    const destY = Math.round(segment.actualScrollY * scale.y) + imageOffsetY;
+    const sourceWidth = Math.min(image.width, canvas.width - destX);
+    const sourceHeight = Math.min(image.height, baseHeight - Math.round(segment.actualScrollY * scale.y));
 
-    if (!segment.isLastFrame) {
-      ctx.drawImage(image, 0, destY);
+    if (sourceWidth <= 0 || sourceHeight <= 0) {
       continue;
     }
 
-    const previousFrameBottom = (segments.length - 1) * viewportHeight;
-    const overlap = previousFrameBottom - segment.actualScrollY;
-    const overlapPx = Math.round(overlap * dpr);
-
-    if (overlapPx > 0 && overlapPx < image.height) {
-      const sourceHeight = image.height - overlapPx;
-      const targetDestY = Math.round(previousFrameBottom * dpr) + imageOffsetY;
-      ctx.drawImage(
-        image,
-        0,
-        overlapPx,
-        image.width,
-        sourceHeight,
-        0,
-        targetDestY,
-        canvas.width,
-        sourceHeight
-      );
-    } else {
-      ctx.drawImage(image, 0, destY);
-    }
+    ctx.drawImage(
+      image,
+      0,
+      0,
+      sourceWidth,
+      sourceHeight,
+      destX,
+      destY,
+      sourceWidth,
+      sourceHeight
+    );
   }
 
   if (metadataBand && options.metadataPosition === 'bottom') {

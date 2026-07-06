@@ -34,14 +34,15 @@
       <section id="urlSection" class="field url-section">
         <div class="section-head">
           <div class="segmented" role="tablist" aria-label="URL input mode">
-            <button id="listModeButton" type="button" role="tab" class="mode-tab active" data-mode="list" data-i18n="urlModeList">List</button>
+            <button id="listModeButton" type="button" role="tab" class="mode-tab" data-mode="list" data-i18n="urlModeList">List</button>
             <button id="templateModeButton" type="button" role="tab" class="mode-tab" data-mode="template" data-i18n="urlModeTemplate">Template</button>
           </div>
-          <div class="label-actions">
-            <label for="urlList" class="inline-label">
-              <span data-i18n="urlListLabel">URLs</span>
-              <span id="urlCountBadge" class="count-badge" hidden>0</span>
-            </label>
+        </div>
+
+        <div id="urlListLabelWrapper" class="field compact">
+          <div class="field-label-row">
+            <label for="urlList" data-i18n="urlListLabel">URLs</label>
+            <span id="urlCountBadge" class="count-badge" hidden>0</span>
             <div class="history-anchor">
               <button id="extractLinksButton" type="button" class="history-button" data-i18n-title="extractLinksButton" aria-label="Extract links from current page">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -66,10 +67,9 @@
               <div id="urlListHistoryMenu" class="history-menu" hidden></div>
             </div>
           </div>
-        </div>
-
-        <div id="urlListPane" class="url-pane">
-          <textarea id="urlList" rows="8" spellcheck="false" data-i18n-placeholder="urlListPlaceholder"></textarea>
+          <div id="urlListPane" class="url-pane" hidden>
+            <textarea id="urlList" rows="8" spellcheck="false" data-i18n-placeholder="urlListPlaceholder"></textarea>
+          </div>
         </div>
 
         <div id="urlTemplatePane" class="url-pane template-pane" hidden>
@@ -209,13 +209,24 @@
           </button>
         </div>
         <div class="schedule-panel-body">
-          <p id="scheduleSummary" class="schedule-summary" data-i18n="scheduledTaskPanelEmpty">No scheduled capture.</p>
           <div id="scheduleTaskList" class="schedule-task-list"></div>
           <div id="scheduleUrlPreview" class="schedule-url-preview"></div>
-          <input id="scheduleAt" type="datetime-local" data-skip-save="true">
-          <button id="scheduleNewButton" type="button" class="secondary neutral compact-button" data-i18n="scheduleNewButton">New</button>
-          <button id="scheduleSaveButton" type="button" class="compact-button" data-i18n="scheduleButton">Schedule capture</button>
-          <button id="cancelScheduleButton" type="button" class="secondary neutral compact-button" data-i18n="cancelScheduleButton" hidden>Cancel scheduled capture</button>
+          <div class="schedule-actions-row">
+            <input id="scheduleAt" type="datetime-local" data-skip-save="true">
+            <input id="scheduleName" type="text" data-skip-save="true" data-i18n-placeholder="scheduleNamePlaceholder">
+            <button id="scheduleNewButton" type="button" class="icon-button" data-i18n-title="scheduleNewButton" aria-label="New">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 5v14"></path>
+                <path d="M5 12h14"></path>
+              </svg>
+            </button>
+            <button id="scheduleSaveButton" type="button" class="icon-button" data-i18n-title="scheduleButton" aria-label="Schedule capture">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 5v14"></path>
+                <path d="M5 12h14"></path>
+              </svg>
+            </button>
+          </div>
         </div>
       </section>
 

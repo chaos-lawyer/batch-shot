@@ -100,12 +100,18 @@
 
 body {
   width: 400px;
-  height: 530px;
+  height: 540px;
   margin: 0;
   overflow: hidden;
   color: var(--text-main);
   font: 14px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background: var(--bg-shell);
+  opacity: 0;
+}
+
+body.is-loaded {
+  opacity: 1;
+  transition: opacity 80ms ease-out;
 }
 
 .shell {
@@ -202,11 +208,11 @@ small,
 
 .url-pane {
   position: relative;
-  min-height: 206px;
+  min-height: 223px;
 }
 
 #urlListPane {
-  min-height: 150px;
+  min-height: 223px;
 }
 
 .url-pane.has-no-wrap,
@@ -221,12 +227,12 @@ small,
 }
 
 .url-pane.has-no-wrap {
-  height: 176px;
+  height: 223px;
   resize: vertical;
 }
 
 #urlListPane.has-no-wrap {
-  height: 220px;
+  height: 223px;
 }
 
 .template-textarea-wrapper {
@@ -264,7 +270,8 @@ small,
 }
 
 #urlList {
-  height: 160px;
+  height: 100%;
+  min-height: 223px;
 }
 
 .no-wrap {
@@ -305,7 +312,7 @@ small,
 }
 
 .link-selector-tools {
-  gap: 6px;
+  gap: 2px;
 }
 
 .link-selector-tools input {
@@ -405,31 +412,18 @@ button.filter-button:hover:not(:disabled) {
   gap: 9px;
 }
 
-.label-actions,
 .field-label-row {
   display: flex;
   align-items: center;
   gap: 6px;
-}
-
-.field-label-row {
   justify-content: flex-start;
-}
-
-.label-actions {
-  width: 100%;
-  justify-content: space-between;
-}
-
-.label-actions .history-anchor {
-  transform: translateY(1.3px);
 }
 
 .field-label-row .history-anchor {
   margin-left: auto;
 }
 
-.url-section.is-template-mode .label-actions {
+.url-section.is-template-mode #urlListLabelWrapper {
   display: none;
 }
 
@@ -494,6 +488,8 @@ button.filter-button:hover:not(:disabled) {
   z-index: 15;
   display: grid;
   gap: 10px;
+  box-sizing: border-box;
+  max-width: calc(100vw - 36px);
   padding: 12px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -501,10 +497,15 @@ button.filter-button:hover:not(:disabled) {
   box-shadow: 0 14px 34px rgba(0, 0, 0, 0.2);
 }
 
+.schedule-panel * {
+  box-sizing: border-box;
+}
+
 .schedule-panel-head,
 .schedule-panel-body {
   display: flex;
   align-items: center;
+  min-width: 0;
 }
 
 .schedule-panel-head {
@@ -517,15 +518,11 @@ button.filter-button:hover:not(:disabled) {
   flex-wrap: wrap;
 }
 
-.schedule-summary {
-  flex: 0 0 100%;
-  color: var(--text-muted);
-  font-size: 12px;
-}
-
 .schedule-task-list,
 .schedule-url-preview {
   flex: 0 0 100%;
+  min-width: 0;
+  max-width: 100%;
 }
 
 .schedule-task-list {
@@ -537,7 +534,7 @@ button.filter-button:hover:not(:disabled) {
 
 .schedule-task-item {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto auto auto;
   gap: 8px;
   align-items: center;
   width: 100%;
@@ -549,11 +546,31 @@ button.filter-button:hover:not(:disabled) {
   background: var(--bg-input);
   box-shadow: none;
   text-align: left;
+  transition: all 0.2s ease;
 }
 
 .schedule-task-item.is-selected {
   border-color: rgba(37, 99, 235, 0.35);
   background: var(--tab-active-bg);
+}
+
+.schedule-task-item.is-confirming {
+  border-color: var(--accent);
+  background: var(--tab-active-bg);
+}
+
+.schedule-task-item.is-confirming .schedule-task-update-button {
+  color: white;
+  background: var(--accent);
+  border-radius: 4px;
+  animation: pulse-update 1.5s infinite;
+  transition: all 0.2s ease;
+}
+
+@keyframes pulse-update {
+  0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
+  70% { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
 }
 
 .schedule-task-time,
@@ -578,28 +595,42 @@ button.filter-button:hover:not(:disabled) {
 .schedule-url-preview {
   margin: 0;
   padding-left: 0;
+  overflow: hidden;
 }
 
 .schedule-url-preview ol {
   margin: 0;
   padding-left: 18px;
+  max-width: 100%;
 }
 
-.schedule-panel-body input {
+.schedule-actions-row {
+  display: flex;
+  flex: 0 0 100%;
+  gap: 8px;
+  align-items: center;
   min-width: 0;
-  flex: 1;
-  height: 38px;
+  max-width: 100%;
+}
+
+.schedule-actions-row input {
+  min-width: 0;
+  height: 34px;
   padding-inline: 8px;
   font-size: 12px;
 }
 
-.schedule-panel-body button {
-  flex: 0 0 auto;
-  white-space: nowrap;
+#scheduleAt {
+  flex: 1.35 1 0;
 }
 
-#cancelScheduleButton {
-  flex-basis: 100%;
+#scheduleName {
+  flex: 1 1 0;
+}
+
+#scheduleName::placeholder {
+  color: var(--text-muted);
+  opacity: 1;
 }
 
 label {
@@ -685,7 +716,7 @@ select:focus {
 .template-pane {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 19px;
   min-height: 0;
 }
 

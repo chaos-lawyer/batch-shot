@@ -113,11 +113,15 @@ async function restoreSettings() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  await history.loadInputHistory();
-  await restoreSettings();
-  await refreshState();
-  await scheduleActions.refreshScheduledTask();
-  initTemplateResizing();
+  try {
+    await history.loadInputHistory();
+    await restoreSettings();
+    await refreshState();
+    await scheduleActions.refreshScheduledTask();
+    initTemplateResizing();
+  } finally {
+    document.body.classList.add('is-loaded');
+  }
 });
 
 bindAutoSaveEvents(elements, saveSettings);
@@ -143,10 +147,14 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
     return;
   }
 
-  const isEnabled = Boolean(changes.settings.newValue?.scheduledTasksEnabled);
-  scheduleActions.setScheduleEnabled(isEnabled);
-  if (isEnabled) {
-    scheduleActions.refreshScheduledTask().catch(() => {});
+  const newValue = changes.settings.newValue || {};
+
+  if ('scheduledTasksEnabled' in newValue) {
+    const isEnabled = Boolean(newValue.scheduledTasksEnabled);
+    scheduleActions.setScheduleEnabled(isEnabled);
+    if (isEnabled) {
+      scheduleActions.refreshScheduledTask().catch(() => {});
+    }
   }
 });
 

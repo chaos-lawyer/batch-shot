@@ -88,6 +88,7 @@ async function stitch(options = {}, segments = [
   canvases.length = 0;
   const dataUrl = await stitchImages(segments, {
     scrollHeight: 200,
+    scrollWidth: 50,
     viewportHeight: 100,
     viewportWidth: 50,
     devicePixelRatio: 1
@@ -118,7 +119,7 @@ const top = await stitch({
 });
 assert.equal(top.height, 224);
 assert.ok(top.calls.some((call) => call.type === 'fillRect' && call.fillStyle === '#000000' && call.y === 0 && call.height === 24));
-assert.equal(top.calls.find((call) => call.type === 'drawImage').args[2], 24);
+assert.equal(top.calls.find((call) => call.type === 'drawImage').args[6], 24);
 
 const bottom = await stitch({
   metadataEnabled: true,
@@ -139,6 +140,65 @@ const overlap = await stitch({}, [
   { dataUrl: 'mock:50x100', actualScrollY: 80, isLastFrame: true }
 ]);
 const overlapDraw = overlap.calls.filter((call) => call.type === 'drawImage').at(-1);
-assert.deepEqual(overlapDraw.args.slice(1), [0, 20, 50, 80, 0, 100, 50, 80]);
+assert.deepEqual(overlapDraw.args.slice(1), [0, 0, 50, 100, 0, 80, 50, 100]);
+
+canvases.length = 0;
+const wideDataUrl = await stitchImages([
+  { dataUrl: 'mock:50x100', actualScrollX: 0, actualScrollY: 0 },
+  { dataUrl: 'mock:50x100', actualScrollX: 50, actualScrollY: 0 },
+  { dataUrl: 'mock:50x100', actualScrollX: 100, actualScrollY: 0 }
+], {
+  scrollHeight: 100,
+  scrollWidth: 120,
+  viewportHeight: 100,
+  viewportWidth: 50,
+  devicePixelRatio: 1
+}, {
+  format: 'png',
+  metadataEnabled: false
+});
+const wide = decodeResult(wideDataUrl);
+assert.equal(wide.width, 120);
+assert.equal(wide.height, 100);
+assert.deepEqual(wide.calls.filter((call) => call.type === 'drawImage').at(-1).args.slice(1), [
+  0,
+  0,
+  20,
+  100,
+  100,
+  0,
+  20,
+  100
+]);
+
+canvases.length = 0;
+const fractionalScaleDataUrl = await stitchImages([
+  { dataUrl: 'mock:1081x901', actualScrollX: 0, actualScrollY: 0 },
+  { dataUrl: 'mock:1081x901', actualScrollX: 400, actualScrollY: 0 },
+  { dataUrl: 'mock:1081x901', actualScrollX: 0, actualScrollY: 333 },
+  { dataUrl: 'mock:1081x901', actualScrollX: 400, actualScrollY: 333 }
+], {
+  scrollHeight: 1000,
+  scrollWidth: 1200,
+  viewportHeight: 667,
+  viewportWidth: 800,
+  devicePixelRatio: 1.35
+}, {
+  format: 'png',
+  metadataEnabled: false
+});
+const fractionalScale = decodeResult(fractionalScaleDataUrl);
+assert.equal(fractionalScale.width, 1622);
+assert.equal(fractionalScale.height, 1351);
+assert.deepEqual(fractionalScale.calls.filter((call) => call.type === 'drawImage').at(-1).args.slice(1), [
+  0,
+  0,
+  1081,
+  901,
+  541,
+  450,
+  1081,
+  901
+]);
 
 console.log('Stitch tests passed');
