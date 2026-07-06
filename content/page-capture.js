@@ -14,38 +14,67 @@ function getPageMetrics() {
       documentElement.scrollHeight || 0,
       documentElement.offsetHeight || 0
     ),
+    scrollWidth: Math.max(
+      body.scrollWidth || 0,
+      body.offsetWidth || 0,
+      documentElement.clientWidth || 0,
+      documentElement.scrollWidth || 0,
+      documentElement.offsetWidth || 0
+    ),
     viewportHeight: window.innerHeight,
     viewportWidth: window.innerWidth,
     devicePixelRatio: window.devicePixelRatio || 1
   };
 }
 
-function preparePage() {
+function preparePage(options = {}) {
   cleanupPage();
 
+  const hideFixedElements = options.hideFixedElements !== false;
   const hiddenElements = [];
   const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+  const scrollbarStyle = document.createElement('style');
+
+  scrollbarStyle.dataset.batchshotCapture = 'scrollbar-hidden';
+  scrollbarStyle.textContent = `
+    html, body, * {
+      scrollbar-width: none !important;
+      -ms-overflow-style: none !important;
+    }
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar,
+    *::-webkit-scrollbar {
+      display: none !important;
+      width: 0 !important;
+      height: 0 !important;
+    }
+  `;
+  document.documentElement.appendChild(scrollbarStyle);
+
   document.documentElement.style.scrollBehavior = 'auto';
 
-  document.querySelectorAll('body *').forEach((element) => {
-    const style = window.getComputedStyle(element);
-    if (style.position !== 'fixed' && style.position !== 'sticky') {
-      return;
-    }
+  if (hideFixedElements) {
+    document.querySelectorAll('body *').forEach((element) => {
+      const style = window.getComputedStyle(element);
+      if (style.position !== 'fixed' && style.position !== 'sticky') {
+        return;
+      }
 
-    hiddenElements.push({
-      element,
-      visibility: element.style.visibility,
-      transition: element.style.transition
+      hiddenElements.push({
+        element,
+        visibility: element.style.visibility,
+        transition: element.style.transition
+      });
+      element.style.visibility = 'hidden';
+      element.style.transition = 'none';
     });
-    element.style.visibility = 'hidden';
-    element.style.transition = 'none';
-  });
+  }
 
   restoreSnapshot = {
     scrollX: window.scrollX,
     scrollY: window.scrollY,
     previousScrollBehavior,
+    scrollbarStyle,
     hiddenElements
   };
 
@@ -58,6 +87,7 @@ function cleanupPage() {
   }
 
   document.documentElement.style.scrollBehavior = restoreSnapshot.previousScrollBehavior;
+  restoreSnapshot.scrollbarStyle?.remove();
   restoreSnapshot.hiddenElements.forEach(({ element, visibility, transition }) => {
     element.style.visibility = visibility;
     element.style.transition = transition;
@@ -66,10 +96,11 @@ function cleanupPage() {
   restoreSnapshot = null;
 }
 
-async function scrollToY(y) {
-  window.scrollTo(0, y);
+async function scrollToPosition(x, y) {
+  window.scrollTo(x, y);
   await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
   return {
+    actualScrollX: window.scrollX,
     actualScrollY: window.scrollY,
     metrics: getPageMetrics()
   };
@@ -97,6 +128,50 @@ function setNativeValue(element, value) {
   element.value = value;
 }
 
+function setElementValue(element, value) {
+  const normalizedValue = String(value ?? '');
+
+  if (element instanceof HTMLSelectElement) {
+    const matchingOption = Array.from(element.options).find((option) => (
+      option.value === normalizedValue || option.textContent.trim() === normalizedValue
+    ));
+    element.value = matchingOption?.value ?? normalizedValue;
+    element.dispatchEvent(new Event('change', { bubbles: true }));
+    return;
+  }
+
+  if (element instanceof HTMLInputElement && (element.type === 'checkbox' || element.type === 'radio')) {
+    element.checked = ['true', '1', 'yes', 'on', element.value].includes(normalizedValue.toLowerCase())
+      || normalizedValue === element.value;
+    element.dispatchEvent(new Event('change', { bubbles: true }));
+    return;
+  }
+
+  const isNativeInput = element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement;
+  element.focus();
+  if (isNativeInput) {
+    setNativeValue(element, '');
+  } else {
+    element.textContent = '';
+  }
+  element.dispatchEvent(new InputEvent('input', {
+    bubbles: true,
+    inputType: 'deleteContentBackward',
+    data: null
+  }));
+  if (isNativeInput) {
+    setNativeValue(element, normalizedValue);
+  } else {
+    element.textContent = normalizedValue;
+  }
+  element.dispatchEvent(new InputEvent('input', {
+    bubbles: true,
+    inputType: 'insertText',
+    data: normalizedValue
+  }));
+  element.dispatchEvent(new Event('change', { bubbles: true }));
+}
+
 function performSearch(payload = {}) {
   const inputSelector = String(payload.inputSelector || '').trim();
   const keyword = String(payload.keyword ?? '');
@@ -117,28 +192,7 @@ function performSearch(payload = {}) {
     return { ok: false, statusKey: 'searchInputNotFoundError' };
   }
 
-  input.focus();
-  if (isNativeInput) {
-    setNativeValue(input, '');
-  } else {
-    input.textContent = '';
-  }
-  input.dispatchEvent(new InputEvent('input', {
-    bubbles: true,
-    inputType: 'deleteContentBackward',
-    data: null
-  }));
-  if (isNativeInput) {
-    setNativeValue(input, keyword);
-  } else {
-    input.textContent = keyword;
-  }
-  input.dispatchEvent(new InputEvent('input', {
-    bubbles: true,
-    inputType: 'insertText',
-    data: keyword
-  }));
-  input.dispatchEvent(new Event('change', { bubbles: true }));
+  setElementValue(input, keyword);
 
   if (submitMode === 'button') {
     if (!buttonSelector) {
@@ -259,19 +313,105 @@ function closestClickableElement(target) {
   return target.closest('button,input[type="button"],input[type="submit"],[role="button"],a') || target;
 }
 
+function isVisibleElement(element) {
+  const rect = element.getBoundingClientRect();
+  const style = window.getComputedStyle(element);
+  return rect.width > 0
+    && rect.height > 0
+    && style.visibility !== 'hidden'
+    && style.display !== 'none';
+}
+
+function isSearchLikeInput(element) {
+  if (element?.isContentEditable) {
+    return true;
+  }
+
+  if (!(element instanceof HTMLInputElement) && !(element instanceof HTMLTextAreaElement)) {
+    return false;
+  }
+
+  if (element.disabled || element.readOnly) {
+    return false;
+  }
+
+  if (element instanceof HTMLTextAreaElement) {
+    return true;
+  }
+
+  return [
+    '',
+    'search',
+    'text',
+    'url',
+    'email',
+    'tel'
+  ].includes(element.type);
+}
+
+function searchInputScore(element) {
+  const haystack = [
+    element.getAttribute('type'),
+    element.getAttribute('role'),
+    element.getAttribute('name'),
+    element.getAttribute('id'),
+    element.getAttribute('placeholder'),
+    element.getAttribute('aria-label'),
+    element.getAttribute('title'),
+    element.className
+  ].join(' ').toLowerCase();
+  const strongPattern = /(search|query|keyword|\bq\b|搜索|查询|检索|关键词)/i;
+  let score = strongPattern.test(haystack) ? 10 : 0;
+
+  if (element instanceof HTMLInputElement && element.type === 'search') {
+    score += 6;
+  }
+  if (element.getAttribute('role') === 'searchbox') {
+    score += 6;
+  }
+  if (document.activeElement === element) {
+    score += 4;
+  }
+  if (element.form) {
+    score += 1;
+  }
+
+  return score;
+}
+
+function inferSearchInputSelector() {
+  const candidates = Array.from(document.querySelectorAll('input,textarea,[contenteditable=""],[contenteditable="true"],[role="searchbox"]'))
+    .filter((element) => isSearchLikeInput(element) && isVisibleElement(element))
+    .map((element) => ({ element, score: searchInputScore(element) }))
+    .sort((a, b) => b.score - a.score);
+
+  if (!candidates.length) {
+    return '';
+  }
+
+  const [best] = candidates;
+  const shouldUseBest = best.score > 0 || candidates.length === 1;
+  return shouldUseBest ? selectorForElement(best.element) : '';
+}
+
 function getSearchInputSelector() {
   const target = lastContextMenuTarget || document.activeElement;
   const isSupportedInput = target instanceof HTMLInputElement
     || target instanceof HTMLTextAreaElement
     || target?.isContentEditable;
 
-  if (!isSupportedInput) {
-    return { ok: false, statusKey: 'searchInputNotFoundError' };
+  if (isSupportedInput) {
+    const selector = selectorForElement(target);
+    if (!selector) {
+      return { ok: false, statusKey: 'searchInputSelectorError' };
+    }
+
+    return { ok: true, selector };
   }
 
-  const selector = selectorForElement(target);
+  const selector = inferSearchInputSelector();
   if (!selector) {
-    return { ok: false, statusKey: 'searchInputSelectorError' };
+    return { ok: false, statusKey: 'searchInputNotFoundError' };
   }
 
   return { ok: true, selector };
@@ -418,12 +558,13 @@ document.addEventListener('contextmenu', (event) => {
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.action === 'prepare') {
-    sendResponse({ ok: true, metrics: preparePage() });
+    sendResponse({ ok: true, metrics: preparePage(message.payload) });
     return true;
   }
 
   if (message.action === 'scrollTo') {
-    scrollToY(message.y).then((response) => sendResponse({ ok: true, ...response }));
+    scrollToPosition(message.x || 0, message.y || 0)
+      .then((response) => sendResponse({ ok: true, ...response }));
     return true;
   }
 

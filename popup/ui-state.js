@@ -23,9 +23,9 @@ export function createPopupUiState({ elements, hasSelectedLinks }) {
     elements.linkSelectorInvertButton.disabled = running;
     elements.linkSelectorApplyButton.disabled = running || !hasSelectedLinks();
     elements.scheduleButton.disabled = running;
+    elements.scheduleName.disabled = running;
     elements.scheduleNewButton.disabled = running;
     elements.scheduleSaveButton.disabled = running;
-    elements.cancelScheduleButton.disabled = running;
     elements.startButton.disabled = running;
     elements.pauseButton.disabled = !running;
     elements.stopButton.disabled = !running;

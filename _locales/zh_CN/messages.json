@@ -154,6 +154,12 @@
   "scheduleNewButton": {
     "message": "新建"
   },
+  "scheduleNamePlaceholder": {
+    "message": "任务名"
+  },
+  "scheduledTaskDefaultName": {
+    "message": "任务$1"
+  },
   "scheduleUpdateButton": {
     "message": "更新定时"
   },
@@ -168,6 +174,9 @@
   "cancelScheduleButton": {
     "message": "取消定时截图"
   },
+  "cancelUpdateConfirmButton": {
+    "message": "取消更新确认"
+  },
   "scheduledTaskSavedStatus": {
     "message": "已设置 $TIME$ 定时截图。",
     "placeholders": {
@@ -177,26 +186,7 @@
     }
   },
   "scheduledTaskUpdatedStatus": {
-    "message": "已更新为 $TIME$ 定时截图。",
-    "placeholders": {
-      "time": {
-        "content": "$1"
-      }
-    }
-  },
-  "scheduledTaskPanelEmpty": {
-    "message": "当前没有定时任务。"
-  },
-  "scheduledTaskPanelNew": {
-    "message": "从当前 URL 列表新建定时任务。"
-  },
-  "scheduledTaskPanelCurrent": {
-    "message": "当前定时：$TIME$",
-    "placeholders": {
-      "time": {
-        "content": "$1"
-      }
-    }
+    "message": "定时任务已更新。"
   },
   "scheduledTaskUrlCount": {
     "message": "$COUNT$ 个 URL",

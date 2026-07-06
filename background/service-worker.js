@@ -297,6 +297,44 @@ async function waitForTabComplete(tabId, timeoutMs = 45000, timeoutStatusKey = '
   });
 }
 
+async function waitForTabReadyForCapture(tabId, timeoutMs = 45000, timeoutStatusKey = 'pageLoadTimeoutError') {
+  function isReady(tab) {
+    const url = String(tab?.url || tab?.pendingUrl || '');
+    return tab?.status === 'complete' && url && url !== 'about:blank';
+  }
+
+  const initial = await chrome.tabs.get(tabId);
+  if (isReady(initial)) {
+    return;
+  }
+
+  await new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      chrome.tabs.onUpdated.removeListener(listener);
+      reject(statusError(timeoutStatusKey));
+    }, timeoutMs);
+
+    function listener(updatedTabId) {
+      if (updatedTabId !== tabId) {
+        return;
+      }
+
+      chrome.tabs.get(tabId)
+        .then((tab) => {
+          if (!isReady(tab)) {
+            return;
+          }
+          clearTimeout(timeout);
+          chrome.tabs.onUpdated.removeListener(listener);
+          resolve();
+        })
+        .catch(() => {});
+    }
+
+    chrome.tabs.onUpdated.addListener(listener);
+  });
+}
+
 async function activateTab(tab) {
   await chrome.windows.update(tab.windowId, { focused: true }).catch(() => {});
   await chrome.tabs.update(tab.id, { active: true });
@@ -316,40 +354,116 @@ async function sendTabMessage(tabId, message) {
   }
 }
 
-async function captureViewport(tab, options) {
-  if (options.metadataEnabled || options.format === 'pdf') {
-    const dataUrl = await captureVisibleTab(tab, { format: 'png' });
-    const [injection] = await chrome.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: () => ({
-        scrollHeight: window.innerHeight,
-        viewportHeight: window.innerHeight,
-        viewportWidth: window.innerWidth,
-        devicePixelRatio: window.devicePixelRatio || 1
-      })
-    });
-    const stitchResponse = await chrome.runtime.sendMessage({
-      action: 'stitch',
-      segments: [{ dataUrl, actualScrollY: 0, isLastFrame: true }],
-      metrics: injection.result,
-      options
-    });
+function waitForRelatedNewTab(sourceTab, timeoutMs = 2000) {
+  return new Promise((resolve) => {
+    let isDone = false;
+    const timeout = setTimeout(() => {
+      cleanup();
+      resolve(null);
+    }, timeoutMs);
 
-    if (!stitchResponse?.ok) {
-      throw statusError('stitchError', [stitchResponse?.error || '']);
+    function cleanup() {
+      if (isDone) {
+        return;
+      }
+      isDone = true;
+      clearTimeout(timeout);
+      chrome.tabs.onCreated.removeListener(handleCreated);
+      chrome.tabs.onActivated.removeListener(handleActivated);
     }
 
-    return stitchResponse.dataUrl;
+    function resolveTab(tab) {
+      cleanup();
+      resolve(tab);
+    }
+
+    function handleCreated(tab) {
+      if (!tab?.id || tab.id === sourceTab.id) {
+        return;
+      }
+
+      resolveTab(tab);
+    }
+
+    function handleActivated(activeInfo) {
+      if (!activeInfo?.tabId || activeInfo.tabId === sourceTab.id) {
+        return;
+      }
+
+      chrome.tabs.get(activeInfo.tabId)
+        .then((tab) => resolveTab(tab))
+        .catch(() => {});
+    }
+
+    chrome.tabs.onCreated.addListener(handleCreated);
+    chrome.tabs.onActivated.addListener(handleActivated);
+  });
+}
+
+async function captureViewport(tab, options) {
+  const prep = await sendTabMessage(tab.id, {
+    action: 'prepare',
+    payload: { hideFixedElements: false }
+  }).catch(() => null);
+
+  try {
+    if (options.metadataEnabled || options.format === 'pdf') {
+      const dataUrl = await captureVisibleTab(tab, { format: 'png' });
+      const [injection] = await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: () => ({
+          scrollHeight: window.innerHeight,
+          scrollWidth: window.innerWidth,
+          viewportHeight: window.innerHeight,
+          viewportWidth: window.innerWidth,
+          devicePixelRatio: window.devicePixelRatio || 1
+        })
+      });
+      const stitchResponse = await chrome.runtime.sendMessage({
+        action: 'stitch',
+        segments: [{ dataUrl, actualScrollX: 0, actualScrollY: 0, isLastFrame: true }],
+        metrics: injection.result,
+        options
+      });
+
+      if (!stitchResponse?.ok) {
+        throw statusError('stitchError', [stitchResponse?.error || '']);
+      }
+
+      return stitchResponse.dataUrl;
+    }
+
+    const format = options.format === 'jpg' ? 'jpeg' : options.format;
+    const captureOptions = { format };
+
+    if (format === 'jpeg') {
+      captureOptions.quality = getCaptureQuality(options);
+    }
+
+    return captureVisibleTab(tab, captureOptions);
+  } finally {
+    if (prep?.ok) {
+      await sendTabMessage(tab.id, { action: 'cleanup' }).catch(() => {});
+    }
+  }
+}
+
+function createScrollPositions(totalSize, viewportSize) {
+  const total = Math.max(0, Number(totalSize) || 0);
+  const viewport = Math.max(1, Number(viewportSize) || 1);
+  const frameCount = Math.max(1, Math.ceil(total / viewport));
+  const maxScroll = Math.max(0, total - viewport);
+  const positions = [];
+
+  for (let frame = 0; frame < frameCount; frame += 1) {
+    const position = Math.min(frame * viewport, maxScroll);
+
+    if (!positions.includes(position)) {
+      positions.push(position);
+    }
   }
 
-  const format = options.format === 'jpg' ? 'jpeg' : options.format;
-  const captureOptions = { format };
-
-  if (format === 'jpeg') {
-    captureOptions.quality = getCaptureQuality(options);
-  }
-
-  return captureVisibleTab(tab, captureOptions);
+  return positions;
 }
 
 async function captureFullPage(tab, options) {
@@ -359,30 +473,35 @@ async function captureFullPage(tab, options) {
   }
 
   const metrics = prep.metrics;
-  const frameCount = Math.max(1, Math.ceil(metrics.scrollHeight / metrics.viewportHeight));
+  const scrollXs = createScrollPositions(metrics.scrollWidth || metrics.viewportWidth, metrics.viewportWidth);
+  const scrollYs = createScrollPositions(metrics.scrollHeight, metrics.viewportHeight);
   const segments = [];
 
-  for (let frame = 0; frame < frameCount; frame += 1) {
-    if (getBatchState().stopping) {
-      throw statusError('captureStoppedError');
+  for (let column = 0; column < scrollXs.length; column += 1) {
+    for (let row = 0; row < scrollYs.length; row += 1) {
+      if (getBatchState().stopping) {
+        throw statusError('captureStoppedError');
+      }
+
+      await waitWhilePaused();
+
+      const requestedX = scrollXs[column];
+      const requestedY = scrollYs[row];
+      const scrollResponse = await sendTabMessage(tab.id, { action: 'scrollTo', x: requestedX, y: requestedY });
+      await sleepWithControls(CAPTURE_SETTLE_MS);
+
+      const dataUrl = await captureVisibleTab(tab, { format: 'png' });
+      segments.push({
+        dataUrl,
+        requestedX,
+        requestedY,
+        actualScrollX: scrollResponse.actualScrollX || 0,
+        actualScrollY: scrollResponse.actualScrollY,
+        isLastColumn: column === scrollXs.length - 1,
+        isLastRow: row === scrollYs.length - 1,
+        isLastFrame: column === scrollXs.length - 1 && row === scrollYs.length - 1
+      });
     }
-
-    await waitWhilePaused();
-
-    const requestedY = Math.min(
-      frame * metrics.viewportHeight,
-      Math.max(0, metrics.scrollHeight - metrics.viewportHeight)
-    );
-    const scrollResponse = await sendTabMessage(tab.id, { action: 'scrollTo', y: requestedY });
-    await sleepWithControls(CAPTURE_SETTLE_MS);
-
-    const dataUrl = await captureVisibleTab(tab, { format: 'png' });
-    segments.push({
-      dataUrl,
-      requestedY,
-      actualScrollY: scrollResponse.actualScrollY,
-      isLastFrame: frame === frameCount - 1
-    });
   }
 
   const stitchResponse = await chrome.runtime.sendMessage({
@@ -558,6 +677,7 @@ async function prepareCaptureJob(job) {
     const tab = await chrome.tabs.create({ url: job.url, active: true });
     await waitForTabComplete(tab.id, 45000, 'searchPageLoadTimeoutError');
 
+    const resultTabPromise = waitForRelatedNewTab(tab);
     const response = await sendTabMessage(tab.id, {
       action: 'performSearch',
       payload: job.search
@@ -568,23 +688,40 @@ async function prepareCaptureJob(job) {
     }
 
     await sleepWithControls(300);
-    await waitForTabComplete(tab.id, 45000, 'searchPageLoadTimeoutError');
+    const openedTab = await resultTabPromise;
+    const captureTarget = openedTab?.id
+      ? await chrome.tabs.get(openedTab.id).catch(() => openedTab)
+      : tab;
+
+    await waitForTabReadyForCapture(captureTarget.id, 45000, 'searchPageLoadTimeoutError');
     await sleepWithControls(Math.max(0, Number(job.searchResultDelay ?? 0)) * 1000);
-    const latestTab = await chrome.tabs.get(tab.id).catch(() => tab);
-    return { ...job, tab: latestTab, url: latestTab.url || tab.url || job.url };
+    const latestTab = await chrome.tabs.get(captureTarget.id).catch(() => captureTarget);
+    return {
+      ...job,
+      tab: latestTab,
+      extraTabs: openedTab?.id ? [tab] : [],
+      url: latestTab.url || captureTarget.url || tab.url || job.url
+    };
   }
 
   return job;
 }
 
 async function cleanupCaptureJob(job) {
-  if (!job.tab?.id) {
+  const tabs = [job.tab, ...(job.extraTabs || [])]
+    .filter((tab) => tab?.id)
+    .filter((tab, index, list) => list.findIndex((item) => item.id === tab.id) === index);
+
+  if (!tabs.length) {
     return;
   }
 
-  await sendTabMessage(job.tab.id, { action: 'cleanup' }).catch(() => {});
+  await Promise.all(tabs.map((tab) => (
+    sendTabMessage(tab.id, { action: 'cleanup' }).catch(() => {})
+  )));
+
   if (job.closeAfterCapture) {
-    await chrome.tabs.remove(job.tab.id).catch(() => {});
+    await Promise.all(tabs.map((tab) => chrome.tabs.remove(tab.id).catch(() => {})));
   }
 }
 
@@ -805,7 +942,12 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
         if (!settings.scheduledTasksEnabled) {
           return { ok: false, statusKey: 'scheduledTasksDisabledError', statusArgs: [] };
         }
-        return scheduledTasks.scheduleBatch(message.payload.options, message.payload.scheduledAt, message.payload.taskId);
+        return scheduledTasks.scheduleBatch(
+          message.payload.options,
+          message.payload.scheduledAt,
+          message.payload.taskId,
+          message.payload.taskName
+        );
       })
       .then((response) => sendResponse(response))
       .catch((error) => sendResponse(errorResponse(error, 'scheduledTaskError')));

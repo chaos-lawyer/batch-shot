@@ -154,6 +154,12 @@
   "scheduleNewButton": {
     "message": "New"
   },
+  "scheduleNamePlaceholder": {
+    "message": "Task name"
+  },
+  "scheduledTaskDefaultName": {
+    "message": "Task $1"
+  },
   "scheduleUpdateButton": {
     "message": "Update"
   },
@@ -168,6 +174,9 @@
   "cancelScheduleButton": {
     "message": "Cancel scheduled capture"
   },
+  "cancelUpdateConfirmButton": {
+    "message": "Cancel update confirmation"
+  },
   "scheduledTaskSavedStatus": {
     "message": "Capture scheduled for $TIME$.",
     "placeholders": {
@@ -177,26 +186,7 @@
     }
   },
   "scheduledTaskUpdatedStatus": {
-    "message": "Scheduled capture updated to $TIME$.",
-    "placeholders": {
-      "time": {
-        "content": "$1"
-      }
-    }
-  },
-  "scheduledTaskPanelEmpty": {
-    "message": "No scheduled capture."
-  },
-  "scheduledTaskPanelNew": {
-    "message": "New schedule from the current URL list."
-  },
-  "scheduledTaskPanelCurrent": {
-    "message": "Current schedule: $TIME$",
-    "placeholders": {
-      "time": {
-        "content": "$1"
-      }
-    }
+    "message": "Scheduled capture updated."
   },
   "scheduledTaskUrlCount": {
     "message": "$COUNT$ URL(s)",

@@ -219,6 +219,7 @@ export function createInputHistory({
     }
 
     elements[config.input].value = entry.value;
+    elements[config.input].dispatchEvent(new Event('input', { bubbles: true }));
     if (type === 'urls') {
       urlInputAdapter.updateUrlCount();
     } else {
@@ -275,6 +276,7 @@ export function createInputHistory({
     }
 
     input.value = '';
+    input.dispatchEvent(new Event('input', { bubbles: true }));
     if (type === 'urls') {
       urlInputAdapter.updateUrlCount();
     } else {
