@@ -8,6 +8,10 @@ export function createPopupUiState({ elements, hasSelectedLinks }) {
 
   const renderStatusText = (text) => {
     elements.statusText.textContent = text;
+    elements.statusText.removeAttribute('title');
+    if (elements.statusText.scrollHeight > elements.statusText.clientHeight) {
+      elements.statusText.title = text;
+    }
   };
 
   function renderRunningControls({ running, paused }) {
@@ -26,6 +30,7 @@ export function createPopupUiState({ elements, hasSelectedLinks }) {
     elements.scheduleName.disabled = running;
     elements.scheduleNewButton.disabled = running;
     elements.scheduleSaveButton.disabled = running;
+    elements.openFillButton.disabled = running;
     elements.startButton.disabled = running;
     elements.pauseButton.disabled = !running;
     elements.stopButton.disabled = !running;
@@ -43,6 +48,7 @@ export function createPopupUiState({ elements, hasSelectedLinks }) {
   }) {
     batchUiState.running = running;
     batchUiState.paused = paused;
+    document.body.classList.toggle('is-running', running);
     renderRunningControls(batchUiState);
     renderStatusText(statusText || message(statusKey, statusArgs));
   }

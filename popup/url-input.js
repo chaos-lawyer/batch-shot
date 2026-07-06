@@ -159,7 +159,9 @@ export function createUrlInput({
   }
 
   function updateTemplateHelp() {
-    elements.urlTemplateLabel.title = message('urlPreviewHelp', urlTemplateDelimiter);
+    const helpMessage = message('urlPreviewHelp', urlTemplateDelimiter);
+    elements.urlTemplateLabel.title = helpMessage;
+    elements.urlTemplate.title = helpMessage;
   }
 
   function closePreviewPanel() {

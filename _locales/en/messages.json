@@ -498,6 +498,9 @@
   "startButton": {
     "message": "Start"
   },
+  "openFillButton": {
+    "message": "Open & fill"
+  },
   "stopButton": {
     "message": "Stop"
   },
@@ -512,6 +515,23 @@
   },
   "runningStatus": {
     "message": "Capturing..."
+  },
+  "openFillRunningStatus": {
+    "message": "Opening and filling pages..."
+  },
+  "openFillNoSearchJobsError": {
+    "message": "Add at least one search template, or use Search box mode."
+  },
+  "openFillDoneStatus": {
+    "message": "Opened and filled $SUCCESSFUL$ page(s), $FAILED$ failure(s). Complete verification manually, then capture current window tabs.",
+    "placeholders": {
+      "successful": {
+        "content": "$1"
+      },
+      "failed": {
+        "content": "$2"
+      }
+    }
   },
   "batchProgressStatus": {
     "message": "$INDEX$/$TOTAL$ $URL$",
