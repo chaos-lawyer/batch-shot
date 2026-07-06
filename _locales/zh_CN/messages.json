@@ -498,6 +498,9 @@
   "startButton": {
     "message": "开始"
   },
+  "openFillButton": {
+    "message": "仅打开并填写"
+  },
   "stopButton": {
     "message": "停止"
   },
@@ -512,6 +515,23 @@
   },
   "runningStatus": {
     "message": "正在截图..."
+  },
+  "openFillRunningStatus": {
+    "message": "正在打开并填写页面..."
+  },
+  "openFillNoSearchJobsError": {
+    "message": "请至少添加一个搜索模板，或使用搜索框模式。"
+  },
+  "openFillDoneStatus": {
+    "message": "已打开并填写 $SUCCESSFUL$ 个页面，失败 $FAILED$ 个。请手动完成验证后，再截取当前窗口全部页面。",
+    "placeholders": {
+      "successful": {
+        "content": "$1"
+      },
+      "failed": {
+        "content": "$2"
+      }
+    }
   },
   "batchProgressStatus": {
     "message": "$INDEX$/$TOTAL$ $URL$",

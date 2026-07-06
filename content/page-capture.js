@@ -232,6 +232,29 @@ function performSearch(payload = {}) {
   return { ok: true };
 }
 
+function fillSearchForm(payload = {}) {
+  const inputSelector = String(payload.inputSelector || '').trim();
+  const keyword = String(payload.keyword ?? '');
+
+  if (!inputSelector) {
+    return { ok: false, statusKey: 'searchInputSelectorError' };
+  }
+
+  const input = querySelectorOrError(inputSelector, 'searchInputSelectorError');
+  if (input?.error) {
+    return { ok: false, statusKey: input.error };
+  }
+
+  const isNativeInput = input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement;
+  if (!isNativeInput && !input.isContentEditable) {
+    return { ok: false, statusKey: 'searchInputNotFoundError' };
+  }
+
+  setElementValue(input, keyword);
+  input.focus?.();
+  return { ok: true };
+}
+
 function cssEscape(value) {
   if (globalThis.CSS?.escape) {
     return CSS.escape(value);
@@ -576,6 +599,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 
   if (message.action === 'performSearch') {
     sendResponse(performSearch(message.payload));
+    return true;
+  }
+
+  if (message.action === 'fillSearchForm') {
+    sendResponse(fillSearchForm(message.payload));
     return true;
   }
 

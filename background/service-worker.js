@@ -667,6 +667,23 @@ function createTabJobs(tabs, options = {}) {
   }));
 }
 
+function createPrepareFormJobs(options) {
+  const jobs = Array.isArray(options.jobs) && options.jobs.length
+    ? createExplicitJobs(options)
+    : options.urlInputMode === 'searchBox'
+      ? createSearchJobs(options)
+      : [];
+
+  return jobs
+    .filter((job) => job.kind === 'search')
+    .map((job) => ({
+      ...job,
+      closeAfterCapture: false,
+      applyDelay: false,
+      waitForLoad: false
+    }));
+}
+
 async function prepareCaptureJob(job) {
   if (job.kind === 'url') {
     const tab = await chrome.tabs.create({ url: job.url, active: true });
@@ -765,6 +782,44 @@ const runCaptureJobList = (jobs, options) => runCaptureJobs(jobs, options, {
   shouldStop: () => getBatchState().stopping,
   waitWhilePaused,
   captureSingleJob
+});
+
+async function prepareSingleFormJob(job, index, total) {
+  let tab = null;
+  let url = job.url;
+  let title = '';
+
+  try {
+    tab = await chrome.tabs.create({ url: job.url, active: true });
+    await waitForTabComplete(tab.id, 45000, 'searchPageLoadTimeoutError');
+    const latestTab = await chrome.tabs.get(tab.id).catch(() => tab);
+    url = latestTab.url || tab.url || job.url;
+    title = latestTab.title || '';
+    batchStatus.updateProgress(index, total, url);
+
+    const response = await sendTabMessage(tab.id, {
+      action: 'fillSearchForm',
+      payload: job.search
+    });
+
+    if (!response?.ok) {
+      throw statusError(response?.statusKey || 'searchSubmitError');
+    }
+
+    return createReportRow({ index, url, title, status: 'ok' });
+  } catch (error) {
+    const latestTab = tab?.id ? await chrome.tabs.get(tab.id).catch(() => null) : null;
+    url = latestTab?.url || url;
+    title = title || latestTab?.title || '';
+    const status = statusFromError(error);
+    return createReportRow({ index, url, title, status: 'error', error: status.statusKey });
+  }
+}
+
+const runPrepareFormJobList = (jobs, options) => runCaptureJobs(jobs, options, {
+  shouldStop: () => getBatchState().stopping,
+  waitWhilePaused,
+  captureSingleJob: prepareSingleFormJob
 });
 
 async function captureCurrentTab(options) {
@@ -901,6 +956,28 @@ async function runBatch(options) {
   }
 }
 
+async function runPrepareForms(options) {
+  try {
+    const jobs = createPrepareFormJobs(options);
+    if (!jobs.length) {
+      throw statusError('openFillNoSearchJobsError');
+    }
+
+    batchStatus.start('openFillRunningStatus');
+    const rows = await runPrepareFormJobList(jobs, options);
+    const successful = rows.filter((row) => row.status === 'ok').length;
+    const failed = rows.length - successful;
+    setStatus({
+      statusKey: 'openFillDoneStatus',
+      statusArgs: [String(successful), String(failed)]
+    }, false, false);
+  } catch (error) {
+    setStatus(statusFromError(error), false, false);
+  } finally {
+    batchStatus.reset();
+  }
+}
+
 const scheduledTasks = createScheduledTaskController({
   getBatchState,
   runBatch,
@@ -983,6 +1060,17 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     }
 
     runBatch(message.payload);
+    sendResponse({ ok: true });
+    return false;
+  }
+
+  if (message.action === 'prepareBatchForms') {
+    if (getBatchState().running) {
+      sendResponse({ ok: false, statusKey: 'batchAlreadyRunningError', statusArgs: [] });
+      return false;
+    }
+
+    runPrepareForms(message.payload);
     sendResponse({ ok: true });
     return false;
   }

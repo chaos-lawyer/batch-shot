@@ -45,6 +45,29 @@ export function createCaptureActions({
     }
   }
 
+  async function openAndFillForms() {
+    const popupSettings = getSettings();
+    const batchResult = buildBatchOptions(popupSettings, getUrlInputMode(), parseUrls, buildTemplateUrls);
+
+    if (!batchResult.options) {
+      setStatus(message(batchResult.errorKey, batchResult.errorArgs));
+      return;
+    }
+
+    const settings = await persistSettings(popupSettings);
+    await rememberCurrentInputs();
+    setRunning({ running: true, statusKey: 'openFillRunningStatus' });
+    const response = await chrome.runtime.sendMessage({
+      action: 'prepareBatchForms',
+      payload: { ...settings, ...batchResult.options }
+    });
+
+    if (!response?.ok) {
+      setStatus(responseStatus(response, 'unknownCaptureError'));
+      setRunning({ running: false });
+    }
+  }
+
   async function captureCurrentTab() {
     const settings = await persistSettings(getSettings());
     setRunning({ running: true, statusKey: 'currentTabRunningStatus' });
@@ -125,6 +148,7 @@ export function createCaptureActions({
   function bindCaptureEvents() {
     elements.currentTabButton.addEventListener('click', captureCurrentTab);
     elements.currentWindowTabsButton.addEventListener('click', captureCurrentWindowTabs);
+    elements.openFillButton.addEventListener('click', openAndFillForms);
     elements.startButton.addEventListener('click', startCapture);
     elements.pauseButton.addEventListener('click', togglePauseCapture);
     elements.stopButton.addEventListener('click', stopCapture);
