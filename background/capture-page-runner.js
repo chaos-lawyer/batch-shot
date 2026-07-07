@@ -122,7 +122,36 @@ export async function captureFullPage(tab, options, deps) {
     throw statusError('capturePrepareError');
   }
 
-  const metrics = prep.metrics;
+  let metrics = prep.metrics;
+
+  // Safety check: if scrollHeight ≈ viewportHeight, overflow:hidden may have
+  // clamped the reported height.  Do a second-pass deep DOM walk to detect the
+  // real content bottom.
+  if (metrics.scrollHeight <= metrics.viewportHeight) {
+    try {
+      const [injection] = await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: () => {
+          const body = document.body;
+          if (!body) return null;
+          let maxBottom = 0;
+          body.querySelectorAll('*').forEach((el) => {
+            if (!el.getBoundingClientRect) return;
+            const rect = el.getBoundingClientRect();
+            const bottom = rect.bottom + window.scrollY;
+            if (bottom > maxBottom) maxBottom = bottom;
+          });
+          return Math.ceil(maxBottom);
+        }
+      });
+      if (injection?.result && injection.result > metrics.scrollHeight) {
+        metrics = { ...metrics, scrollHeight: injection.result };
+      }
+    } catch (_error) {
+      // Injection failure should not break the existing flow
+    }
+  }
+
   const scrollXs = createScrollPositions(metrics.scrollWidth || metrics.viewportWidth, metrics.viewportWidth);
   const scrollYs = createScrollPositions(metrics.scrollHeight, metrics.viewportHeight);
   const segments = [];
