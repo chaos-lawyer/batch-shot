@@ -206,7 +206,13 @@ BatchShot/
 ├── background/
 │   └── service-worker.js
 ├── content/
-│   └── page-capture.js
+│   ├── capture-page.js
+│   ├── form-fill.js
+│   ├── search-submit.js
+│   ├── selector-builder.js
+│   ├── search-infer.js
+│   ├── button-picker.js
+│   └── messages.js
 ├── offscreen/
 │   ├── offscreen.html
 │   └── offscreen.js
@@ -239,7 +245,7 @@ BatchShot/
 - `popup/`：主操作面板，负责 URL 输入、模板生成、任务控制和状态显示。
 - `options/`：设置页面，负责输出、报告、元信息、外观和语言配置。
 - `background/service-worker.js`：批量任务调度、标签页生命周期、截图和下载。
-- `content/page-capture.js`：页面测量、滚动、隐藏固定元素和恢复页面状态。
+- `content/`：内容脚本，包含页面测量与滚动（capture-page.js）、表单填充（form-fill.js）、搜索提交（search-submit.js）、选择器生成（selector-builder.js）、搜索框推断（search-infer.js）、按钮选择器 UI（button-picker.js）及消息监听（messages.js）。
 - `offscreen/offscreen.js`：整页截图拼接、元信息绘制、PDF/JPG/PNG 转换。
 - `utils/`：设置、文件名、报告字段、i18n 和 XLSX 生成工具。
 
@@ -457,7 +463,13 @@ BatchShot/
 ├── background/
 │   └── service-worker.js
 ├── content/
-│   └── page-capture.js
+│   ├── capture-page.js
+│   ├── form-fill.js
+│   ├── search-submit.js
+│   ├── selector-builder.js
+│   ├── search-infer.js
+│   ├── button-picker.js
+│   └── messages.js
 ├── offscreen/
 │   ├── offscreen.html
 │   └── offscreen.js
@@ -490,7 +502,7 @@ Core modules:
 - `popup/`: main operation panel for URL input, template generation, task control, and status display.
 - `options/`: settings page for output, reports, metadata, appearance, and language.
 - `background/service-worker.js`: batch scheduling, tab lifecycle, screenshot capture, and downloads.
-- `content/page-capture.js`: page measurement, scrolling, fixed element hiding, and cleanup.
+- `content/`: content scripts, containing page measurement and scrolling (capture-page.js), form filling (form-fill.js), search submit (search-submit.js), selector building (selector-builder.js), search input inference (search-infer.js), button picking UI (button-picker.js), and message routing (messages.js).
 - `offscreen/offscreen.js`: full-page stitching, metadata drawing, and PNG/JPG/PDF conversion.
 - `utils/`: settings, filenames, report fields, i18n, and XLSX generation utilities.
 

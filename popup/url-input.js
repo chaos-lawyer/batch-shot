@@ -109,7 +109,8 @@ export function buildTemplateUrlsFromValues(templateValue, itemsValue, delimiter
 export function createUrlInput({
   elements,
   saveSettings,
-  closeHistoryMenus
+  closeHistoryMenus,
+  onModeChange
 }) {
   let urlInputMode = DEFAULT_SETTINGS.urlInputMode;
   let urlTemplateDelimiter = DEFAULT_SETTINGS.urlTemplateDelimiter;
@@ -220,6 +221,11 @@ export function createUrlInput({
     elements.extractLinksButton.hidden = urlInputMode !== 'list';
     elements.urlListHistoryButton.hidden = urlInputMode !== 'list';
     elements.urlListClearButton.hidden = urlInputMode !== 'list';
+    
+    if (onModeChange) {
+      onModeChange();
+    }
+
     elements.listModeButton.classList.toggle('active', urlInputMode === 'list');
     elements.templateModeButton.classList.toggle('active', urlInputMode === 'template');
     elements.listModeButton.setAttribute('aria-selected', String(urlInputMode === 'list'));

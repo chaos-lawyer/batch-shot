@@ -23,9 +23,10 @@ const linkSelectorAdapter = {
   hasSelectedLinks: () => false
 };
 
-const { getBatchUiState, setRunning, renderStatusText: setStatus } = createPopupUiState({
+const { getBatchUiState, setRunning, renderStatusText: setStatus, renderActionVisibility } = createPopupUiState({
   elements,
-  hasSelectedLinks: () => linkSelectorAdapter.hasSelectedLinks()
+  hasSelectedLinks: () => linkSelectorAdapter.hasSelectedLinks(),
+  getUrlInputMode: () => urlInputAdapter.getMode()
 });
 
 async function saveSettings() {
@@ -43,7 +44,10 @@ const history = createInputHistory({
 const urlInput = createUrlInput({
   elements,
   saveSettings,
-  closeHistoryMenus: history.closeHistoryMenus
+  closeHistoryMenus: history.closeHistoryMenus,
+  onModeChange: () => {
+    renderActionVisibility();
+  }
 });
 settingsAdapter.getSettings = urlInput.getSettings;
 urlInputAdapter.getMode = urlInput.getMode;

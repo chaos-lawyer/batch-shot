@@ -1,0 +1,113 @@
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.actions button {
+  min-width: 0;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: transform 0.15s ease, background 0.15s ease, opacity 0.15s ease, border-color 0.15s ease;
+}
+
+.actions button:hover:not(:disabled) {
+  transform: translateY(-1px);
+}
+
+.split-button-group {
+  display: flex;
+}
+
+@keyframes action-fade-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulse-running {
+  0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); }
+  70% { box-shadow: 0 0 0 4px rgba(239, 68, 68, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+}
+
+body:not(.is-running) #stopButton,
+body:not(.is-running) #pauseButton {
+  display: none;
+}
+
+body.is-running .split-button-group {
+  display: none;
+}
+
+body.is-running #stopButton,
+body.is-running #pauseButton {
+  animation: action-fade-in 0.2s ease-out forwards;
+}
+
+body.is-running #stopButton {
+  animation: action-fade-in 0.2s ease-out forwards, pulse-running 2s infinite;
+  animation-delay: 0s, 0.2s;
+}
+
+body:not(.is-running) #openFillButton,
+body:not(.is-running) .split-button-group {
+  animation: action-fade-in 0.2s ease-out forwards;
+}
+
+@keyframes pulse-paused {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+  70% { box-shadow: 0 0 0 4px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+body.is-paused #pauseButton {
+  color: var(--text-inverse);
+  background: var(--success);
+  border-color: var(--success);
+  animation: action-fade-in 0.2s ease-out forwards, pulse-paused 2s infinite;
+  animation-delay: 0s, 0.2s;
+}
+
+body.is-paused #pauseButton:hover {
+  opacity: 0.85;
+}
+
+body.is-paused #stopButton {
+  animation: action-fade-in 0.2s ease-out forwards;
+}
+
+.split-button-group button:first-child {
+  border-radius: 8px;
+  width: 36px;
+}
+
+.split-button-group.has-schedule-trigger button:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.split-button-group.has-schedule-trigger button:last-child {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  width: 36px;
+  border-left: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.split-button-group button:hover:not(:disabled) {
+  z-index: 1;
+}
+
+#statusText {
+  min-width: 0;
+  font-size: 13px;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-break: break-word;
+}
