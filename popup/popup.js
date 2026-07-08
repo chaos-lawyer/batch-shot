@@ -142,16 +142,7 @@ async function restoreSettings() {
   elements.sequentialNextSelector.value = merged.sequentialNextSelector || '';
   elements.sequentialCaptureCount.value = merged.sequentialCaptureCount;
 
-  if (!elements.sequentialStartUrl.value.trim()) {
-    const currentUrl = await getActivePageUrl();
-    if (currentUrl) {
-      elements.sequentialStartUrl.value = currentUrl;
-      await persistSettings({
-        ...merged,
-        sequentialStartUrl: currentUrl
-      });
-    }
-  }
+
 
   if (merged.theme) {
     document.documentElement.dataset.theme = merged.theme;

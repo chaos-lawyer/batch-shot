@@ -69,7 +69,7 @@ function createPickerBar(messages = {}) {
     'border-radius:10px',
     'background:#FFFFFF',
     'color:#111827',
-    'font:0.875rem/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
+    'font:14px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
     'box-shadow:0 12px 32px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05)',
     'border-left:4px solid #2563EB',
     'border-right:4px solid #2563EB'
@@ -104,7 +104,7 @@ function createPickerBar(messages = {}) {
     'border-radius:6px',
     'background:transparent',
     'color:#2563EB',
-    'font:600 0.8125rem/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
+    'font:600 13px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
     'white-space:nowrap',
     'cursor:pointer',
     'transition:all 0.15s ease'
@@ -128,7 +128,7 @@ function createPickerBar(messages = {}) {
     'border:none',
     'background:transparent',
     'color:#6B7280',
-    'font:500 0.8125rem/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
+    'font:500 13px/1 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif',
     'white-space:nowrap',
     'cursor:pointer',
     'transition:all 0.15s ease'

@@ -103,11 +103,12 @@ body.is-paused #stopButton {
 
 #statusText {
   min-width: 0;
-  font-size: 13px;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  max-width: 228px; /* Standardize text wrapping width across 2-button and 3-button layouts */
+  font-size: 12px;
+  line-height: 1.4;
+  height: 34px;
+  display: flex;
+  align-items: center;
   overflow: hidden;
-  text-overflow: ellipsis;
   word-break: break-word;
 }
