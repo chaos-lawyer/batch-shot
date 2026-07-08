@@ -65,24 +65,30 @@ function setElementValue(element, value) {
 }
 
 function fillSearchForm(payload = {}) {
-  const inputSelector = String(payload.inputSelector || '').trim();
-  const keyword = String(payload.keyword ?? '');
+  const fields = Array.isArray(payload.fields) && payload.fields.length
+    ? payload.fields
+    : [{ selector: payload.inputSelector, value: payload.keyword }];
 
-  if (!inputSelector) {
+  if (!fields.length || fields.some((field) => !String(field.selector || '').trim())) {
     return { ok: false, statusKey: 'searchInputSelectorError' };
   }
 
-  const input = querySelectorOrError(inputSelector, 'searchInputSelectorError');
-  if (input?.error) {
-    return { ok: false, statusKey: input.error };
+  for (const field of fields) {
+    const selector = String(field.selector || '').trim();
+    const input = querySelectorOrError(selector, 'searchInputSelectorError');
+    if (input?.error) {
+      return { ok: false, statusKey: input.error };
+    }
+
+    const isNativeInput = input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement;
+    if (!isNativeInput && !(input instanceof HTMLSelectElement) && !input.isContentEditable) {
+      return { ok: false, statusKey: 'searchInputNotFoundError' };
+    }
+
+    setElementValue(input, field.value);
   }
 
-  const isNativeInput = input instanceof HTMLInputElement || input instanceof HTMLTextAreaElement;
-  if (!isNativeInput && !input.isContentEditable) {
-    return { ok: false, statusKey: 'searchInputNotFoundError' };
-  }
-
-  setElementValue(input, keyword);
-  input.focus?.();
+  const lastField = fields.at(-1);
+  document.querySelector(String(lastField.selector || '').trim())?.focus?.();
   return { ok: true };
 }

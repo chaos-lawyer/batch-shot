@@ -4,17 +4,19 @@ import { runPrepareForms } from './form-prep-runner.js';
 import { setupMessageRouter } from './message-router.js';
 import { createScheduledTaskController } from './scheduled-task.js';
 import { statusFromError, statusError, errorResponse } from './status-error.js';
-import { captureCurrentTab, captureCurrentWindowTabs, runBatch } from './capture-page-runner.js';
-import { sendTabMessage, waitForTabComplete } from './tab-utils.js';
-import { createExplicitJobs, createSearchJobs } from './job-factory.js';
+import { captureCurrentTab, captureCurrentWindowTabs, runBatch, captureCurrentTabSequence } from './capture-page-runner.js';
+import { getActiveCapturableTab, sendTabMessage, waitForTabComplete } from './tab-utils.js';
+import { createExplicitJobs, createSearchJobs, createUrlJobs } from './job-factory.js';
 
 import {
   syncActionUi,
   syncActionPopup,
   openActionPopupFromMenu,
   appendSearchTemplateFromContextMenu,
+  setNextPageSelectorFromContextMenu,
   ACTION_MENU_OPEN_POPUP,
-  ACTION_MENU_ADD_SEARCH_TEMPLATE
+  ACTION_MENU_ADD_SEARCH_TEMPLATE,
+  ACTION_MENU_SET_NEXT_PAGE
 } from './action-ui.js';
 
 const batchStatus = createBatchStatusState((state) => {
@@ -72,6 +74,8 @@ setupMessageRouter({
   chrome,
   getBatchState,
   loadSettings,
+  saveSettings,
+  openActionPopupFromMenu: () => openActionPopupFromMenu(getActionUiDeps()),
   syncActionUi: (settings) => syncActionUi(chrome, settings),
   scheduledTasks,
   batchStatus,
@@ -79,6 +83,7 @@ setupMessageRouter({
   runPrepareForms,
   captureCurrentTab: (options) => captureCurrentTab(options, getCaptureRunnerDeps()),
   captureCurrentWindowTabs: (options) => captureCurrentWindowTabs(options, getCaptureRunnerDeps()),
+  captureCurrentTabSequence: (options) => captureCurrentTabSequence(options, getCaptureRunnerDeps()),
   setStatus,
   statusError,
   statusFromError,
@@ -87,7 +92,9 @@ setupMessageRouter({
   waitWhilePaused,
   waitForTabComplete,
   sendTabMessage,
+  getActiveCapturableTab,
   createReportRow,
+  createUrlJobs,
   createExplicitJobs,
   createSearchJobs
 });
@@ -142,6 +149,12 @@ chrome.commands.onCommand.addListener((command) => {
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === ACTION_MENU_ADD_SEARCH_TEMPLATE) {
     Promise.resolve(appendSearchTemplateFromContextMenu(tab, getActionUiDeps()))
+      .catch((error) => setStatus(statusFromError(error), false));
+    return;
+  }
+
+  if (info.menuItemId === ACTION_MENU_SET_NEXT_PAGE) {
+    Promise.resolve(setNextPageSelectorFromContextMenu(tab, getActionUiDeps()))
       .catch((error) => setStatus(statusFromError(error), false));
     return;
   }

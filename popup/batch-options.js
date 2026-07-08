@@ -51,8 +51,8 @@ export function buildSearchBatchOptions(settings) {
   };
 }
 
-export function buildUrlBatchOptions(settings, mode, parseUrls, buildTemplateUrls) {
-  const templateResult = mode === 'template' ? buildTemplateUrls() : null;
+export function buildUrlBatchOptions(settings, mode, parseUrls, buildTemplateUrls, options = {}) {
+  const templateResult = mode === 'template' ? buildTemplateUrls(options) : null;
   const urls = templateResult ? templateResult.urls : parseUrls(settings.urls);
   const urlContexts = templateResult ? templateResult.urlContexts : [];
   const searchJobs = templateResult?.searchJobs || [];
@@ -84,7 +84,8 @@ export function buildUrlBatchOptions(settings, mode, parseUrls, buildTemplateUrl
     const invalidSearchJob = searchJobs.find((job) => {
       try {
         normalizeUrl(job.url);
-        return !job.search?.inputSelector;
+        const fields = Array.isArray(job.search?.fields) ? job.search.fields : [];
+        return !fields.length || fields.some((field) => !field.selector);
       } catch (_error) {
         return true;
       }
@@ -101,10 +102,10 @@ export function buildUrlBatchOptions(settings, mode, parseUrls, buildTemplateUrl
   };
 }
 
-export function buildBatchOptions(settings, mode, parseUrls, buildTemplateUrls) {
+export function buildBatchOptions(settings, mode, parseUrls, buildTemplateUrls, options = {}) {
   if (mode === 'searchBox') {
     return buildSearchBatchOptions(settings);
   }
 
-  return buildUrlBatchOptions(settings, mode, parseUrls, buildTemplateUrls);
+  return buildUrlBatchOptions(settings, mode, parseUrls, buildTemplateUrls, options);
 }

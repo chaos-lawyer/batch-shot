@@ -1,5 +1,6 @@
 import { loadSettings, saveSettings as persistSettings } from '../utils/settings.js';
-import { applyI18n, initI18n } from '../utils/i18n.js';
+import { applyI18n, initI18n, message } from '../utils/i18n.js';
+import { CONTENT_SCRIPT_FILES } from '../utils/content-script-files.js';
 import { createCaptureActions } from './capture-actions.js';
 import { getPopupElements } from './dom.js';
 import { createInputHistory } from './history.js';
@@ -30,7 +31,12 @@ const { getBatchUiState, setRunning, renderStatusText: setStatus, renderActionVi
 });
 
 async function saveSettings() {
-  await persistSettings(settingsAdapter.getSettings());
+  const settings = {
+    ...settingsAdapter.getSettings(),
+    sequentialNextSelector: elements.sequentialNextSelector.value.trim(),
+    sequentialCaptureCount: Number(elements.sequentialCaptureCount.value) || 3
+  };
+  await persistSettings(settings);
 }
 
 const history = createInputHistory({
@@ -53,6 +59,7 @@ settingsAdapter.getSettings = urlInput.getSettings;
 urlInputAdapter.getMode = urlInput.getMode;
 urlInputAdapter.updateUrlCount = urlInput.updateUrlCount;
 urlInputAdapter.updateTemplatePreview = urlInput.updateTemplatePreview;
+urlInputAdapter.getDelimiter = urlInput.getDelimiter;
 
 const linkSelector = createLinkSelector({
   elements,
@@ -92,6 +99,27 @@ const captureActions = createCaptureActions({
   setStatus
 });
 
+async function getActivePageUrl() {
+  if (chrome.windows?.getAll) {
+    const windows = await chrome.windows.getAll({
+      populate: true,
+      windowTypes: ['normal']
+    });
+    const focusedWindow = windows.find((window) => window.focused);
+    const orderedWindows = [
+      focusedWindow,
+      ...windows.filter((window) => window.id !== focusedWindow?.id)
+    ].filter(Boolean);
+    for (const window of orderedWindows) {
+      const tab = (window.tabs || []).find((item) => item.active && /^https?:\/\/|^file:\/\//.test(item.url || ''));
+      if (tab?.url) return tab.url;
+    }
+  }
+
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  return tab?.url && /^https?:\/\/|^file:\/\//.test(tab.url) ? tab.url : '';
+}
+
 const scheduleActions = createScheduleActions({
   elements,
   persistSettings,
@@ -110,6 +138,20 @@ async function restoreSettings() {
   historyLimit = merged.historyLimit;
   urlInput.restoreUrlSettings(merged);
   scheduleActions.setScheduleEnabled(merged.scheduledTasksEnabled);
+
+  elements.sequentialNextSelector.value = merged.sequentialNextSelector || '';
+  elements.sequentialCaptureCount.value = merged.sequentialCaptureCount;
+
+  if (!elements.sequentialStartUrl.value.trim()) {
+    const currentUrl = await getActivePageUrl();
+    if (currentUrl) {
+      elements.sequentialStartUrl.value = currentUrl;
+      await persistSettings({
+        ...merged,
+        sequentialStartUrl: currentUrl
+      });
+    }
+  }
 
   if (merged.theme) {
     document.documentElement.dataset.theme = merged.theme;
@@ -134,6 +176,68 @@ history.bindHistoryEvents();
 linkSelector.bindLinkSelectorEvents();
 captureActions.bindCaptureEvents();
 scheduleActions.bindScheduleEvents();
+
+// Helper: inject content scripts into tab if needed, then send a message.
+async function sendToActiveTab(message) {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id || !/^https?:\/\/|^file:\/\//.test(tab.url || '')) {
+    return { ok: false, statusKey: 'noActivePageError' };
+  }
+  try {
+    return await chrome.tabs.sendMessage(tab.id, message);
+  } catch (_err) {
+    // Content scripts not yet injected — inject them and retry.
+    await chrome.scripting.executeScript({
+      target: { tabId: tab.id },
+      files: CONTENT_SCRIPT_FILES
+    });
+    return await chrome.tabs.sendMessage(tab.id, message);
+  }
+}
+
+async function fillSequenceFromCurrentPage() {
+  setStatus(message('sequentialRunningStatus'));
+  try {
+    const currentUrl = await getActivePageUrl();
+    if (!currentUrl) {
+      setStatus(message('noActivePageError'));
+      return;
+    }
+
+    elements.sequentialStartUrl.value = currentUrl;
+    const response = await sendToActiveTab({ action: 'detectNextPage' });
+    if (response?.ok && response.selector) {
+      elements.sequentialNextSelector.value = response.selector;
+      await saveSettings();
+      setStatus(message('sequenceFromCurrentPageSavedStatus'));
+    } else {
+      await saveSettings();
+      setStatus(message('sequenceFromCurrentPagePartialStatus'));
+    }
+  } catch (error) {
+    setStatus(error.message || message('nextPageNotFoundError'));
+  }
+}
+
+async function pickNextPageSelector() {
+  try {
+    await saveSettings();
+    chrome.runtime.sendMessage({
+      action: 'pickNextPageSelectorFromPopup',
+      payload: { prompt: message('nextPageSelectorPickerPrompt') }
+    });
+    window.close();
+  } catch (error) {
+    setStatus(error.message || message('nextPageSelectorError'));
+  }
+}
+
+function bindSequentialEvents() {
+  elements.detectNextPageButton.addEventListener('click', fillSequenceFromCurrentPage);
+  elements.pickNextPageButton.addEventListener('click', pickNextPageSelector);
+}
+
+bindSequentialEvents();
 
 chrome.runtime.onMessage.addListener((statusMessage) => {
   if (statusMessage.action !== 'batchStatus') return;

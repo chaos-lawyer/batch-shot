@@ -10,6 +10,16 @@ export function statusError(statusKey, statusArgs = []) {
   return new StatusError(statusKey, statusArgs);
 }
 
+export class SequentialCaptureError extends Error {
+  constructor(statusKey, successful, failed, originalError) {
+    super(originalError?.message || statusKey);
+    this.statusKey = statusKey;
+    this.successful = successful;
+    this.failed = failed;
+    this.originalError = originalError;
+  }
+}
+
 export function statusFromError(error, fallbackKey = 'unknownCaptureError') {
   if (error?.statusKey) {
     return {

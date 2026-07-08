@@ -11,11 +11,20 @@ export function createUrlJobs(urls, options) {
 
 export function normalizeSearchJob(job, options, deps) {
   const { statusError } = deps;
-  const inputSelector = String(job.search?.inputSelector || '').trim();
+  const fields = Array.isArray(job.search?.fields) && job.search.fields.length
+    ? job.search.fields.map((field) => ({
+      selector: String(field.selector || '').trim(),
+      value: field.value
+    }))
+    : [{
+      selector: String(job.search?.inputSelector || '').trim(),
+      value: job.search?.keyword
+    }];
+  const inputSelector = fields[0]?.selector || '';
   const submitMode = job.search?.submitMode === 'button' ? 'button' : 'enter';
   const buttonSelector = String(job.search?.buttonSelector || '').trim();
 
-  if (!inputSelector) {
+  if (!fields.length || fields.some((field) => !field.selector)) {
     throw statusError('searchInputSelectorError');
   }
 
@@ -29,6 +38,7 @@ export function normalizeSearchJob(job, options, deps) {
     urlContext: job.urlContext || {},
     search: {
       keyword: String(job.search?.keyword ?? job.urlContext?.keyword ?? ''),
+      fields,
       inputSelector,
       submitMode,
       buttonSelector
@@ -92,6 +102,7 @@ export function createSearchJobs(options, deps) {
     urlContext: { keyword },
     search: {
       keyword,
+      fields: [{ selector: inputSelector, value: keyword }],
       inputSelector,
       submitMode,
       buttonSelector

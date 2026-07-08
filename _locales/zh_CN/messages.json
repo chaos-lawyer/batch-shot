@@ -29,8 +29,14 @@
   "historyTemplatesButton": {
     "message": "显示模板历史"
   },
-  "clearTemplateButton": {
-    "message": "清空 URL 模板"
+  "historySequentialButton": {
+    "message": "显示序列截图历史"
+  },
+  "clearTemplatesButton": {
+    "message": "清空模板"
+  },
+  "clearSequentialButton": {
+    "message": "清空下一页选择器"
   },
   "historyTemplateItemsButton": {
     "message": "显示文本列表历史"
@@ -39,10 +45,13 @@
     "message": "清空文本列表"
   },
   "historyUrlsEmpty": {
-    "message": "暂无 URL 历史。"
+    "message": "暂无 URL 列表历史。"
   },
   "historyTemplatesEmpty": {
-    "message": "暂无模板历史。"
+    "message": "暂无模板历史"
+  },
+  "historySequentialEmpty": {
+    "message": "暂无序列截图历史"
   },
   "historyTemplateItemsEmpty": {
     "message": "暂无文本列表历史。"
@@ -90,6 +99,17 @@
   },
   "urlTemplateItemsPlaceholder": {
     "message": "每行一个搜索词"
+  },
+  "urlTemplateItemsFieldHelp": {
+    "message": "当前 CSS 选择器模板要求文本列表每行输入 $COUNT$ 个字段。字段可用制表符或 $DELIMITER$ 分隔；查询截图时，如果最后一个选择器是提交按钮，可少输入 1 个字段。",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "delimiter": {
+        "content": "$2"
+      }
+    }
   },
   "templatePreviewLabel": {
     "message": "预览"
@@ -309,8 +329,11 @@
   "contextMenuAddSearchTemplate": {
     "message": "添加搜索框到 BatchShot 模板"
   },
-  "buttonPickerPrompt": {
-    "message": "点击查询按钮，或跳过以使用回车提交。"
+  "templateSelectorPickerPrompt": {
+    "message": "请依次点击需要填写的表单输入框。全部选完后，点击“查询/搜索”按钮来选取它并结束；如果不需按钮，可点击“跳过”改用回车键提交。"
+  },
+  "templateSelectorPickerCounter": {
+    "message": "已选 {count} 个输入框"
   },
   "buttonPickerSkip": {
     "message": "跳过"
@@ -502,10 +525,10 @@
     "message": "保存失败"
   },
   "startButton": {
-    "message": "开始"
+    "message": "开始截图"
   },
   "openFillButton": {
-    "message": "仅打开并填写"
+    "message": "仅打开链接"
   },
   "stopButton": {
     "message": "停止"
@@ -523,13 +546,13 @@
     "message": "正在截图..."
   },
   "openFillRunningStatus": {
-    "message": "正在打开并填写页面..."
+    "message": "正在打开页面并填写表单..."
   },
   "openFillNoSearchJobsError": {
-    "message": "请至少添加一个搜索模板，或使用搜索框模式。"
+    "message": "请至少添加一个链接或搜索模板。"
   },
   "openFillDoneStatus": {
-    "message": "已打开并填写 $SUCCESSFUL$ 个页面，失败 $FAILED$ 个。请手动完成验证后，再截取当前窗口全部页面。",
+    "message": "已准备 $SUCCESSFUL$ 个页面，失败 $FAILED$ 个。请手动完成后，再截取当前窗口全部页面。",
     "placeholders": {
       "successful": {
         "content": "$1"
@@ -605,6 +628,22 @@
     "message": "搜索模板第 $LINES$ 行需要包含 URL、连接符、输入框选择器，以及可选按钮选择器。",
     "placeholders": {
       "lines": {
+        "content": "$1"
+      }
+    }
+  },
+  "urlTemplateFieldCountError": {
+    "message": "模板/数据第 $PAIRS$ 组字段数量不匹配。查询截图时，数据字段数必须等于 CSS 选择器数，或比选择器数少 1 个且最后一个选择器作为提交按钮。",
+    "placeholders": {
+      "pairs": {
+        "content": "$1"
+      }
+    }
+  },
+  "urlTemplateFillFieldCountError": {
+    "message": "模板/数据第 $PAIRS$ 组字段数量不匹配。仅填写表单时，数据字段数必须等于所有 CSS 选择器数，或比选择器数少 1 个（最后一个选择器视为可选的查询按钮）。",
+    "placeholders": {
+      "pairs": {
         "content": "$1"
       }
     }
@@ -722,5 +761,99 @@
   },
   "githubLinkTitle": {
     "message": "在 GitHub 上查看"
+  },
+  "sequentialCaptureButton": {
+    "message": "序列"
+  },
+  "urlModeSequential": {
+    "message": "序列"
+  },
+  "sequentialNextSelectorLabel": {
+    "message": "下一页 CSS 选择器"
+  },
+  "sequentialNextSelectorPlaceholder": {
+    "message": "可点击右上角图标手动选取"
+  },
+  "sequentialCaptureCountLabel": {
+    "message": "截图次数"
+  },
+  "detectNextPageButton": {
+    "message": "自动填充"
+  },
+  "pickNextPageButton": {
+    "message": "手动选取"
+  },
+  "startSequentialCaptureButton": {
+    "message": "开始序列截图"
+  },
+  "contextMenuSetNextPage": {
+    "message": "设为序列截图下一页按钮"
+  },
+  "sequentialStartUrlLabel": {
+    "message": "网页 URL"
+  },
+  "sequentialStartUrlPlaceholder": {
+    "message": "输入起始 URL"
+  },
+  "fillSequenceFromCurrentPageButton": {
+    "message": "从当前页一键填充"
+  },
+  "sequenceFromCurrentPageSavedStatus": {
+    "message": "已从当前页填入 URL 和下一页按钮。"
+  },
+  "sequenceFromCurrentPagePartialStatus": {
+    "message": "已填入当前页 URL，未识别到下一页按钮。"
+  },
+  "historySequentialStartUrlsButton": {
+    "message": "显示 URL 历史"
+  },
+  "clearSequentialStartUrlButton": {
+    "message": "清空 URL"
+  },
+  "historySequentialStartUrlsEmpty": {
+    "message": "暂无序列截图 URL 历史"
+  },
+  "sequentialRunningStatus": {
+    "message": "正在序列截图..."
+  },
+  "sequentialDoneStatus": {
+    "message": "序列截图完成。成功 $SUCCESSFUL$ 张，失败 $FAILED$ 个。",
+    "placeholders": {
+      "successful": {
+        "content": "$1"
+      },
+      "failed": {
+        "content": "$2"
+      }
+    }
+  },
+  "sequentialDoneWithReportStatus": {
+    "message": "序列截图完成。成功 $SUCCESSFUL$ 张，失败 $FAILED$ 个。报告已下载。",
+    "placeholders": {
+      "successful": {
+        "content": "$1"
+      },
+      "failed": {
+        "content": "$2"
+      }
+    }
+  },
+  "nextPageSelectorSavedStatus": {
+    "message": "已设置序列截图下一页。"
+  },
+  "nextPageNotFoundError": {
+    "message": "未识别到下一页元素。"
+  },
+  "nextPageSelectorError": {
+    "message": "下一页选择器无效或元素不可点击。"
+  },
+  "nextPageClickError": {
+    "message": "点击下一页失败。"
+  },
+  "nextPageWaitTimeoutError": {
+    "message": "点击下一页后页面未发生变化。"
+  },
+  "nextPageSelectorPickerPrompt": {
+    "message": "点击页面上的下一页按钮。按 Esc 取消。"
   }
 }

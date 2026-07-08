@@ -29,8 +29,14 @@
   "historyTemplatesButton": {
     "message": "Show template history"
   },
-  "clearTemplateButton": {
+  "historySequentialButton": {
+    "message": "Show sequential history"
+  },
+  "clearTemplatesButton": {
     "message": "Clear URL template"
+  },
+  "clearSequentialButton": {
+    "message": "Clear next page selector"
   },
   "historyTemplateItemsButton": {
     "message": "Show text list history"
@@ -39,10 +45,13 @@
     "message": "Clear text list"
   },
   "historyUrlsEmpty": {
-    "message": "No URL history yet."
+    "message": "No URL list history yet."
   },
   "historyTemplatesEmpty": {
     "message": "No template history yet."
+  },
+  "historySequentialEmpty": {
+    "message": "No sequential history yet."
   },
   "historyTemplateItemsEmpty": {
     "message": "No text list history yet."
@@ -79,6 +88,9 @@
   "urlModeTemplate": {
     "message": "Template"
   },
+  "urlModeSequential": {
+    "message": "Sequential"
+  },
   "urlTemplateLabel": {
     "message": "URL template"
   },
@@ -90,6 +102,17 @@
   },
   "urlTemplateItemsPlaceholder": {
     "message": "One search term per line"
+  },
+  "urlTemplateItemsFieldHelp": {
+    "message": "This CSS selector template expects $COUNT$ field(s) per text-list line. Separate fields with tabs or $DELIMITER$. For capture, if the last selector is the submit button, enter one fewer field.",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      },
+      "delimiter": {
+        "content": "$2"
+      }
+    }
   },
   "templatePreviewLabel": {
     "message": "Preview"
@@ -309,8 +332,11 @@
   "contextMenuAddSearchTemplate": {
     "message": "Add search box to BatchShot template"
   },
-  "buttonPickerPrompt": {
-    "message": "Click the search button, or skip to submit with Enter."
+  "templateSelectorPickerPrompt": {
+    "message": "Click each form input field you want to fill in, one by one. When done, click the submit/search button to select it and finish. If no button is needed, click \"Skip\" to use the Enter key instead."
+  },
+  "templateSelectorPickerCounter": {
+    "message": "{count} field(s) selected"
   },
   "buttonPickerSkip": {
     "message": "Skip"
@@ -505,7 +531,7 @@
     "message": "Start"
   },
   "openFillButton": {
-    "message": "Open & fill"
+    "message": "Open links only"
   },
   "stopButton": {
     "message": "Stop"
@@ -523,13 +549,13 @@
     "message": "Capturing..."
   },
   "openFillRunningStatus": {
-    "message": "Opening and filling pages..."
+    "message": "Opening pages and filling forms..."
   },
   "openFillNoSearchJobsError": {
-    "message": "Add at least one search template, or use Search box mode."
+    "message": "Add at least one URL or search template."
   },
   "openFillDoneStatus": {
-    "message": "Opened and filled $SUCCESSFUL$ page(s), $FAILED$ failure(s). Complete verification manually, then capture current window tabs.",
+    "message": "Prepared $SUCCESSFUL$ page(s), $FAILED$ failure(s). Complete any manual steps, then capture current window tabs.",
     "placeholders": {
       "successful": {
         "content": "$1"
@@ -605,6 +631,22 @@
     "message": "Search template line(s) $LINES$ need URL, delimiter, input selector, and optional button selector.",
     "placeholders": {
       "lines": {
+        "content": "$1"
+      }
+    }
+  },
+  "urlTemplateFieldCountError": {
+    "message": "Template/item pair(s) $PAIRS$ have mismatched field counts. For capture, values must match selectors or be one fewer when the last selector is a submit button.",
+    "placeholders": {
+      "pairs": {
+        "content": "$1"
+      }
+    }
+  },
+  "urlTemplateFillFieldCountError": {
+    "message": "Template/item pair(s) $PAIRS$ have mismatched field counts. For open & fill, values must match all CSS selectors, or be one fewer (the last selector is treated as an optional submit button).",
+    "placeholders": {
+      "pairs": {
         "content": "$1"
       }
     }
@@ -722,5 +764,96 @@
   },
   "githubLinkTitle": {
     "message": "View on GitHub"
+  },
+  "sequentialCaptureButton": {
+    "message": "Sequential Capture"
+  },
+  "sequentialNextSelectorLabel": {
+    "message": "Next Page CSS Selector"
+  },
+  "sequentialNextSelectorPlaceholder": {
+    "message": "Click the icon on top-right to pick manually"
+  },
+  "sequentialCaptureCountLabel": {
+    "message": "Capture Count"
+  },
+  "detectNextPageButton": {
+    "message": "Auto Fill"
+  },
+  "pickNextPageButton": {
+    "message": "Manual Pick"
+  },
+  "startSequentialCaptureButton": {
+    "message": "Start Capture"
+  },
+  "contextMenuSetNextPage": {
+    "message": "Set as next page button for sequential capture"
+  },
+  "sequentialStartUrlLabel": {
+    "message": "Page URL"
+  },
+  "sequentialStartUrlPlaceholder": {
+    "message": "Enter starting URL"
+  },
+  "fillSequenceFromCurrentPageButton": {
+    "message": "Fill from current page"
+  },
+  "sequenceFromCurrentPageSavedStatus": {
+    "message": "Page URL and next button filled from current page."
+  },
+  "sequenceFromCurrentPagePartialStatus": {
+    "message": "Current page URL filled. No next page button was detected."
+  },
+  "historySequentialStartUrlsButton": {
+    "message": "Show URL history"
+  },
+  "clearSequentialStartUrlButton": {
+    "message": "Clear URL"
+  },
+  "historySequentialStartUrlsEmpty": {
+    "message": "No sequential URL history yet."
+  },
+  "sequentialRunningStatus": {
+    "message": "Sequential capturing..."
+  },
+  "sequentialDoneStatus": {
+    "message": "Sequential capture done. $SUCCESSFUL$ successful, $FAILED$ failed.",
+    "placeholders": {
+      "successful": {
+        "content": "$1"
+      },
+      "failed": {
+        "content": "$2"
+      }
+    }
+  },
+  "sequentialDoneWithReportStatus": {
+    "message": "Sequential capture done. $SUCCESSFUL$ successful, $FAILED$ failed. Report downloaded.",
+    "placeholders": {
+      "successful": {
+        "content": "$1"
+      },
+      "failed": {
+        "content": "$2"
+      }
+    }
+  },
+  "nextPageSelectorSavedStatus": {
+    "message": "Next page selector saved."
+  },
+  "nextPageNotFoundError": {
+    "message": "Next page element not found."
+  },
+  "nextPageSelectorError": {
+    "message": "Next page selector is invalid or element is not clickable."
+  },
+  "nextPageClickError": {
+    "message": "Failed to click the next page element."
+  },
+  "nextPageWaitTimeoutError": {
+    "message": "Page content did not change after clicking next page."
+  },
+  "nextPageSelectorPickerPrompt": {
+    "message": "Click the next page button on the page. Press Esc to cancel."
   }
 }

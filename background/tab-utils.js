@@ -2,15 +2,9 @@ import { statusError } from './status-error.js';
 
 const CAPTURABLE_PROTOCOLS = new Set(['http:', 'https:', 'file:']);
 
-export const CONTENT_SCRIPT_FILES = [
-  'content/capture-page.js',
-  'content/form-fill.js',
-  'content/search-submit.js',
-  'content/selector-builder.js',
-  'content/search-infer.js',
-  'content/button-picker.js',
-  'content/messages.js'
-];
+import { CONTENT_SCRIPT_FILES } from '../utils/content-script-files.js';
+
+export { CONTENT_SCRIPT_FILES };
 
 export function isCapturableTab(tab) {
   if (!tab?.id || !tab.url) {
@@ -22,6 +16,32 @@ export function isCapturableTab(tab) {
   } catch (_error) {
     return false;
   }
+}
+
+export async function getActiveCapturableTab(chromeApi = chrome) {
+  if (!chromeApi.windows?.getAll) {
+    const [tab] = await chromeApi.tabs.query({ active: true, currentWindow: true });
+    return isCapturableTab(tab) ? tab : null;
+  }
+
+  const windows = await chromeApi.windows.getAll({
+    populate: true,
+    windowTypes: ['normal']
+  });
+  const focusedWindow = windows.find((window) => window.focused);
+  const orderedWindows = [
+    focusedWindow,
+    ...windows.filter((window) => window.id !== focusedWindow?.id)
+  ].filter(Boolean);
+
+  for (const window of orderedWindows) {
+    const tab = (window.tabs || []).find((item) => item.active && isCapturableTab(item));
+    if (tab) {
+      return tab;
+    }
+  }
+
+  return null;
 }
 
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));

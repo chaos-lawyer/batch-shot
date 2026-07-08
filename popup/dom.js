@@ -15,12 +15,14 @@ export function getPopupElements() {
     urlCountBadge: $('urlCountBadge'),
     listModeButton: $('listModeButton'),
     templateModeButton: $('templateModeButton'),
+    sequentialModeButton: $('sequentialModeButton'),
     urlTemplateLabel: $('urlTemplateLabel'),
     urlTemplateCountBadge: $('urlTemplateCountBadge'),
     urlTemplate: $('urlTemplate'),
     urlTemplateHistoryButton: $('urlTemplateHistoryButton'),
     urlTemplateClearButton: $('urlTemplateClearButton'),
     urlTemplateHistoryMenu: $('urlTemplateHistoryMenu'),
+    urlTemplateItemsLabel: $('urlTemplateItemsLabel'),
     urlTemplateItems: $('urlTemplateItems'),
     urlTemplateItemsCountBadge: $('urlTemplateItemsCountBadge'),
     urlTemplateItemsHistoryButton: $('urlTemplateItemsHistoryButton'),
@@ -65,6 +67,17 @@ export function getPopupElements() {
     startButton: $('startButton'),
     pauseButton: $('pauseButton'),
     stopButton: $('stopButton'),
-    statusText: $('statusText')
+    statusText: $('statusText'),
+    urlListLabelWrapper: $('urlListLabelWrapper'),
+    urlSequentialPane: $('urlSequentialPane'),
+    sequentialStartUrl: $('sequentialStartUrl'),
+    sequentialStartUrlHistoryButton: $('sequentialStartUrlHistoryButton'),
+    sequentialStartUrlClearButton: $('sequentialStartUrlClearButton'),
+    sequentialStartUrlHistoryMenu: $('sequentialStartUrlHistoryMenu'),
+    sequentialClearButton: $('sequentialClearButton'),
+    sequentialNextSelector: $('sequentialNextSelector'),
+    sequentialCaptureCount: $('sequentialCaptureCount'),
+    detectNextPageButton: $('detectNextPageButton'),
+    pickNextPageButton: $('pickNextPageButton')
   };
 }

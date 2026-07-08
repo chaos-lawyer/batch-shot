@@ -2,7 +2,7 @@ import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { CONTENT_SCRIPT_FILES } from '../background/tab-utils.js';
+import { CONTENT_SCRIPT_FILES } from '../utils/content-script-files.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const manifestPath = path.join(__dirname, '../manifest.json');

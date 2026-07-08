@@ -17,7 +17,7 @@ export function createPopupUiState({ elements, hasSelectedLinks, getUrlInputMode
 
   function renderActionVisibility(running) {
     const mode = getUrlInputMode ? getUrlInputMode() : 'list';
-    elements.openFillButton.hidden = running || mode !== 'template';
+    elements.openFillButton.hidden = running || !['list', 'template'].includes(mode);
   }
 
   function renderRunningControls({ running, paused }) {
@@ -40,6 +40,14 @@ export function createPopupUiState({ elements, hasSelectedLinks, getUrlInputMode
     elements.startButton.disabled = running;
     elements.pauseButton.disabled = !running;
     elements.stopButton.disabled = !running;
+    
+    if (elements.sequentialStartUrlHistoryButton) elements.sequentialStartUrlHistoryButton.disabled = running;
+    if (elements.sequentialStartUrlClearButton) elements.sequentialStartUrlClearButton.disabled = running;
+    if (elements.sequentialClearButton) elements.sequentialClearButton.disabled = running;
+    elements.sequentialNextSelector.disabled = running;
+    elements.sequentialCaptureCount.disabled = running;
+    elements.detectNextPageButton.disabled = running;
+    elements.pickNextPageButton.disabled = running;
     const pauseLabel = message(paused ? 'resumeButton' : 'pauseButton');
     elements.pauseButton.title = pauseLabel;
     elements.pauseButton.setAttribute('aria-label', pauseLabel);

@@ -3,6 +3,8 @@ export function setupMessageRouter(deps) {
     chrome,
     getBatchState,
     loadSettings,
+    saveSettings,
+    openActionPopupFromMenu,
     syncActionUi,
     scheduledTasks,
     batchStatus,
@@ -10,6 +12,7 @@ export function setupMessageRouter(deps) {
     runPrepareForms,
     captureCurrentTab,
     captureCurrentWindowTabs,
+    captureCurrentTabSequence,
     setStatus,
     statusError,
     statusFromError,
@@ -18,7 +21,9 @@ export function setupMessageRouter(deps) {
     waitWhilePaused,
     waitForTabComplete,
     sendTabMessage,
+    getActiveCapturableTab,
     createReportRow,
+    createUrlJobs,
     createExplicitJobs,
     createSearchJobs
   } = deps;
@@ -112,6 +117,7 @@ export function setupMessageRouter(deps) {
         waitForTabComplete,
         sendTabMessage,
         createReportRow,
+        createUrlJobs,
         createExplicitJobs,
         createSearchJobs
       });
@@ -139,6 +145,71 @@ export function setupMessageRouter(deps) {
           sendResponse(response);
         });
       return true;
+    }
+
+    if (message.action === 'captureCurrentTabSequence') {
+      captureCurrentTabSequence(message.payload)
+        .then((count) => sendResponse({ ok: true, count }))
+        .catch((error) => {
+          const response = errorResponse(error);
+          if (error && error.successful !== undefined) {
+            response.successful = error.successful;
+            response.failed = error.failed;
+          }
+          setStatus(response, false);
+          sendResponse(response);
+        });
+      return true;
+    }
+
+    if (message.action === 'detectNextPage') {
+      getActiveCapturableTab(chrome)
+        .then((tab) => {
+          if (!tab?.id) {
+            sendResponse({ ok: false, statusKey: 'noActivePageError' });
+            return;
+          }
+          return sendTabMessage(tab.id, { action: 'detectNextPage' }, deps)
+            .then((res) => sendResponse(res));
+        })
+        .catch((error) => sendResponse(errorResponse(error, 'nextPageNotFoundError')));
+      return true;
+    }
+
+    if (message.action === 'pickNextPageSelector') {
+      getActiveCapturableTab(chrome)
+        .then((tab) => {
+          if (!tab?.id) {
+            sendResponse({ ok: false, statusKey: 'noActivePageError' });
+            return;
+          }
+          return sendTabMessage(tab.id, { action: 'pickNextPageSelector', payload: message.payload }, deps)
+            .then((res) => sendResponse(res));
+        })
+        .catch((error) => sendResponse(errorResponse(error, 'nextPageSelectorError')));
+      return true;
+    }
+
+    if (message.action === 'pickNextPageSelectorFromPopup') {
+      getActiveCapturableTab(chrome)
+        .then(async (tab) => {
+          if (!tab?.id) {
+            return;
+          }
+          const res = await sendTabMessage(tab.id, { action: 'pickNextPageSelector', payload: message.payload }, deps);
+          if (res?.cancelled) {
+            await openActionPopupFromMenu();
+            return;
+          }
+          if (res?.ok && res.selector) {
+            await saveSettings({
+              sequentialNextSelector: res.selector
+            });
+            await openActionPopupFromMenu();
+          }
+        })
+        .catch(() => {});
+      return false;
     }
 
     return false;

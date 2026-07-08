@@ -31,8 +31,34 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true;
   }
 
-  if (message.action === 'pickSearchButtonSelector') {
-    pickSearchButtonSelector(message.payload || {}).then((response) => sendResponse(response));
+
+  if (message.action === 'pickSearchTemplateSelectors') {
+    pickSearchTemplateSelectors(message.payload || {}).then((response) => sendResponse(response));
+    return true;
+  }
+
+  if (message.action === 'getContextElementSelector') {
+    sendResponse(getContextElementSelector());
+    return true;
+  }
+
+  if (message.action === 'detectNextPage') {
+    sendResponse(detectNextPage());
+    return true;
+  }
+
+  if (message.action === 'clickNextPage') {
+    sendResponse(clickNextPage(message.payload || {}));
+    return true;
+  }
+
+  if (message.action === 'getPageSignature') {
+    sendResponse(getPageSignature());
+    return true;
+  }
+
+  if (message.action === 'pickNextPageSelector') {
+    pickNextPageSelector(message.payload || {}).then((response) => sendResponse(response));
     return true;
   }
 

@@ -21,6 +21,12 @@ export const HISTORY_CONFIG = {
     button: 'urlTemplateItemsHistoryButton',
     menu: 'urlTemplateItemsHistoryMenu',
     emptyKey: 'historyTemplateItemsEmpty'
+  },
+  sequentialStartUrls: {
+    input: 'sequentialStartUrl',
+    button: 'sequentialStartUrlHistoryButton',
+    menu: 'sequentialStartUrlHistoryMenu',
+    emptyKey: 'historySequentialStartUrlsEmpty'
   }
 };
 
@@ -34,7 +40,8 @@ export function createInputHistory({
   let inputHistory = {
     urls: [],
     templates: [],
-    templateItems: []
+    templateItems: [],
+    sequentialStartUrls: []
   };
   let openHistoryType = '';
 
@@ -45,13 +52,16 @@ export function createInputHistory({
         value: String(entry.value),
         name: String(entry.name || ''),
         updatedAt: entry.updatedAt || '',
-        pinned: !!entry.pinned
+        pinned: !!entry.pinned,
+        ...(entry.nextSelector !== undefined ? { nextSelector: String(entry.nextSelector) } : {}),
+        ...(entry.count !== undefined ? { count: Number(entry.count) } : {})
       }));
 
     return {
       urls: Array.isArray(history?.urls) ? normalizeEntries(history.urls) : [],
       templates: Array.isArray(history?.templates) ? normalizeEntries(history.templates) : [],
-      templateItems: Array.isArray(history?.templateItems) ? normalizeEntries(history.templateItems) : []
+      templateItems: Array.isArray(history?.templateItems) ? normalizeEntries(history.templateItems) : [],
+      sequentialStartUrls: Array.isArray(history?.sequentialStartUrls) ? normalizeEntries(history.sequentialStartUrls) : (Array.isArray(history?.sequential) ? normalizeEntries(history.sequential) : [])
     };
   }
 
@@ -64,18 +74,25 @@ export function createInputHistory({
     await chrome.storage.local.set({ [HISTORY_STORAGE_KEY]: inputHistory });
   }
 
-  function summarizeHistoryValue(value) {
+  function summarizeHistoryValue(type, entry) {
+    const value = entry.value;
     const lines = value
       .split(/\r?\n/)
       .map((line) => line.trim())
       .filter(Boolean);
-    return {
-      title: lines[0] || value.trim(),
-      meta: lines.length > 1 ? message('historyLineCount', String(lines.length)) : ''
-    };
+    
+    let title = lines[0] || value.trim();
+    let meta = lines.length > 1 ? message('historyLineCount', String(lines.length)) : '';
+
+    if (type === 'sequentialStartUrls' && entry.nextSelector) {
+      const delimiter = urlInputAdapter.getDelimiter ? urlInputAdapter.getDelimiter() : ' :: ';
+      title = `${entry.value}${delimiter}${entry.nextSelector}`;
+    }
+
+    return { title, meta };
   }
 
-  async function addHistoryEntry(type, value) {
+  async function addHistoryEntry(type, value, extraFields = {}) {
     const trimmed = value.trim();
     if (!trimmed || !HISTORY_CONFIG[type]) {
       return;
@@ -83,7 +100,13 @@ export function createInputHistory({
 
     const existing = inputHistory[type].find((entry) => entry.value === trimmed);
     const withoutDuplicate = inputHistory[type].filter((entry) => entry.value !== trimmed);
-    const newEntry = { value: trimmed, name: existing?.name || '', updatedAt: new Date().toISOString(), pinned: !!existing?.pinned };
+    const newEntry = {
+      value: trimmed,
+      name: existing?.name || '',
+      updatedAt: new Date().toISOString(),
+      pinned: !!existing?.pinned,
+      ...extraFields
+    };
     
     const newList = [newEntry, ...withoutDuplicate];
     const pinned = newList.filter(e => e.pinned);
@@ -98,6 +121,14 @@ export function createInputHistory({
     if (urlInputAdapter.getMode() === 'template') {
       await addHistoryEntry('templates', elements.urlTemplate.value);
       await addHistoryEntry('templateItems', elements.urlTemplateItems.value);
+      return;
+    }
+
+    if (urlInputAdapter.getMode() === 'sequential') {
+      await addHistoryEntry('sequentialStartUrls', elements.sequentialStartUrl.value, {
+        nextSelector: elements.sequentialNextSelector.value.trim(),
+        count: Number(elements.sequentialCaptureCount.value) || 3
+      });
       return;
     }
 
@@ -150,7 +181,7 @@ export function createInputHistory({
   }
 
   function createHistoryRow(type, entry, index) {
-    const summary = summarizeHistoryValue(entry.value);
+    const summary = summarizeHistoryValue(type, entry);
     const isPinned = entry.pinned;
     
     const props = { className: `history-row${isPinned ? ' is-draggable' : ''}` };
@@ -242,12 +273,21 @@ export function createInputHistory({
       return;
     }
 
-    elements[config.input].value = entry.value;
-    elements[config.input].dispatchEvent(new Event('input', { bubbles: true }));
-    if (type === 'urls') {
-      urlInputAdapter.updateUrlCount();
+    if (type === 'sequentialStartUrls') {
+      elements.sequentialStartUrl.value = entry.value;
+      elements.sequentialStartUrl.dispatchEvent(new Event('input', { bubbles: true }));
+      elements.sequentialNextSelector.value = entry.nextSelector || '';
+      elements.sequentialNextSelector.dispatchEvent(new Event('input', { bubbles: true }));
+      elements.sequentialCaptureCount.value = entry.count || 3;
+      elements.sequentialCaptureCount.dispatchEvent(new Event('input', { bubbles: true }));
     } else {
-      urlInputAdapter.updateTemplatePreview();
+      elements[config.input].value = entry.value;
+      elements[config.input].dispatchEvent(new Event('input', { bubbles: true }));
+      if (type === 'urls') {
+        urlInputAdapter.updateUrlCount();
+      } else {
+        urlInputAdapter.updateTemplatePreview();
+      }
     }
 
     await saveSettings();
@@ -270,7 +310,7 @@ export function createInputHistory({
       return;
     }
 
-    const summary = summarizeHistoryValue(entry.value);
+    const summary = summarizeHistoryValue(type, entry);
     const nextName = window.prompt(message('historyRenamePrompt'), entry.name || summary.title);
     if (nextName === null) {
       return;
@@ -309,8 +349,13 @@ export function createInputHistory({
   }
 
   async function clearInputValue(type) {
-    const config = HISTORY_CONFIG[type];
-    const input = config ? elements[config.input] : null;
+    let input;
+    if (type === 'sequential') {
+      input = elements.sequentialNextSelector;
+    } else {
+      const config = HISTORY_CONFIG[type];
+      input = config ? elements[config.input] : null;
+    }
     if (!input?.value.trim()) {
       return;
     }
@@ -319,7 +364,7 @@ export function createInputHistory({
     input.dispatchEvent(new Event('input', { bubbles: true }));
     if (type === 'urls') {
       urlInputAdapter.updateUrlCount();
-    } else {
+    } else if (type === 'templates' || type === 'templateItems') {
       urlInputAdapter.updateTemplatePreview();
     }
 
@@ -428,6 +473,12 @@ export function createInputHistory({
     elements.urlListClearButton.addEventListener('click', () => clearInputValue('urls'));
     elements.urlTemplateClearButton.addEventListener('click', () => clearInputValue('templates'));
     elements.urlTemplateItemsClearButton.addEventListener('click', () => clearInputValue('templateItems'));
+    if (elements.sequentialStartUrlClearButton) {
+      elements.sequentialStartUrlClearButton.addEventListener('click', () => clearInputValue('sequentialStartUrls'));
+    }
+    if (elements.sequentialClearButton) {
+      elements.sequentialClearButton.addEventListener('click', () => clearInputValue('sequential'));
+    }
   }
 
   return {

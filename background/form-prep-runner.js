@@ -1,13 +1,13 @@
 export function createPrepareFormJobs(options, deps) {
-  const { createExplicitJobs, createSearchJobs } = deps;
+  const { createExplicitJobs, createSearchJobs, createUrlJobs } = deps;
   const jobs = Array.isArray(options.jobs) && options.jobs.length
     ? createExplicitJobs(options, deps)
     : options.urlInputMode === 'searchBox'
       ? createSearchJobs(options, deps)
-      : [];
+      : createUrlJobs(options.urls || [], options);
 
   return jobs
-    .filter((job) => job.kind === 'search')
+    .filter((job) => job.kind === 'url' || job.kind === 'search')
     .map((job) => ({
       ...job,
       closeAfterCapture: false,
@@ -39,13 +39,15 @@ export async function prepareSingleFormJob(job, index, total, deps) {
     title = latestTab.title || '';
     batchStatus.updateProgress(index, total, url);
 
-    const response = await sendTabMessage(tab.id, {
-      action: 'fillSearchForm',
-      payload: job.search
-    });
+    if (job.kind === 'search') {
+      const response = await sendTabMessage(tab.id, {
+        action: 'fillSearchForm',
+        payload: job.search
+      });
 
-    if (!response?.ok) {
-      throw statusError(response?.statusKey || 'searchSubmitError');
+      if (!response?.ok) {
+        throw statusError(response?.statusKey || 'searchSubmitError');
+      }
     }
 
     return createReportRow({ index, url, title, status: 'ok' });

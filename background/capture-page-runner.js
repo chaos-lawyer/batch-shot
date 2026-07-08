@@ -6,9 +6,9 @@ import { createReportRow, runCaptureJobs } from './capture-flow.js';
 import { createUrlJobs, createExplicitJobs, createSearchJobs, createTabJobs } from './job-factory.js';
 import { captureTabToDownload, downloadReport } from './report-download.js';
 import { runCaptureJobList } from './search-runner.js';
-import { isCapturableTab, activateTab, sendTabMessage, waitForTabComplete, waitForTabReadyForCapture } from './tab-utils.js';
+import { getActiveCapturableTab, isCapturableTab, activateTab, sendTabMessage, waitForTabComplete, waitForTabReadyForCapture } from './tab-utils.js';
 import { ensureOffscreenDocument, closeOffscreenDocument } from './offscreen-manager.js';
-import { statusError, statusFromError } from './status-error.js';
+import { statusError, statusFromError, SequentialCaptureError } from './status-error.js';
 
 let lastCaptureAt = 0;
 const MIN_CAPTURE_INTERVAL_MS = 700;
@@ -241,7 +241,7 @@ export async function captureCurrentTab(options, deps) {
     throw statusError('batchAlreadyRunningError');
   }
 
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  const tab = await getActiveCapturableTab(chrome);
   if (!tab?.id || !tab.url) {
     throw statusError('noActivePageError');
   }
@@ -338,6 +338,145 @@ export async function runBatch(options, deps) {
     batchStatus.finish(rows, options.reportEnabled);
   } catch (error) {
     setStatus(statusFromError(error), false, false);
+  } finally {
+    await closeOffscreenDocument().catch(() => {});
+    batchStatus.reset();
+  }
+}
+
+async function waitForPageSignatureChange(tabId, oldSignature, options, deps) {
+  const maxWait = deps.maxWait !== undefined ? deps.maxWait : 15000;
+  const pollInterval = deps.pollInterval !== undefined ? deps.pollInterval : 250;
+  let elapsed = 0;
+
+  while (elapsed < maxWait) {
+    if (deps.getBatchState().stopping) {
+      throw deps.statusError('captureStoppedError');
+    }
+    await deps.waitWhilePaused();
+
+    const response = await deps.sendTabMessage(tabId, { action: 'getPageSignature' }).catch(() => null);
+    if (response && response.signature !== oldSignature) {
+      return;
+    }
+
+    await new Promise((resolve) => setTimeout(resolve, pollInterval));
+    elapsed += pollInterval;
+  }
+
+  throw deps.statusError('nextPageWaitTimeoutError');
+}
+
+async function clickNextPageAndWait(tabId, selector, options, deps) {
+  const before = await deps.sendTabMessage(tabId, { action: 'getPageSignature' });
+  if (!before) {
+    throw deps.statusError('nextPageSelectorError');
+  }
+
+  const clicked = await deps.sendTabMessage(tabId, {
+    action: 'clickNextPage',
+    payload: { selector }
+  });
+
+  if (!clicked?.ok) {
+    throw deps.statusError(clicked?.statusKey || 'nextPageClickError');
+  }
+
+  await waitForPageSignatureChange(tabId, before.signature, options, deps);
+  await deps.sleepWithControls(Math.max(0, Number(options.delay) || 0) * 1000);
+}
+
+export async function captureCurrentTabSequence(options, deps) {
+  const { batchStatus } = deps;
+  const setStatus = (...args) => batchStatus.setStatus(...args);
+  const getBatchState = () => batchStatus.getState();
+
+  if (getBatchState().running) {
+    throw statusError('batchAlreadyRunningError');
+  }
+
+  const tab = await getActiveCapturableTab(chrome);
+  if (!tab?.id || !tab.url) {
+    throw statusError('noActivePageError');
+  }
+
+  const count = clampInteger(options.sequentialCaptureCount, 3, 1, 200);
+  let nextSelector = String(options.sequentialNextSelector || '').trim();
+  const startUrl = String(options.sequentialStartUrl || '').trim();
+
+  batchStatus.start('sequentialRunningStatus');
+  const captureDeps = getCaptureDeps(batchStatus);
+
+  const rows = [];
+  try {
+    if (startUrl && startUrl !== tab.url) {
+      await chrome.tabs.update(tab.id, { url: startUrl });
+      await waitForTabComplete(tab.id);
+      await sleepWithControls(1000, getBatchState);
+      const updatedTab = await chrome.tabs.get(tab.id);
+      tab.url = updatedTab.url || startUrl;
+    }
+
+    await ensureOffscreenDocument();
+
+    if (!nextSelector && count > 1) {
+      const detected = await deps.sendTabMessage(tab.id, { action: 'detectNextPage' }).catch(() => null);
+      if (detected?.ok) {
+        nextSelector = detected.selector;
+      }
+    }
+
+    for (let index = 0; index < count; index += 1) {
+      if (getBatchState().stopping) {
+        throw statusError('captureStoppedError');
+      }
+
+      await waitWhilePaused(getBatchState);
+      batchStatus.updateProgress(index, count, tab.url);
+
+      const result = await captureTabToDownload(tab, index, count, options, {
+        sequenceIndex: index + 1
+      }, captureDeps);
+
+      rows.push(createReportRow({
+        index,
+        url: result.url,
+        title: result.title,
+        filename: result.filename,
+        status: 'ok'
+      }));
+
+      if (index === count - 1) {
+        break;
+      }
+
+      if (!nextSelector) {
+        throw statusError('nextPageNotFoundError');
+      }
+
+      await clickNextPageAndWait(tab.id, nextSelector, options, captureDeps);
+    }
+
+    if (options.reportEnabled) {
+      await downloadReport(rows, options, getReportDeps());
+    }
+
+    const successful = rows.filter((row) => row.status === 'ok').length;
+    const failed = rows.length - successful;
+    batchStatus.setStatus({
+      statusKey: options.reportEnabled ? 'sequentialDoneWithReportStatus' : 'sequentialDoneStatus',
+      statusArgs: [String(successful), String(failed)]
+    }, false, false);
+
+    return rows.length;
+  } catch (error) {
+    if (rows.length > 0 && options.reportEnabled) {
+      await downloadReport(rows, options, getReportDeps()).catch(() => {});
+    }
+    const successful = rows.filter((row) => row.status === 'ok').length;
+    const failed = count - successful;
+    const statusKey = error.statusKey || 'unknownCaptureError';
+    throw new SequentialCaptureError(statusKey, successful, failed, error);
   } finally {
     await closeOffscreenDocument().catch(() => {});
     batchStatus.reset();

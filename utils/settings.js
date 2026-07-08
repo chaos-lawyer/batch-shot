@@ -30,6 +30,10 @@ export const DEFAULT_SETTINGS = {
   reportFields: DEFAULT_REPORT_FIELDS,
   closeBatchTabsAfterCapture: true,
   historyLimit: 10,
+  sequentialStartUrl: '',
+  sequentialNextSelector: '',
+  sequentialCaptureCount: 3,
+  sequentialPanelExpanded: false,
   filenamePattern: '{index}-{host}',
   filenameDateTimeFormat: 'YYYY-MM-DD_HHmmss',
   metadataEnabled: false,
@@ -62,7 +66,7 @@ function migrateSettings(settings) {
   const iconClickAction = ['popup', 'captureCurrentPage', 'captureAllPages'].includes(settings.iconClickAction)
     ? settings.iconClickAction
     : DEFAULT_SETTINGS.iconClickAction;
-  const urlInputMode = ['list', 'template'].includes(settings.urlInputMode)
+  const urlInputMode = ['list', 'template', 'sequential'].includes(settings.urlInputMode)
     ? settings.urlInputMode
     : DEFAULT_SETTINGS.urlInputMode;
   const captureMode = ['fullPage', 'viewport'].includes(settings.captureMode)
@@ -75,6 +79,17 @@ function migrateSettings(settings) {
     ? settings.urlTemplateDelimiter
     : DEFAULT_SETTINGS.urlTemplateDelimiter;
 
+  const sequentialCaptureCount = Number(settings.sequentialCaptureCount);
+  const sequentialStartUrl = typeof settings.sequentialStartUrl === 'string'
+    ? settings.sequentialStartUrl.trim()
+    : DEFAULT_SETTINGS.sequentialStartUrl;
+  const sequentialNextSelector = typeof settings.sequentialNextSelector === 'string'
+    ? settings.sequentialNextSelector.trim()
+    : DEFAULT_SETTINGS.sequentialNextSelector;
+  const sequentialPanelExpanded = typeof settings.sequentialPanelExpanded === 'boolean'
+    ? settings.sequentialPanelExpanded
+    : DEFAULT_SETTINGS.sequentialPanelExpanded;
+
   return {
     ...settings,
     appLanguage,
@@ -86,6 +101,12 @@ function migrateSettings(settings) {
     urlTemplateDelimiter,
     reportFormat,
     reportFields: normalizeReportFields(settings.reportFields),
+    sequentialStartUrl,
+    sequentialNextSelector,
+    sequentialPanelExpanded,
+    sequentialCaptureCount: Number.isFinite(sequentialCaptureCount)
+      ? clampInteger(sequentialCaptureCount, DEFAULT_SETTINGS.sequentialCaptureCount, 1, 200)
+      : DEFAULT_SETTINGS.sequentialCaptureCount,
     screenshotQuality: Number.isFinite(screenshotQuality)
       ? clampInteger(screenshotQuality, DEFAULT_SETTINGS.screenshotQuality, 1, 100)
       : DEFAULT_SETTINGS.screenshotQuality,

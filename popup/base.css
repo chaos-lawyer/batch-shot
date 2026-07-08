@@ -100,7 +100,7 @@
 
 body {
   width: 400px;
-  height: 540px;
+  height: 550px;
   margin: 0;
   overflow: hidden;
   color: var(--text-main);
@@ -181,8 +181,8 @@ button.neutral:hover:not(:disabled) {
 }
 
 button.mode-tab {
-  width: 72px;
-  min-width: 72px;
+  width: 88px;
+  min-width: 88px;
   height: 28px;
   padding: 0 10px;
   border: 0;

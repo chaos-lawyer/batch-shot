@@ -44,6 +44,8 @@ const mockCreateSearchJobs = (options, deps) => {
   return [];
 };
 
+const mockCreateUrlJobs = (urls) => urls.map((url) => ({ kind: 'url', url }));
+
 const mockCreateReportRow = (row) => row;
 
 async function runTests() {
@@ -51,6 +53,7 @@ async function runTests() {
   const depsForJobs = {
     createExplicitJobs: mockCreateExplicitJobs,
     createSearchJobs: mockCreateSearchJobs,
+    createUrlJobs: mockCreateUrlJobs,
     statusError: mockStatusError
   };
 
@@ -62,12 +65,17 @@ async function runTests() {
   };
 
   const filteredJobs = createPrepareFormJobs(jobsOptions, depsForJobs);
-  assert.strictEqual(filteredJobs.length, 1, 'Should filter out non-search jobs');
-  assert.strictEqual(filteredJobs[0].url, 'https://example.com/2', 'Should keep search job');
+  assert.strictEqual(filteredJobs.length, 2, 'Should keep URL and search jobs');
+  assert.strictEqual(filteredJobs[0].url, 'https://example.com/1', 'Should keep URL job');
+  assert.strictEqual(filteredJobs[1].url, 'https://example.com/2', 'Should keep search job');
 
-  console.log('Testing runPrepareForms with no search jobs...');
+  const listJobs = createPrepareFormJobs({ urlInputMode: 'list', urls: ['https://example.com/list'] }, depsForJobs);
+  assert.strictEqual(listJobs.length, 1, 'Should create URL jobs for list mode');
+  assert.strictEqual(listJobs[0].kind, 'url', 'List mode job should be URL job');
+
+  console.log('Testing runPrepareForms with no preparable jobs...');
   statusLog = [];
-  await runPrepareForms({ jobs: [{ kind: 'url' }] }, {
+  await runPrepareForms({ urlInputMode: 'list', urls: [] }, {
     ...depsForJobs,
     batchStatus: mockBatchStatus,
     setStatus: mockSetStatus,
@@ -76,11 +84,12 @@ async function runTests() {
     runCaptureJobs: mockRunCaptureJobs
   });
 
-  assert.strictEqual(statusLog.find(l => l.type === 'setStatus').statusInfo.statusKey, 'openFillNoSearchJobsError', 'Should error when no search jobs');
+  assert.strictEqual(statusLog.find(l => l.type === 'setStatus').statusInfo.statusKey, 'openFillNoSearchJobsError', 'Should error when no preparable jobs');
 
-  console.log('Testing runPrepareForms with successful and failed fill...');
+  console.log('Testing runPrepareForms with URL open, successful fill, and failed fill...');
   statusLog = [];
   rowsLog = [];
+  const sentMessages = [];
 
   const depsForRun = {
     ...depsForJobs,
@@ -96,6 +105,7 @@ async function runTests() {
     statusFromError: mockStatusFromError,
     waitForTabComplete: async () => {},
     sendTabMessage: async (tabId, message) => {
+      sentMessages.push(message);
       if (message.payload === 'fail') {
         return { ok: false, statusKey: 'searchSubmitError' };
       }
@@ -107,19 +117,22 @@ async function runTests() {
 
   await runPrepareForms({
     jobs: [
+      { kind: 'url', url: 'https://example.com/open' },
       { kind: 'search', url: 'https://example.com/success', search: 'success' },
       { kind: 'search', url: 'https://example.com/fail', search: 'fail' }
     ]
   }, depsForRun);
 
-  assert.strictEqual(rowsLog.length, 2, 'Should process two rows');
-  assert.strictEqual(rowsLog[0].status, 'ok', 'First job should be ok');
-  assert.strictEqual(rowsLog[1].status, 'error', 'Second job should be error');
-  assert.strictEqual(rowsLog[1].error, 'searchSubmitError', 'Second job error should match');
+  assert.strictEqual(rowsLog.length, 3, 'Should process three rows');
+  assert.strictEqual(rowsLog[0].status, 'ok', 'URL job should be ok');
+  assert.strictEqual(rowsLog[1].status, 'ok', 'Successful fill job should be ok');
+  assert.strictEqual(rowsLog[2].status, 'error', 'Failed fill job should be error');
+  assert.strictEqual(rowsLog[2].error, 'searchSubmitError', 'Failed fill job error should match');
+  assert.strictEqual(sentMessages.length, 2, 'Should only send fill messages for search jobs');
 
   const doneStatus = statusLog.find(l => l.type === 'setStatus' && l.statusInfo.statusKey === 'openFillDoneStatus');
   assert.ok(doneStatus, 'Should set done status');
-  assert.deepStrictEqual(doneStatus.statusInfo.statusArgs, ['1', '1'], 'Should have 1 success, 1 failure');
+  assert.deepStrictEqual(doneStatus.statusInfo.statusArgs, ['2', '1'], 'Should have 2 successes, 1 failure');
 
   console.log('All form prep tests passed!');
 }

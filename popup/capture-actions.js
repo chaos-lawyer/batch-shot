@@ -22,7 +22,48 @@ export function createCaptureActions({
     return response?.error || message(fallbackKey);
   }
 
+  async function startSequentialCapture() {
+    const popupSettings = getSettings();
+    const selector = elements.sequentialNextSelector.value.trim();
+    const count = Number(elements.sequentialCaptureCount.value) || 3;
+
+    const settings = await persistSettings({
+      ...popupSettings,
+      sequentialNextSelector: selector,
+      sequentialCaptureCount: count
+    });
+    await rememberCurrentInputs();
+
+    setRunning({ running: true, statusKey: 'sequentialRunningStatus' });
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: 'captureCurrentTabSequence',
+        payload: {
+          ...settings,
+          sequentialNextSelector: selector,
+          sequentialCaptureCount: count
+        }
+      });
+
+      if (!response?.ok) {
+        setStatus(responseStatus(response, 'unknownCaptureError'));
+        setRunning({ running: false });
+        return;
+      }
+
+      setRunning({ running: false });
+    } catch (error) {
+      setStatus(error.message || message('unknownCaptureError'));
+      setRunning({ running: false });
+    }
+  }
+
   async function startCapture() {
+    if (getUrlInputMode() === 'sequential') {
+      await startSequentialCapture();
+      return;
+    }
+
     const popupSettings = getSettings();
     const batchResult = buildBatchOptions(popupSettings, getUrlInputMode(), parseUrls, buildTemplateUrls);
 
@@ -47,7 +88,13 @@ export function createCaptureActions({
 
   async function openAndFillForms() {
     const popupSettings = getSettings();
-    const batchResult = buildBatchOptions(popupSettings, getUrlInputMode(), parseUrls, buildTemplateUrls);
+    const batchResult = buildBatchOptions(
+      popupSettings,
+      getUrlInputMode(),
+      parseUrls,
+      buildTemplateUrls,
+      { fillOnly: true }
+    );
 
     if (!batchResult.options) {
       setStatus(message(batchResult.errorKey, batchResult.errorArgs));

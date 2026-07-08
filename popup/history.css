@@ -23,10 +23,15 @@ button.history-button {
   box-shadow: none;
 }
 
-button.history-button:hover:not(:disabled),
-button.history-button[aria-expanded="true"] {
+button.history-button:hover:not(:disabled):not(.active):not([aria-expanded="true"]) {
   color: var(--text-main);
   background: var(--bg-panel);
+}
+
+button.history-button.active,
+button.history-button[aria-expanded="true"] {
+  color: var(--tab-active-text);
+  background: var(--tab-active-bg);
 }
 
 .history-menu {
