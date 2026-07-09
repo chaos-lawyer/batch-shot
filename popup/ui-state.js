@@ -2,6 +2,8 @@ import { message } from '../utils/i18n.js';
 import { icon } from './dom-helpers.js';
 
 export function createPopupUiState({ elements, hasSelectedLinks, getUrlInputMode }) {
+  const isDetached = new URLSearchParams(window.location.search).get('detached') === 'true';
+
   const batchUiState = {
     running: false,
     paused: false
@@ -17,7 +19,7 @@ export function createPopupUiState({ elements, hasSelectedLinks, getUrlInputMode
 
   function renderActionVisibility(running) {
     const mode = getUrlInputMode ? getUrlInputMode() : 'list';
-    elements.openFillButton.hidden = running || !['list', 'template'].includes(mode);
+    elements.openFillButton.hidden = running || !['list', 'template', 'sequential'].includes(mode);
   }
 
   function renderRunningControls({ running, paused }) {
@@ -59,12 +61,138 @@ export function createPopupUiState({ elements, hasSelectedLinks, getUrlInputMode
     renderActionVisibility(running);
   }
 
+  function renderDashboardLog(logs, currentUrl) {
+    if (!elements.dashboardLogList || !logs) {
+      return;
+    }
+
+    elements.dashboardLogList.innerHTML = '';
+    logs.forEach((log) => {
+      const logItem = document.createElement('div');
+      logItem.className = 'log-item';
+      
+      const iconSpan = document.createElement('span');
+      iconSpan.className = `log-icon ${log.status === 'ok' ? 'success' : 'error'}`;
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'log-content';
+      
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'log-title';
+      let displayName = log.title || '';
+      if (!displayName && log.url) {
+        try {
+          displayName = new URL(log.url).hostname;
+        } catch (e) {
+          displayName = log.url;
+        }
+      }
+      titleSpan.textContent = displayName || log.url || 'Page';
+      
+      if (log.status !== 'ok') {
+        titleSpan.textContent += ` - ${message(log.error) || log.error || 'Failed'}`;
+      }
+      
+      contentDiv.appendChild(titleSpan);
+      
+      if (log.url) {
+        const urlSpan = document.createElement('span');
+        urlSpan.className = 'log-url';
+        urlSpan.textContent = log.url;
+        contentDiv.appendChild(urlSpan);
+      }
+      
+      logItem.appendChild(iconSpan);
+      logItem.appendChild(contentDiv);
+      
+      elements.dashboardLogList.appendChild(logItem);
+    });
+
+    if (currentUrl) {
+      const logItem = document.createElement('div');
+      logItem.className = 'log-item capturing';
+      
+      const iconSpan = document.createElement('span');
+      iconSpan.className = 'log-icon capturing';
+      
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'log-content';
+      
+      const titleSpan = document.createElement('span');
+      titleSpan.className = 'log-title';
+      let displayName = '';
+      try {
+        displayName = new URL(currentUrl).hostname;
+      } catch (e) {
+        displayName = currentUrl;
+      }
+      titleSpan.textContent = displayName || 'Page';
+      titleSpan.textContent += ` - ${message('dashboardLogStatusCapturing') || 'Capturing...'}`;
+      
+      contentDiv.appendChild(titleSpan);
+      
+      const urlSpan = document.createElement('span');
+      urlSpan.className = 'log-url';
+      urlSpan.textContent = currentUrl;
+      contentDiv.appendChild(urlSpan);
+      
+      logItem.appendChild(iconSpan);
+      logItem.appendChild(contentDiv);
+      
+      elements.dashboardLogList.appendChild(logItem);
+    }
+
+    const container = elements.dashboardLogList.parentElement;
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+  }
+
+  function renderDashboard({ running, completed, statusKey, statusArgs, logs, total }) {
+    if (!elements.dashboardPanel || elements.dashboardPanel.hidden) {
+      return;
+    }
+
+    let currentProgress = 0;
+    let totalProgress = total || 0;
+
+    if (statusKey === 'batchProgressStatus' && statusArgs.length >= 2) {
+      currentProgress = Number(statusArgs[0]) || 0;
+      totalProgress = Number(statusArgs[1]) || totalProgress;
+    } else if (logs && logs.length > 0) {
+      currentProgress = logs.length;
+    }
+
+    if (totalProgress > 0) {
+      if (elements.dashboardProgressText) {
+        elements.dashboardProgressText.textContent = `${currentProgress} / ${totalProgress}`;
+      }
+      if (elements.dashboardProgressBar) {
+        const pct = Math.min(100, Math.max(0, (currentProgress / totalProgress) * 100));
+        elements.dashboardProgressBar.style.width = `${pct}%`;
+      }
+    } else {
+      if (elements.dashboardProgressText) {
+        elements.dashboardProgressText.textContent = '-- / --';
+      }
+      if (elements.dashboardProgressBar) {
+        elements.dashboardProgressBar.style.width = '0%';
+      }
+    }
+
+    const currentUrl = (running && !completed && statusArgs && statusArgs[2]) ? statusArgs[2] : null;
+    renderDashboardLog(logs, currentUrl);
+  }
+
   function setRunning({
     running,
     paused = false,
     statusKey = running ? 'runningStatus' : 'idleStatus',
     statusArgs = [],
-    statusText = ''
+    statusText = '',
+    logs = [],
+    total = 0,
+    completed = false
   }) {
     batchUiState.running = running;
     batchUiState.paused = paused;
@@ -72,6 +200,28 @@ export function createPopupUiState({ elements, hasSelectedLinks, getUrlInputMode
     document.body.classList.toggle('is-paused', running && paused);
     renderRunningControls(batchUiState);
     renderStatusText(statusText || message(statusKey, statusArgs));
+
+    const showDashboard = running || completed;
+    if (elements.dashboardPanel && elements.urlSection) {
+      elements.dashboardPanel.hidden = !showDashboard;
+      elements.urlSection.hidden = showDashboard;
+      if (elements.captureSettings) {
+        elements.captureSettings.hidden = showDashboard;
+      }
+    }
+
+    if (elements.dashboardCloseButton) {
+      elements.dashboardCloseButton.hidden = !completed;
+    }
+
+    if (elements.currentTabButton) {
+      elements.currentTabButton.hidden = showDashboard;
+    }
+    if (elements.currentWindowTabsButton) {
+      elements.currentWindowTabsButton.hidden = showDashboard;
+    }
+
+    renderDashboard({ running, completed, statusKey, statusArgs, logs, total });
   }
 
   function getBatchUiState() {

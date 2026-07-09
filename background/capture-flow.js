@@ -18,7 +18,11 @@ export async function runCaptureJobs(jobs, options, controls) {
     }
 
     await controls.waitWhilePaused();
-    rows.push(await controls.captureSingleJob(jobs[index], index, jobs.length, options));
+    const row = await controls.captureSingleJob(jobs[index], index, jobs.length, options);
+    rows.push(row);
+    if (controls.onJobComplete) {
+      await controls.onJobComplete(row, index, jobs.length);
+    }
   }
 
   return rows;
@@ -31,16 +35,17 @@ export function createBatchStatusState(onStatus = () => {}) {
     stopping: false,
     statusKey: 'idleStatus',
     statusArgs: [],
-    statusText: ''
+    statusText: '',
+    logs: [],
+    total: 0,
+    completed: false
   };
 
   function emit(status, running = state.running, paused = state.paused) {
     const nextStatus = typeof status === 'string' ? { statusText: status } : status;
     state = {
       ...state,
-      statusKey: nextStatus.statusKey || '',
-      statusArgs: nextStatus.statusArgs || [],
-      statusText: nextStatus.statusText || '',
+      ...nextStatus,
       running,
       paused
     };
@@ -50,20 +55,29 @@ export function createBatchStatusState(onStatus = () => {}) {
   return {
     getState: () => ({ ...state }),
     setStatus: emit,
-    start(statusKey) {
-      state = { running: true, paused: false, stopping: false, statusKey, statusArgs: [], statusText: '' };
-      emit({ statusKey }, true, false);
+    start(statusKey, total = 0) {
+      state = { running: true, paused: false, stopping: false, statusKey, statusArgs: [], statusText: '', logs: [], total, completed: false };
+      emit({ statusKey, logs: [], total, completed: false }, true, false);
     },
     updateProgress(index, total, url) {
       emit({ statusKey: 'batchProgressStatus', statusArgs: [String(index + 1), String(total), url] }, true, state.paused);
+    },
+    addLog(url, status, error = '', title = '') {
+      const logs = [...(state.logs || []), { url, status, error, title }];
+      emit({ statusKey: 'batchLogUpdatedStatus', statusArgs: [], logs }, true, state.paused);
     },
     finish(rows, reportEnabled) {
       const successful = rows.filter((row) => row.status === 'ok').length;
       const failed = rows.length - successful;
       emit({
         statusKey: reportEnabled ? 'batchDoneWithReportStatus' : 'batchDoneStatus',
-        statusArgs: [String(successful), String(failed)]
+        statusArgs: [String(successful), String(failed)],
+        completed: true
       }, false, false);
+    },
+    clearCompleted() {
+      state = { ...state, completed: false, logs: [], total: 0 };
+      emit({ completed: false, logs: [], total: 0 });
     },
     reset() {
       state = { ...state, running: false, paused: false, stopping: false };

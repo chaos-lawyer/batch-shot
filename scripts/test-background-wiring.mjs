@@ -11,11 +11,24 @@ let downloadCalls = [];
 let tabCreatedUrls = [];
 let executeScriptCalls = [];
 
+let localStorageMock = { settings: { theme: 'dark' } };
+
 globalThis.chrome = {
   storage: {
     local: {
-      get: async () => ({ settings: { theme: 'dark' } }),
-      set: async () => {}
+      get: async (keys) => {
+        if (!keys) return localStorageMock;
+        if (typeof keys === 'string') return { [keys]: localStorageMock[keys] };
+        if (Array.isArray(keys)) {
+          const res = {};
+          keys.forEach(k => { res[k] = localStorageMock[k]; });
+          return res;
+        }
+        return localStorageMock;
+      },
+      set: async (val) => {
+        localStorageMock = { ...localStorageMock, ...val };
+      }
     },
     onChanged: { addListener: () => {} }
   },
@@ -144,9 +157,14 @@ async function runTests() {
   
   assert.strictEqual(downloadCalls.length, 3, 'Should trigger 3 downloads (2 screenshots + 1 report)');
   assert.ok(downloadCalls[2].url.startsWith('data:text/csv'), 'Last download should be the CSV report');
+  
+  // Verify startBatch wrote taskHistory
+  const storedHistory = localStorageMock.taskHistory || [];
+  assert.strictEqual(storedHistory.length, 1, 'startBatch should write to taskHistory');
 
   console.log('Testing prepareBatchForms wiring (runPrepareForms)...');
   tabCreatedUrls = [];
+  delete localStorageMock.taskHistory;
   
   await new Promise((resolve) => {
     messageListener({
@@ -162,10 +180,12 @@ async function runTests() {
   await sleep(1000);
   assert.strictEqual(tabCreatedUrls.length, 1, 'Should create 1 tab for search form preparation');
   assert.strictEqual(tabCreatedUrls[0], 'https://example.com/search1');
+  assert.ok(!localStorageMock.taskHistory, 'prepareBatchForms should not write to taskHistory');
 
   console.log('Testing captureCurrentWindowTabs wiring...');
   tabCreatedUrls = [];
   downloadCalls = [];
+  delete localStorageMock.taskHistory;
   
   await new Promise((resolve) => {
     messageListener({
@@ -180,6 +200,7 @@ async function runTests() {
 
   await sleep(1000);
   assert.strictEqual(downloadCalls.length, 1, 'Should trigger 1 screenshot download from current active tab');
+  assert.ok(!localStorageMock.taskHistory, 'captureCurrentWindowTabs should not write to taskHistory');
 
   console.log('All background wiring tests passed!');
 }

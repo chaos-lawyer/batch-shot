@@ -49,6 +49,12 @@ export function getPopupElements() {
     linkSelectorCancelButton: $('linkSelectorCancelButton'),
     linkSelectorApplyButton: $('linkSelectorApplyButton'),
     captureSettings: $('captureSettings'),
+    taskHistoryButton: $('taskHistoryButton'),
+    taskHistoryPanel: $('taskHistoryPanel'),
+    taskHistorySummary: $('taskHistorySummary'),
+    taskHistoryRetryAllButton: $('taskHistoryRetryAllButton'),
+    taskHistoryClearButton: $('taskHistoryClearButton'),
+    taskHistoryList: $('taskHistoryList'),
     delay: $('delay'),
     schedulePanel: $('schedulePanel'),
     schedulePanelCloseButton: $('schedulePanelCloseButton'),
@@ -78,6 +84,11 @@ export function getPopupElements() {
     sequentialNextSelector: $('sequentialNextSelector'),
     sequentialCaptureCount: $('sequentialCaptureCount'),
     detectNextPageButton: $('detectNextPageButton'),
-    pickNextPageButton: $('pickNextPageButton')
+    pickNextPageButton: $('pickNextPageButton'),
+    dashboardPanel: $('dashboardPanel'),
+    dashboardCloseButton: $('dashboardCloseButton'),
+    dashboardProgressText: $('dashboardProgressText'),
+    dashboardProgressBar: $('dashboardProgressBar'),
+    dashboardLogList: $('dashboardLogList')
   };
 }

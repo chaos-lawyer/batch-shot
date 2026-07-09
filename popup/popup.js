@@ -6,6 +6,7 @@ import { getPopupElements } from './dom.js';
 import { createInputHistory } from './history.js';
 import { createLinkSelector } from './link-selector.js';
 import { createScheduleActions } from './schedule.js';
+import { createTaskHistory } from './task-history.js';
 import { bindAutoSaveEvents, createPopupUiState, initTemplateResizing } from './ui-state.js';
 import { createUrlInput } from './url-input.js';
 
@@ -76,12 +77,22 @@ async function refreshState() {
   const response = await chrome.runtime.sendMessage({ action: 'getState' });
   const running = Boolean(response?.running);
   const paused = Boolean(response?.paused);
+  let completed = Boolean(response?.completed);
+
+  if (!running && completed) {
+    chrome.runtime.sendMessage({ action: 'clearCompletedStatus' }).catch(() => {});
+    completed = false;
+  }
+
   setRunning({
     running,
     paused,
     statusKey: running ? (paused ? 'pausedStatus' : 'runningStatus') : 'idleStatus',
     statusArgs: response?.statusArgs || [],
-    statusText: response?.statusText || ''
+    statusText: response?.statusText || '',
+    logs: response?.logs || [],
+    total: response?.total || 0,
+    completed
   });
 }
 
@@ -131,6 +142,13 @@ const scheduleActions = createScheduleActions({
   setStatus
 });
 
+const taskHistory = createTaskHistory({
+  elements,
+  getBatchUiState,
+  setRunning,
+  setStatus
+});
+
 async function restoreSettings() {
   const merged = await loadSettings();
   await initI18n(merged.appLanguage);
@@ -155,6 +173,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await restoreSettings();
     await refreshState();
     await scheduleActions.refreshScheduledTask();
+    await taskHistory.refreshTaskHistory();
     initTemplateResizing();
   } finally {
     document.body.classList.add('is-loaded');
@@ -167,6 +186,16 @@ history.bindHistoryEvents();
 linkSelector.bindLinkSelectorEvents();
 captureActions.bindCaptureEvents();
 scheduleActions.bindScheduleEvents();
+taskHistory.bindTaskHistoryEvents();
+
+if (elements.dashboardCloseButton) {
+  elements.dashboardCloseButton.addEventListener('click', () => {
+    chrome.runtime.sendMessage({ action: 'clearCompletedStatus' }).catch(() => {});
+    elements.dashboardPanel.hidden = true;
+    elements.urlSection.hidden = false;
+    elements.captureSettings.hidden = false;
+  });
+}
 
 // Helper: inject content scripts into tab if needed, then send a message.
 async function sendToActiveTab(message) {
@@ -237,12 +266,23 @@ chrome.runtime.onMessage.addListener((statusMessage) => {
     paused: Boolean(statusMessage.paused),
     statusKey: statusMessage.statusKey || (statusMessage.paused ? 'pausedStatus' : 'runningStatus'),
     statusArgs: statusMessage.statusArgs || [],
-    statusText: statusMessage.statusText || ''
+    statusText: statusMessage.statusText || '',
+    logs: statusMessage.logs || [],
+    total: statusMessage.total || 0,
+    completed: Boolean(statusMessage.completed)
   });
 });
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
-  if (areaName !== 'local' || !changes.settings) {
+  if (areaName !== 'local') {
+    return;
+  }
+
+  if (changes.taskHistory) {
+    taskHistory.refreshTaskHistory().catch(() => {});
+  }
+
+  if (!changes.settings) {
     return;
   }
 
@@ -257,10 +297,18 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   }
 });
 
-document.addEventListener('click', () => history.closeHistoryMenus());
+document.addEventListener('click', () => {
+  history.closeHistoryMenus();
+  taskHistory.closeTaskHistory();
+});
 
 document.addEventListener('keydown', (event) => {
   if (event.key !== 'Escape') {
+    return;
+  }
+
+  if (!elements.taskHistoryPanel.hidden) {
+    taskHistory.closeTaskHistory();
     return;
   }
 

@@ -18,6 +18,27 @@ export function isCapturableTab(tab) {
   }
 }
 
+export async function getTargetWindowId(chromeApi = chrome) {
+  if (!chromeApi.windows?.getAll) {
+    return chromeApi.windows.WINDOW_ID_CURRENT;
+  }
+  const windows = await chromeApi.windows.getAll({ windowTypes: ['normal'] });
+  const focusedWindow = windows.find((window) => window.focused);
+  if (focusedWindow) {
+    return focusedWindow.id;
+  }
+  try {
+    const lastFocused = await chromeApi.windows.getLastFocused({ windowTypes: ['normal'] });
+    if (lastFocused) {
+      return lastFocused.id;
+    }
+  } catch (_e) {}
+  if (windows.length > 0) {
+    return windows[0].id;
+  }
+  return chromeApi.windows.WINDOW_ID_CURRENT;
+}
+
 export async function getActiveCapturableTab(chromeApi = chrome) {
   if (!chromeApi.windows?.getAll) {
     const [tab] = await chromeApi.tabs.query({ active: true, currentWindow: true });

@@ -326,6 +326,9 @@
   "contextMenuOpenPopup": {
     "message": "打开弹出面板"
   },
+  "contextMenuOpenDetached": {
+    "message": "独立窗口运行"
+  },
   "contextMenuAddSearchTemplate": {
     "message": "添加搜索框到 BatchShot 模板"
   },
@@ -343,6 +346,9 @@
   },
   "currentWindowTabsButton": {
     "message": "截取当前窗口所有标签页"
+  },
+  "detachPanelButton": {
+    "message": "独立窗口运行"
   },
   "currentTabRunningStatus": {
     "message": "正在截取当前页..."
@@ -598,6 +604,69 @@
       }
     }
   },
+  "taskHistoryButton": {
+    "message": "最近失败任务"
+  },
+  "taskHistoryTitle": {
+    "message": "最近失败任务"
+  },
+  "taskHistoryEmpty": {
+    "message": "暂无最近失败任务记录。"
+  },
+  "taskHistoryEmptyDetail": {
+    "message": "最近一次批量任务出现失败或中断后，会在这里显示可重试 URL。"
+  },
+  "taskHistoryClearButton": {
+    "message": "清除提醒"
+  },
+  "taskHistoryRetryAllButton": {
+    "message": "重试失败项"
+  },
+  "taskHistoryRetrySummary": {
+    "message": "$COUNT$ 个失败项",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "taskHistoryRetryFailedButton": {
+    "message": "重试"
+  },
+  "taskHistoryIgnoreFailedButton": {
+    "message": "忽略"
+  },
+  "taskHistoryRetryStartedStatus": {
+    "message": "正在重试 $COUNT$ 个问题项...",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "taskHistoryNoFailures": {
+    "message": "本次任务没有失败项。"
+  },
+  "taskHistoryMoreFailures": {
+    "message": "另有 $COUNT$ 个问题项",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "taskHistoryLoadError": {
+    "message": "无法加载任务详情。"
+  },
+  "taskHistoryNoRetryableFailures": {
+    "message": "没有失败项。"
+  },
+  "taskHistoryIncompleteItem": {
+    "message": "未完成"
+  },
+  "taskHistoryClearStatus": {
+    "message": "报警记录已清空。"
+  },
   "pausedStatus": {
     "message": "已暂停。"
   },
@@ -775,7 +844,7 @@
     "message": "可点击右上角图标手动选取"
   },
   "sequentialCaptureCountLabel": {
-    "message": "截图次数"
+    "message": "页面数"
   },
   "detectNextPageButton": {
     "message": "自动填充"
@@ -816,6 +885,17 @@
   "sequentialRunningStatus": {
     "message": "正在序列截图..."
   },
+  "sequentialOpenRunningStatus": {
+    "message": "正在打开序列页面..."
+  },
+  "sequentialOpenDoneStatus": {
+    "message": "已打开 $COUNT$ 个序列页面。",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
   "sequentialDoneStatus": {
     "message": "序列截图完成。成功 $SUCCESSFUL$ 张，失败 $FAILED$ 个。",
     "placeholders": {
@@ -855,5 +935,11 @@
   },
   "nextPageSelectorPickerPrompt": {
     "message": "点击页面上的下一页按钮。按 Esc 取消。"
+  },
+  "dashboardTitle": {
+    "message": "运行状态看板"
+  },
+  "dashboardLogStatusCapturing": {
+    "message": "正在截图..."
   }
 }

@@ -1,16 +1,20 @@
 import assert from 'node:assert/strict';
-import { captureCurrentTabSequence } from '../background/capture-page-runner.js';
+import { captureCurrentTabSequence, openCurrentTabSequence } from '../background/capture-page-runner.js';
 import { SequentialCaptureError } from '../background/status-error.js';
 
 // Mock chrome API
 const mockTab = { id: 123, url: 'http://localhost/list', title: 'Test List' };
 let tabMessageSent = [];
+let captureVisibleTabCalls = 0;
 globalThis.chrome = {
   tabs: {
     query: async () => [mockTab],
     get: async () => mockTab,
     update: async () => mockTab,
-    captureVisibleTab: async () => 'data:image/png;base64,...',
+    captureVisibleTab: async () => {
+      captureVisibleTabCalls += 1;
+      return 'data:image/png;base64,...';
+    },
     sendMessage: async (tabId, msg) => {
       return mockDeps.sendTabMessage(tabId, msg);
     }
@@ -83,7 +87,9 @@ const mockDeps = {
     return batchStatusState;
   },
   statusError(key) {
-    return new Error(key);
+    const err = new Error(key);
+    err.statusKey = key;
+    return err;
   },
   statusFromError(err) {
     return { statusKey: err.message };
@@ -137,6 +143,7 @@ async function resetTestState() {
   getPageSignatureBehavior = 'dynamic';
   mockDeps.maxWait = 20;
   mockDeps.pollInterval = 5;
+  captureVisibleTabCalls = 0;
 }
 
 // ----------------------------------------------------
@@ -180,10 +187,13 @@ try {
 await resetTestState();
 getPageSignatureBehavior = 'static';
 
+const startTime = Date.now();
 try {
   await captureCurrentTabSequence(options, mockDeps);
   assert.fail('Should have thrown an error');
 } catch (error) {
+  const duration = Date.now() - startTime;
+  assert.ok(duration < 2000, `Timeout test should run in under 2 seconds, but took ${duration}ms`);
   assert.ok(error instanceof SequentialCaptureError, 'Should throw SequentialCaptureError');
   assert.equal(error.statusKey, 'nextPageWaitTimeoutError');
   assert.equal(error.successful, 1);
@@ -222,5 +232,21 @@ try {
   assert.equal(error.successful, 0);
   assert.equal(error.failed, 2);
 }
+
+// ----------------------------------------------------
+// Test 6: Sequential open-only advances pages without screenshots
+// ----------------------------------------------------
+await resetTestState();
+const openOptions = { ...options, sequentialCaptureCount: 3 };
+const openResult = await openCurrentTabSequence(openOptions, mockDeps);
+assert.equal(openResult, 3, 'Should open through 3 sequential pages');
+
+const openActions = tabMessageSent.map(m => m.action);
+assert.ok(openActions.includes('getPageSignature'), 'Open-only should query page signature before clicking');
+assert.ok(openActions.includes('clickNextPage'), 'Open-only should click next page');
+assert.equal(openActions.filter(action => action === 'clickNextPage').length, 2, 'Count 3 should click next page twice');
+assert.equal(captureVisibleTabCalls, 0, 'Open-only must not capture screenshots');
+assert.equal(batchStatusState.statusKey, 'sequentialOpenDoneStatus');
+assert.deepEqual(batchStatusState.statusArgs, ['3']);
 
 console.log('Sequential capture flow tests passed!');

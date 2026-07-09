@@ -160,10 +160,18 @@ export async function captureSingleJob(job, index, total, options, deps) {
 }
 
 export const runCaptureJobList = (jobs, options, deps) => {
-  const { runCaptureJobs, getBatchState, waitWhilePaused } = deps;
+  const { runCaptureJobs, getBatchState, waitWhilePaused, onJobComplete, batchStatus } = deps;
   return runCaptureJobs(jobs, options, {
     shouldStop: () => getBatchState().stopping,
     waitWhilePaused,
-    captureSingleJob: (job, index, total) => captureSingleJob(job, index, total, options, deps)
+    captureSingleJob: (job, index, total) => captureSingleJob(job, index, total, options, deps),
+    onJobComplete: async (row, index, total) => {
+      if (batchStatus && batchStatus.addLog) {
+        batchStatus.addLog(row.url, row.status, row.error, row.title);
+      }
+      if (onJobComplete) {
+        await onJobComplete(row, index, total);
+      }
+    }
   });
 };

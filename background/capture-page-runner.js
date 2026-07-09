@@ -6,7 +6,7 @@ import { createReportRow, runCaptureJobs } from './capture-flow.js';
 import { createUrlJobs, createExplicitJobs, createSearchJobs, createTabJobs } from './job-factory.js';
 import { captureTabToDownload, downloadReport } from './report-download.js';
 import { runCaptureJobList } from './search-runner.js';
-import { getActiveCapturableTab, isCapturableTab, activateTab, sendTabMessage, waitForTabComplete, waitForTabReadyForCapture } from './tab-utils.js';
+import { getActiveCapturableTab, getTargetWindowId, isCapturableTab, activateTab, sendTabMessage, waitForTabComplete, waitForTabReadyForCapture } from './tab-utils.js';
 import { ensureOffscreenDocument, closeOffscreenDocument } from './offscreen-manager.js';
 import { statusError, statusFromError, SequentialCaptureError } from './status-error.js';
 
@@ -197,7 +197,7 @@ export async function captureFullPage(tab, options, deps) {
   return stitchResponse.dataUrl;
 }
 
-function getCaptureDeps(batchStatus) {
+function getCaptureDeps(batchStatus, overrides = {}) {
   const getBatchState = () => batchStatus.getState();
   const selfDeps = {
     chrome,
@@ -216,7 +216,8 @@ function getCaptureDeps(batchStatus) {
     captureFullPage: (tab, options) => captureFullPage(tab, options, selfDeps),
     buildFilename,
     sendTabMessage,
-    waitForTabReadyForCapture
+    waitForTabReadyForCapture,
+    ...overrides
   };
   return selfDeps;
 }
@@ -248,9 +249,9 @@ export async function captureCurrentTab(options, deps) {
 
   const jobs = createTabJobs([tab], { closeAfterCapture: false })
     .map((job) => ({ ...job, applyDelay: false, waitForLoad: false }));
-  batchStatus.start('currentTabRunningStatus');
+  batchStatus.start('currentTabRunningStatus', jobs.length);
 
-  const captureDeps = getCaptureDeps(batchStatus);
+  const captureDeps = getCaptureDeps(batchStatus, deps);
 
   try {
     await ensureOffscreenDocument();
@@ -274,7 +275,8 @@ export async function captureCurrentWindowTabs(options, deps) {
     throw statusError('batchAlreadyRunningError');
   }
 
-  const currentWindowTabs = await chrome.tabs.query({ currentWindow: true });
+  const windowId = await getTargetWindowId(chrome);
+  const currentWindowTabs = await chrome.tabs.query({ windowId });
   const tabs = currentWindowTabs.filter(isCapturableTab);
   if (!tabs.length) {
     throw statusError('noCapturableTabsError');
@@ -283,9 +285,9 @@ export async function captureCurrentWindowTabs(options, deps) {
   const originalTab = currentWindowTabs.find((tab) => tab.active);
   const jobs = createTabJobs(tabs, { closeAfterCapture: false });
   let rows = [];
-  batchStatus.start('currentWindowTabsRunningStatus');
+  batchStatus.start('currentWindowTabsRunningStatus', jobs.length);
 
-  const captureDeps = getCaptureDeps(batchStatus);
+  const captureDeps = getCaptureDeps(batchStatus, deps);
 
   try {
     await ensureOffscreenDocument();
@@ -308,7 +310,13 @@ export async function captureCurrentWindowTabs(options, deps) {
 }
 
 export async function runBatch(options, deps) {
-  const { batchStatus } = deps;
+  const {
+    batchStatus,
+    startCaptureTaskHistory,
+    updateCaptureTaskHistory,
+    finishCaptureTaskHistory,
+    saveCaptureTaskHistory
+  } = deps;
   const setStatus = (...args) => batchStatus.setStatus(...args);
   const getBatchState = () => batchStatus.getState();
 
@@ -324,13 +332,28 @@ export async function runBatch(options, deps) {
     jobs = createUrlJobs(options.urls, options);
   }
 
-  batchStatus.start('runningStatus');
+  batchStatus.start('runningStatus', jobs.length);
 
-  const captureDeps = getCaptureDeps(batchStatus);
+  const captureDeps = getCaptureDeps(batchStatus, deps);
+
+  let rows = [];
+  let taskHistoryId = '';
 
   try {
+    if (startCaptureTaskHistory) {
+      const task = await startCaptureTaskHistory({ options, jobs }).catch(() => null);
+      taskHistoryId = task?.id || '';
+    }
+
     await ensureOffscreenDocument();
-    const rows = await runCaptureJobList(jobs, options, captureDeps);
+    rows = await runCaptureJobList(jobs, options, {
+      ...captureDeps,
+      onJobComplete: (row) => (
+        taskHistoryId && updateCaptureTaskHistory
+          ? updateCaptureTaskHistory(taskHistoryId, row).catch(() => {})
+          : Promise.resolve()
+      )
+    });
 
     if (options.reportEnabled) {
       await downloadReport(rows, options, getReportDeps());
@@ -339,6 +362,14 @@ export async function runBatch(options, deps) {
   } catch (error) {
     setStatus(statusFromError(error), false, false);
   } finally {
+    if (taskHistoryId && finishCaptureTaskHistory) {
+      await finishCaptureTaskHistory(taskHistoryId, {
+        rows,
+        stopped: getBatchState().stopping
+      }).catch(() => {});
+    } else if (rows.length && saveCaptureTaskHistory) {
+      await saveCaptureTaskHistory({ options, jobs, rows }).catch(() => {});
+    }
     await closeOffscreenDocument().catch(() => {});
     batchStatus.reset();
   }
@@ -404,8 +435,8 @@ export async function captureCurrentTabSequence(options, deps) {
   let nextSelector = String(options.sequentialNextSelector || '').trim();
   const startUrl = String(options.sequentialStartUrl || '').trim();
 
-  batchStatus.start('sequentialRunningStatus');
-  const captureDeps = getCaptureDeps(batchStatus);
+  batchStatus.start('sequentialRunningStatus', count);
+  const captureDeps = getCaptureDeps(batchStatus, deps);
 
   const rows = [];
   try {
@@ -434,27 +465,42 @@ export async function captureCurrentTabSequence(options, deps) {
       await waitWhilePaused(getBatchState);
       batchStatus.updateProgress(index, count, tab.url);
 
-      const result = await captureTabToDownload(tab, index, count, options, {
-        sequenceIndex: index + 1
-      }, captureDeps);
+      try {
+        const result = await captureTabToDownload(tab, index, count, options, {
+          sequenceIndex: index + 1
+        }, captureDeps);
 
-      rows.push(createReportRow({
-        index,
-        url: result.url,
-        title: result.title,
-        filename: result.filename,
-        status: 'ok'
-      }));
+        const row = createReportRow({
+          index,
+          url: result.url,
+          title: result.title,
+          filename: result.filename,
+          status: 'ok'
+        });
+        rows.push(row);
+        if (batchStatus.addLog) {
+          batchStatus.addLog(row.url, row.status, row.error, row.title);
+        }
 
-      if (index === count - 1) {
-        break;
+        if (index === count - 1) {
+          break;
+        }
+
+        if (!nextSelector) {
+          throw statusError('nextPageNotFoundError');
+        }
+
+        await clickNextPageAndWait(tab.id, nextSelector, options, captureDeps);
+      } catch (error) {
+        const latestTab = tab.id ? await chrome.tabs.get(tab.id).catch(() => null) : null;
+        const errUrl = latestTab?.url || tab.url;
+        const errTitle = latestTab?.title || '';
+        const status = statusFromError(error);
+        if (batchStatus.addLog) {
+          batchStatus.addLog(errUrl, 'error', status.statusKey, errTitle);
+        }
+        throw error;
       }
-
-      if (!nextSelector) {
-        throw statusError('nextPageNotFoundError');
-      }
-
-      await clickNextPageAndWait(tab.id, nextSelector, options, captureDeps);
     }
 
     if (options.reportEnabled) {
@@ -479,6 +525,93 @@ export async function captureCurrentTabSequence(options, deps) {
     throw new SequentialCaptureError(statusKey, successful, failed, error);
   } finally {
     await closeOffscreenDocument().catch(() => {});
+    batchStatus.reset();
+  }
+}
+
+export async function openCurrentTabSequence(options, deps) {
+  const { batchStatus } = deps;
+  const getBatchState = () => batchStatus.getState();
+
+  if (getBatchState().running) {
+    throw statusError('batchAlreadyRunningError');
+  }
+
+  const tab = await getActiveCapturableTab(chrome);
+  if (!tab?.id || !tab.url) {
+    throw statusError('noActivePageError');
+  }
+
+  const count = clampInteger(options.sequentialCaptureCount, 3, 1, 200);
+  let nextSelector = String(options.sequentialNextSelector || '').trim();
+  const startUrl = String(options.sequentialStartUrl || '').trim();
+  const sequenceDeps = getCaptureDeps(batchStatus, deps);
+
+  batchStatus.start('sequentialOpenRunningStatus', count);
+
+  try {
+    if (startUrl && startUrl !== tab.url) {
+      await chrome.tabs.update(tab.id, { url: startUrl });
+      await waitForTabComplete(tab.id);
+      await sleepWithControls(1000, getBatchState);
+      const updatedTab = await chrome.tabs.get(tab.id);
+      tab.url = updatedTab.url || startUrl;
+    }
+
+    if (!nextSelector && count > 1) {
+      const detected = await sequenceDeps.sendTabMessage(tab.id, { action: 'detectNextPage' }).catch(() => null);
+      if (detected?.ok) {
+        nextSelector = detected.selector;
+      }
+    }
+
+    for (let index = 0; index < count; index += 1) {
+      if (getBatchState().stopping) {
+        throw statusError('captureStoppedError');
+      }
+
+      await waitWhilePaused(getBatchState);
+
+      try {
+        const currentTab = await chrome.tabs.get(tab.id).catch(() => tab);
+        tab.url = currentTab.url || tab.url;
+        batchStatus.updateProgress(index, count, tab.url);
+
+        if (batchStatus.addLog) {
+          batchStatus.addLog(tab.url, 'ok', '', currentTab.title || '');
+        }
+
+        if (index === count - 1) {
+          break;
+        }
+
+        if (!nextSelector) {
+          throw statusError('nextPageNotFoundError');
+        }
+
+        await clickNextPageAndWait(tab.id, nextSelector, options, sequenceDeps);
+      } catch (error) {
+        const latestTab = tab.id ? await chrome.tabs.get(tab.id).catch(() => null) : null;
+        const errUrl = latestTab?.url || tab.url;
+        const errTitle = latestTab?.title || '';
+        const status = statusFromError(error);
+        if (batchStatus.addLog) {
+          batchStatus.addLog(errUrl, 'error', status.statusKey, errTitle);
+        }
+        throw error;
+      }
+    }
+
+    batchStatus.setStatus({
+      statusKey: 'sequentialOpenDoneStatus',
+      statusArgs: [String(count)]
+    }, false, false);
+
+    return count;
+  } catch (error) {
+    batchStatus.setStatus(statusFromError(error, 'unknownCaptureError'), false, false);
+    throw error;
+  } finally {
     batchStatus.reset();
   }
 }

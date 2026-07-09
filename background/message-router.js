@@ -7,12 +7,18 @@ export function setupMessageRouter(deps) {
     openActionPopupFromMenu,
     syncActionUi,
     scheduledTasks,
+    getTaskHistory,
+    getRetryAllOptions,
+    getRetryOptions,
+    clearTaskHistoryAlerts,
+    ignoreTaskHistoryRow,
     batchStatus,
     runBatch,
     runPrepareForms,
     captureCurrentTab,
     captureCurrentWindowTabs,
     captureCurrentTabSequence,
+    openCurrentTabSequence,
     setStatus,
     statusError,
     statusFromError,
@@ -31,6 +37,12 @@ export function setupMessageRouter(deps) {
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     if (message.action === 'getState') {
       sendResponse(getBatchState());
+      return false;
+    }
+
+    if (message.action === 'clearCompletedStatus') {
+      batchStatus.clearCompleted();
+      sendResponse({ ok: true });
       return false;
     }
 
@@ -71,6 +83,68 @@ export function setupMessageRouter(deps) {
       scheduledTasks.clearScheduledTask(message.payload?.taskId)
         .then((tasks) => sendResponse({ ok: true, tasks }))
         .catch((error) => sendResponse(errorResponse(error, 'scheduledTaskCancelError')));
+      return true;
+    }
+
+    if (message.action === 'getTaskHistory') {
+      getTaskHistory()
+        .then((tasks) => sendResponse({ ok: true, tasks }))
+        .catch((error) => sendResponse(errorResponse(error)));
+      return true;
+    }
+
+    if (message.action === 'retryFailedTask') {
+      if (getBatchState().running) {
+        sendResponse({ ok: false, statusKey: 'batchAlreadyRunningError', statusArgs: [] });
+        return false;
+      }
+
+      getRetryOptions(message.payload?.taskId)
+        .then((retryOptions) => {
+          if (!retryOptions?.jobs?.length) {
+            sendResponse({ ok: false, statusKey: 'taskHistoryNoRetryableFailures', statusArgs: [] });
+            return;
+          }
+
+          runBatch(retryOptions);
+          sendResponse({ ok: true, count: retryOptions.jobs.length });
+        })
+        .catch((error) => sendResponse(errorResponse(error)));
+      return true;
+    }
+
+    if (message.action === 'retryAllFailedTasks') {
+      if (getBatchState().running) {
+        sendResponse({ ok: false, statusKey: 'batchAlreadyRunningError', statusArgs: [] });
+        return false;
+      }
+
+      getRetryAllOptions()
+        .then((retryOptions) => {
+          if (!retryOptions?.jobs?.length) {
+            sendResponse({ ok: false, statusKey: 'taskHistoryNoRetryableFailures', statusArgs: [] });
+            return;
+          }
+
+          runBatch(retryOptions);
+          sendResponse({ ok: true, count: retryOptions.jobs.length });
+        })
+        .catch((error) => sendResponse(errorResponse(error)));
+      return true;
+    }
+
+    if (message.action === 'clearTaskHistoryAlerts') {
+      clearTaskHistoryAlerts()
+        .then((tasks) => sendResponse({ ok: true, tasks }))
+        .catch((error) => sendResponse(errorResponse(error)));
+      return true;
+    }
+
+    if (message.action === 'ignoreTaskHistoryRow') {
+      const { taskId, url } = message.payload || {};
+      ignoreTaskHistoryRow(taskId, url)
+        .then((task) => sendResponse({ ok: true, task }))
+        .catch((error) => sendResponse(errorResponse(error)));
       return true;
     }
 
@@ -156,6 +230,17 @@ export function setupMessageRouter(deps) {
             response.successful = error.successful;
             response.failed = error.failed;
           }
+          setStatus(response, false);
+          sendResponse(response);
+        });
+      return true;
+    }
+
+    if (message.action === 'openCurrentTabSequence') {
+      openCurrentTabSequence(message.payload)
+        .then((count) => sendResponse({ ok: true, count }))
+        .catch((error) => {
+          const response = errorResponse(error);
           setStatus(response, false);
           sendResponse(response);
         });

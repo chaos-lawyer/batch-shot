@@ -14,6 +14,13 @@
           <h1 data-i18n="popupTitle">BatchShot</h1>
         </div>
         <div class="header-actions">
+          <button id="taskHistoryButton" type="button" class="icon-button task-history-alert-button" data-i18n-title="taskHistoryButton" aria-label="Recent failed task" aria-expanded="false" aria-controls="taskHistoryPanel" hidden>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+              <path d="M12 9v4"></path>
+              <path d="M12 17h.01"></path>
+            </svg>
+          </button>
           <button id="currentTabButton" type="button" class="icon-button" data-i18n-title="currentTabButton" aria-label="Capture current page">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z"></path>
@@ -209,6 +216,27 @@
         </div>
       </section>
 
+      <section id="dashboardPanel" class="dashboard-panel" hidden>
+        <div class="dashboard-header">
+          <h2 data-i18n="dashboardTitle">Task Dashboard</h2>
+          <div class="dashboard-header-actions">
+            <span id="dashboardProgressText">0 / 0</span>
+            <button id="dashboardCloseButton" type="button" class="history-button" aria-label="Close" hidden>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18 6 6 18"></path>
+                <path d="m6 6 12 12"></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="progress-bar-container">
+          <div id="dashboardProgressBar" class="progress-bar-fill" style="width: 0%"></div>
+        </div>
+        <div class="dashboard-log-container">
+          <div id="dashboardLogList" class="dashboard-log-list"></div>
+        </div>
+      </section>
+
       <section id="linkSelectorPanel" class="link-selector-panel" aria-labelledby="linkSelectorTitle" hidden>
         <div class="link-selector-head">
           <div>
@@ -230,7 +258,7 @@
         </div>
         <div id="linkSelectorList" class="link-selector-list"></div>
         <div class="link-selector-foot">
-          <button id="linkSelectorCancelButton" type="button" class="secondary neutral compact-button" data-i18n="linkSelectorCancelButton">Cancel</button>
+          <button id="linkSelectorCancelButton" type="button" class="secondary compact-button" data-i18n="linkSelectorCancelButton">Cancel</button>
           <button id="linkSelectorApplyButton" type="button" class="compact-button" data-i18n="linkSelectorApplyButton" disabled>Add to list</button>
         </div>
       </section>
@@ -249,6 +277,33 @@
           </button>
         </div>
         <div id="previewPanelList" class="link-selector-list url-preview-list"></div>
+      </section>
+
+      <section id="taskHistoryPanel" class="task-history-panel" aria-labelledby="taskHistoryTitle" hidden>
+        <div class="task-history-head">
+          <div>
+            <h2 id="taskHistoryTitle" data-i18n="taskHistoryTitle">Failure history</h2>
+            <p id="taskHistorySummary" data-i18n="taskHistoryEmpty">No failed tasks.</p>
+          </div>
+          <div class="task-history-panel-actions">
+            <button id="taskHistoryRetryAllButton" type="button" class="history-button" data-i18n-title="taskHistoryRetryAllButton" aria-label="Retry all">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12a9 9 0 1 1-2.64-6.36"></path>
+                <polyline points="21 3 21 9 15 9"></polyline>
+              </svg>
+            </button>
+            <button id="taskHistoryClearButton" type="button" class="history-button" data-i18n-title="taskHistoryClearButton" aria-label="Clear failure history">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 6h18"></path>
+                <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="taskHistoryList" class="task-history-list"></div>
       </section>
 
       <section id="captureSettings" class="grid">
@@ -300,13 +355,13 @@
       <footer class="footer">
         <p id="statusText" data-i18n="idleStatus">Ready.</p>
         <div class="actions">
-          <button id="settingsButton" type="button" class="secondary neutral" data-i18n-title="settingsButton" aria-label="Settings">
+          <button id="settingsButton" type="button" class="secondary" data-i18n-title="settingsButton" aria-label="Settings">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="3"></circle>
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
             </svg>
           </button>
-          <button id="stopButton" type="button" class="secondary" data-i18n-title="stopButton" aria-label="Stop" disabled>
+          <button id="stopButton" type="button" class="danger" data-i18n-title="stopButton" aria-label="Stop" disabled>
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
             </svg>
@@ -317,7 +372,7 @@
               <rect x="14" y="4" width="4" height="16" rx="1"></rect>
             </svg>
           </button>
-          <button id="openFillButton" type="button" class="secondary neutral" data-i18n-title="openFillButton" aria-label="Open links only">
+          <button id="openFillButton" type="button" class="secondary" data-i18n-title="openFillButton" aria-label="Open links only">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
               <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>

@@ -1,4 +1,5 @@
 import { message } from '../utils/i18n.js';
+import { formatDateTime } from '../utils/date-format.js';
 import { icon } from './dom-helpers.js';
 import { taskDisplayName, nextDefaultTaskName, setScheduleNameValue } from './schedule-name.js';
 
@@ -9,14 +10,7 @@ function toDatetimeLocalValue(timestamp) {
 }
 
 function formatScheduledAt(timestamp) {
-  const locale = document.documentElement.lang || undefined;
-  return new Intl.DateTimeFormat(locale, {
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-    hourCycle: 'h23'
-  }).format(new Date(timestamp));
+  return formatDateTime(timestamp, 'MM/DD HH:mm');
 }
 
 function taskUrlPreview(task) {

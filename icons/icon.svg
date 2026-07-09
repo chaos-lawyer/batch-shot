@@ -1,20 +1,25 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <!-- Brand Background -->
-  <rect width="128" height="128" rx="28" fill="#2563EB"/>
-  
-  <!-- Back card -->
-  <rect x="36" y="24" width="56" height="80" rx="8" fill="#60A5FA"/>
-  
-  <!-- Middle card -->
-  <rect x="24" y="40" width="80" height="72" rx="8" fill="#93C5FD"/>
-  
-  <!-- Front card -->
-  <rect x="12" y="56" width="104" height="60" rx="8" fill="#FFFFFF"/>
-  
-  <!-- Camera Lens / Focus -->
-  <circle cx="64" cy="86" r="14" fill="none" stroke="#2563EB" stroke-width="8"/>
-  <circle cx="64" cy="86" r="4" fill="#2563EB"/>
-  
-  <!-- Flash / Accent -->
-  <circle cx="96" cy="72" r="4" fill="#2563EB"/>
+  <defs>
+    <linearGradient id="brandBg" x1="18" y1="12" x2="110" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#15355A"/>
+      <stop offset="1" stop-color="#0A2540"/>
+    </linearGradient>
+    <linearGradient id="frontCard" x1="24" y1="48" x2="104" y2="116" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF"/>
+      <stop offset="1" stop-color="#EAF4FF"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="128" height="128" rx="28" fill="url(#brandBg)"/>
+  <path d="M18 34C38 18 63 13 92 19C79 32 66 44 53 54C40 64 27 70 14 72V48C14 42 15 38 18 34Z" fill="#38BDF8" opacity=".18"/>
+
+  <rect x="36" y="24" width="56" height="80" rx="8" fill="#38BDF8" opacity=".86"/>
+  <rect x="24" y="40" width="80" height="72" rx="8" fill="#7DD3FC" opacity=".88"/>
+  <rect x="12" y="56" width="104" height="60" rx="10" fill="url(#frontCard)"/>
+
+  <path d="M42 86H52M76 86H86M64 64V74M64 98V108" stroke="#0A2540" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="64" cy="86" r="13" fill="none" stroke="#0A2540" stroke-width="7"/>
+  <circle cx="64" cy="86" r="4" fill="#0A2540"/>
+
+  <circle cx="96" cy="72" r="5" fill="#10B981"/>
 </svg>

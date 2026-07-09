@@ -1,0 +1,162 @@
+/* Dashboard Styles */
+
+.dashboard-panel {
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  background: var(--bg-panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  margin: 12px 16px;
+  box-shadow: var(--shadow-input);
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.dashboard-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dashboard-header h2 {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+#dashboardProgressText {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  color: var(--text-muted);
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: var(--bg-shell);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: var(--accent);
+  width: 0%;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 4px;
+}
+
+.dashboard-log-container {
+  flex: 1;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-shell);
+  padding: 8px 12px;
+  box-sizing: border-box;
+}
+
+/* Scrollbar styling */
+.dashboard-log-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dashboard-log-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.dashboard-log-container::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 3px;
+}
+
+.dashboard-log-container::-webkit-scrollbar-thumb:hover {
+  background: var(--border-focus);
+}
+
+.dashboard-log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.log-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--text-main);
+  word-break: break-all;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+  padding-bottom: 4px;
+}
+
+:root[data-theme="dark"] .log-item {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.02);
+}
+
+.log-icon {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: inline-block;
+  margin-top: 5px;
+  user-select: none;
+}
+
+.log-icon.success {
+  background-color: #10B981; /* Green */
+}
+
+.log-icon.error {
+  background-color: #EF4444; /* Red */
+}
+
+.log-icon.capturing {
+  background-color: #3B82F6; /* Blue */
+  animation: pulse-blue 1.5s infinite ease-in-out;
+}
+
+@keyframes pulse-blue {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.25); opacity: 1; }
+  100% { transform: scale(0.9); opacity: 0.6; }
+}
+
+.log-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.log-title {
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.log-url {
+  font-size: 10px;
+  color: var(--text-muted);
+  opacity: 0.8;
+  margin-top: 1px;
+  word-break: break-all;
+  overflow-wrap: break-word;
+  white-space: normal;
+}

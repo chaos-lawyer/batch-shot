@@ -76,11 +76,16 @@ export async function runPrepareForms(options, deps) {
       throw statusError('openFillNoSearchJobsError');
     }
 
-    batchStatus.start('openFillRunningStatus');
+    batchStatus.start('openFillRunningStatus', jobs.length);
     const rows = await runCaptureJobs(jobs, options, {
       shouldStop: () => batchStatus.getState().stopping,
       waitWhilePaused,
-      captureSingleJob: (job, index, total) => prepareSingleFormJob(job, index, total, deps)
+      captureSingleJob: (job, index, total) => prepareSingleFormJob(job, index, total, deps),
+      onJobComplete: (row) => {
+        if (batchStatus && batchStatus.addLog) {
+          batchStatus.addLog(row.url, row.status, row.error, row.title);
+        }
+      }
     });
 
     const successful = rows.filter((row) => row.status === 'ok').length;

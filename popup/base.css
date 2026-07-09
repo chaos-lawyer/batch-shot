@@ -1,91 +1,119 @@
 :root {
+  --font-ui: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-code: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+
   /* Core brand colors */
-  --accent: #2563EB;
-  --accent-hover: #1D4ED8;
+  --accent: #0A2540;
+  --accent-hover: #15355A;
+  --accent-glow: rgba(10, 37, 64, 0.15);
   --success: #10B981;
   --success-glow: rgba(16, 185, 129, 0.3);
-  --accent-glow: rgba(37, 99, 235, 0.3);
+
+  /* Alert / Warning colors */
+  --alert-text: #B45309;
+  --alert-badge-bg: #DC2626;
+  --alert-badge-text: #FFFFFF;
 
   /* Light mode defaults */
   color-scheme: light dark;
-  --bg-shell: #FFFFFF;
+  --bg-shell: #F1F5F9;
   --bg-input: #FFFFFF;
-  --bg-panel: #F9FAFB;
-  --border: #E5E7EB;
-  --border-focus: #93C5FD;
-  --text-main: #111827;
-  --text-muted: #6B7280;
+  --bg-panel: #FFFFFF;
+  --border: #CBD5E1;
+  --border-focus: #64748B;
+  --text-main: #0F172A;
+  --text-muted: #64748B;
   --text-inverse: #FFFFFF;
   
   --shadow-input: 0 1px 2px rgba(0, 0, 0, 0.05);
 
   --btn-secondary-bg: #FFFFFF;
-  --btn-secondary-border: #D1D5DB;
-  --btn-secondary-text: #374151;
-  --btn-secondary-hover: #F3F4F6;
+  --btn-secondary-border: #CBD5E1;
+  --btn-secondary-text: #334155;
+  --btn-secondary-hover: #F8FAFC;
 
   --btn-danger-bg: #FEF2F2;
   --btn-danger-border: #FECACA;
   --btn-danger-text: #DC2626;
   --btn-danger-hover: #FEE2E2;
 
-  --tab-hover: #F3F4F6;
-  --tab-active-bg: #EFF6FF;
-  --tab-active-text: #1D4ED8;
+  --tab-hover: #E2E8F0;
+  --tab-active-bg: rgba(10, 37, 64, 0.08);
+  --tab-active-text: #0A2540;
 }
 
 :root[data-theme="dark"] {
-  --bg-shell: #18181B;
-  --bg-input: #27272A;
-  --bg-panel: #27272A;
-  --border: #3F3F46;
-  --border-focus: #3B82F6;
-  --text-main: #FAFAFA;
-  --text-muted: #A1A1AA;
+  --accent: #38BDF8;
+  --accent-hover: #7DD3FC;
+  --accent-glow: rgba(56, 189, 248, 0.25);
+  --text-inverse: #090D16;
+
+  /* Alert / Warning colors */
+  --alert-text: #FBBF24;
+  --alert-badge-bg: #EF4444;
+  --alert-badge-text: #FFFFFF;
+
+  --bg-shell: #090D16;
+  --bg-input: #1E293B;
+  --bg-panel: #0F172A;
+  --border: #334155;
+  --border-focus: #64748B;
+  --text-main: #F8FAFC;
+  --text-muted: #94A3B8;
   
   --shadow-input: 0 1px 2px rgba(0, 0, 0, 0.3);
 
-  --btn-secondary-bg: #27272A;
-  --btn-secondary-border: #3F3F46;
-  --btn-secondary-text: #E4E4E7;
-  --btn-secondary-hover: #3F3F46;
+  --btn-secondary-bg: #1E293B;
+  --btn-secondary-border: #334155;
+  --btn-secondary-text: #E2E8F0;
+  --btn-secondary-hover: #334155;
 
   --btn-danger-bg: rgba(220, 38, 38, 0.15);
   --btn-danger-border: rgba(220, 38, 38, 0.3);
   --btn-danger-text: #FCA5A5;
   --btn-danger-hover: rgba(220, 38, 38, 0.25);
 
-  --tab-hover: #3F3F46;
-  --tab-active-bg: rgba(37, 99, 235, 0.2);
-  --tab-active-text: #93C5FD;
+  --tab-hover: #1E293B;
+  --tab-active-bg: rgba(56, 189, 248, 0.15);
+  --tab-active-text: #38BDF8;
   color-scheme: dark;
 }
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg-shell: #18181B;
-    --bg-input: #27272A;
-    --bg-panel: #27272A;
-    --border: #3F3F46;
-    --border-focus: #3B82F6;
-    --text-main: #FAFAFA;
-    --text-muted: #A1A1AA;
+    --accent: #38BDF8;
+    --accent-hover: #7DD3FC;
+    --accent-glow: rgba(56, 189, 248, 0.25);
+    --text-inverse: #090D16;
+
+    /* Alert / Warning colors */
+    --alert-text: #FBBF24;
+    --alert-badge-bg: #EF4444;
+    --alert-badge-text: #FFFFFF;
+
+    --bg-shell: #090D16;
+    --bg-input: #1E293B;
+    --bg-panel: #0F172A;
+    --border: #334155;
+    --border-focus: #64748B;
+    --text-main: #F8FAFC;
+    --text-muted: #94A3B8;
     
     --shadow-input: 0 1px 2px rgba(0, 0, 0, 0.3);
 
-    --btn-secondary-bg: #27272A;
-    --btn-secondary-border: #3F3F46;
-    --btn-secondary-text: #E4E4E7;
-    --btn-secondary-hover: #3F3F46;
+    --btn-secondary-bg: #1E293B;
+    --btn-secondary-border: #334155;
+    --btn-secondary-text: #E2E8F0;
+    --btn-secondary-hover: #334155;
 
     --btn-danger-bg: rgba(220, 38, 38, 0.15);
     --btn-danger-border: rgba(220, 38, 38, 0.3);
     --btn-danger-text: #FCA5A5;
     --btn-danger-hover: rgba(220, 38, 38, 0.25);
 
-    --tab-hover: #3F3F46;
-    --tab-active-bg: rgba(37, 99, 235, 0.2);
-    --tab-active-text: #93C5FD;
+    --tab-hover: #1E293B;
+    --tab-active-bg: rgba(56, 189, 248, 0.15);
+    --tab-active-text: #38BDF8;
     color-scheme: dark;
   }
 }
@@ -104,7 +132,7 @@ body {
   margin: 0;
   overflow: hidden;
   color: var(--text-main);
-  font: 14px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font: 14px/1.45 var(--font-ui);
   background: var(--bg-shell);
   opacity: 0;
 }
@@ -161,23 +189,36 @@ button:disabled {
 }
 
 button.secondary {
-  color: var(--btn-danger-text);
-  background: var(--btn-danger-bg);
-  border: 1px solid var(--btn-danger-border);
-}
-
-button.secondary:hover:not(:disabled) {
-  background: var(--btn-danger-hover);
-}
-
-button.neutral {
   color: var(--btn-secondary-text);
   background: var(--btn-secondary-bg);
   border: 1px solid var(--btn-secondary-border);
 }
 
-button.neutral:hover:not(:disabled) {
+button.secondary:hover:not(:disabled) {
   background: var(--btn-secondary-hover);
+}
+
+button.danger,
+button.destructive {
+  color: var(--btn-danger-text);
+  background: var(--btn-danger-bg);
+  border: 1px solid var(--btn-danger-border);
+}
+
+button.danger:hover:not(:disabled),
+button.destructive:hover:not(:disabled) {
+  background: var(--btn-danger-hover);
+}
+
+#urlList,
+#urlTemplate,
+#urlTemplateItems,
+#sequentialStartUrl,
+#sequentialNextSelector,
+#sequentialCaptureCount,
+#folder,
+#delay {
+  font-family: var(--font-code);
 }
 
 button.mode-tab {

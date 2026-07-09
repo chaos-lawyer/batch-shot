@@ -79,38 +79,24 @@ function inRoundRect(x, y, rx, ry, w, h, r) {
 function renderPixel(x, y) {
   let color = [0, 0, 0, 0];
   if (inRoundRect(x, y, 0, 0, 128, 128, 28)) {
-    color = mix(hex("#1f6feb"), hex("#0d1117"), (x * 0.34 + y * 0.66) / 128);
-    const wave = y < 66 && y > 16 + Math.sin(x / 13) * 8 + x * 0.15;
-    if (wave) color = over(color, [88, 166, 255, 64]);
+    color = mix(hex("#15355A"), hex("#0A2540"), (x * 0.32 + y * 0.68) / 128);
+    const highlight = y < 72 && y > 16 + Math.sin(x / 18) * 5 + x * 0.28;
+    if (highlight) color = over(color, [56, 189, 248, 46]);
   }
 
   const shadowShapes = [
-    [25, 35, 57, 70, 8],
-    [35, 27, 57, 70, 8],
-    [45, 37, 57, 70, 8],
-    [70, 77, 38, 30, 8],
+    [36, 29, 56, 80, 8],
+    [24, 45, 80, 72, 8],
+    [12, 61, 104, 60, 10],
   ];
   for (const [sx, sy, sw, sh, sr] of shadowShapes) {
-    if (inRoundRect(x, y, sx, sy + 5, sw, sh, sr)) color = over(color, [1, 4, 9, 42]);
+    if (inRoundRect(x, y, sx, sy + 5, sw, sh, sr)) color = over(color, [2, 6, 23, 48]);
   }
 
-  if (inRoundRect(x, y, 25, 28, 57, 70, 8)) color = over(color, [139, 148, 158, 184]);
-  if (inRoundRect(x, y, 35, 20, 57, 70, 8)) color = hex("#c9d1d9");
-  if (inRoundRect(x, y, 45, 30, 57, 70, 8)) color = mix(hex("#ffffff"), hex("#c9d1d9"), (y - 30) / 70);
+  if (inRoundRect(x, y, 36, 24, 56, 80, 8)) color = over(color, [56, 189, 248, 220]);
+  if (inRoundRect(x, y, 24, 40, 80, 72, 8)) color = over(color, [125, 211, 252, 224]);
+  if (inRoundRect(x, y, 12, 56, 104, 60, 10)) color = mix(hex("#FFFFFF"), hex("#EAF4FF"), Math.max(0, y - 56) / 60);
 
-  const bars = [
-    [52, 39, 42, 7, 3.5, hex("#2f81f7")],
-    [52, 53, 24, 5, 2.5, hex("#8b949e")],
-    [52, 64, 34, 5, 2.5, hex("#8b949e")],
-    [52, 75, 28, 5, 2.5, hex("#8b949e")],
-  ];
-  for (const [bx, by, bw, bh, br, fill] of bars) {
-    if (inRoundRect(x, y, bx, by, bw, bh, br)) color = fill;
-  }
-
-  const stroke = (cond) => {
-    if (cond) color = hex("#f0f6fc");
-  };
   const nearLine = (x1, y1, x2, y2, width) => {
     const dx = x2 - x1;
     const dy = y2 - y1;
@@ -119,17 +105,18 @@ function renderPixel(x, y) {
     const py = y1 + dy * t;
     return (x - px) ** 2 + (y - py) ** 2 <= (width / 2) ** 2;
   };
-  stroke(nearLine(30, 46, 30, 34, 7.5) || nearLine(30, 34, 39, 25, 7.5) || nearLine(39, 25, 51, 25, 7.5));
-  stroke(nearLine(98, 82, 98, 94, 7.5) || nearLine(98, 94, 89, 103, 7.5) || nearLine(89, 103, 77, 103, 7.5));
+  const dist = (cx, cy) => Math.hypot(x - cx, y - cy);
+  const brand = hex("#0A2540");
+  const focusRing = dist(64, 86) >= 9.5 && dist(64, 86) <= 16.5;
+  const focusDot = dist(64, 86) <= 4.2;
+  const focusMarks = nearLine(42, 86, 52, 86, 7)
+    || nearLine(76, 86, 86, 86, 7)
+    || nearLine(64, 64, 64, 74, 7)
+    || nearLine(64, 98, 64, 108, 7);
+  if (focusRing || focusDot || focusMarks) color = brand;
 
-  if (inRoundRect(x, y, 70, 70, 38, 30, 8)) color = hex("#0d1117");
-  const reportBars = [
-    [76, 78, 26, 4, 2, hex("#3fb950")],
-    [76, 87, 11, 4, 2, hex("#58a6ff")],
-    [91, 87, 11, 4, 2, hex("#58a6ff")],
-  ];
-  for (const [bx, by, bw, bh, br, fill] of reportBars) {
-    if (inRoundRect(x, y, bx, by, bw, bh, br)) color = fill;
+  if (dist(96, 72) <= 5.2) {
+    color = hex("#10B981");
   }
 
   return color;

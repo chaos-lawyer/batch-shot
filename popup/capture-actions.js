@@ -87,6 +87,11 @@ export function createCaptureActions({
   }
 
   async function openAndFillForms() {
+    if (getUrlInputMode() === 'sequential') {
+      await openSequentialLinks();
+      return;
+    }
+
     const popupSettings = getSettings();
     const batchResult = buildBatchOptions(
       popupSettings,
@@ -111,6 +116,39 @@ export function createCaptureActions({
 
     if (!response?.ok) {
       setStatus(responseStatus(response, 'unknownCaptureError'));
+      setRunning({ running: false });
+    }
+  }
+
+  async function openSequentialLinks() {
+    const popupSettings = getSettings();
+    const selector = elements.sequentialNextSelector.value.trim();
+    const count = Number(elements.sequentialCaptureCount.value) || 3;
+    const settings = await persistSettings({
+      ...popupSettings,
+      sequentialNextSelector: selector,
+      sequentialCaptureCount: count
+    });
+
+    await rememberCurrentInputs();
+    setRunning({ running: true, statusKey: 'sequentialOpenRunningStatus' });
+
+    try {
+      const response = await chrome.runtime.sendMessage({
+        action: 'openCurrentTabSequence',
+        payload: {
+          ...settings,
+          sequentialNextSelector: selector,
+          sequentialCaptureCount: count
+        }
+      });
+
+      if (!response?.ok) {
+        setStatus(responseStatus(response, 'unknownCaptureError'));
+        setRunning({ running: false });
+      }
+    } catch (error) {
+      setStatus(error.message || message('unknownCaptureError'));
       setRunning({ running: false });
     }
   }

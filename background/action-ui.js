@@ -1,5 +1,6 @@
 export const ACTION_POPUP_URL = 'popup/popup.html';
 export const ACTION_MENU_OPEN_POPUP = 'open-popup';
+export const ACTION_MENU_OPEN_DETACHED = 'open-detached-popup';
 export const ACTION_MENU_ADD_SEARCH_TEMPLATE = 'add-search-template';
 export const ACTION_MENU_SET_NEXT_PAGE = 'set-next-page-selector';
 
@@ -55,6 +56,17 @@ export async function syncActionContextMenus(chrome, settings) {
   }
 
   chrome.contextMenus.create({
+    id: ACTION_MENU_OPEN_DETACHED,
+    contexts: ['action'],
+    title: await messageForSettings(
+      chrome,
+      settings,
+      'contextMenuOpenDetached',
+      'Open in independent window'
+    )
+  });
+
+  chrome.contextMenus.create({
     id: ACTION_MENU_SET_NEXT_PAGE,
     contexts: ['page', 'link'],
     title: await messageForSettings(
@@ -77,6 +89,16 @@ function openStandalonePopupWindow(chrome) {
     type: 'popup',
     width: 420,
     height: 720,
+    focused: true
+  });
+}
+
+export function openDetachedPopup(chrome) {
+  return chrome.windows.create({
+    url: chrome.runtime.getURL('popup/popup.html?detached=true'),
+    type: 'popup',
+    width: 416,
+    height: 590,
     focused: true
   });
 }

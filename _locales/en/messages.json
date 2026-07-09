@@ -329,6 +329,9 @@
   "contextMenuOpenPopup": {
     "message": "Open popup"
   },
+  "contextMenuOpenDetached": {
+    "message": "Open in independent window"
+  },
   "contextMenuAddSearchTemplate": {
     "message": "Add search box to BatchShot template"
   },
@@ -346,6 +349,9 @@
   },
   "currentWindowTabsButton": {
     "message": "Capture all tabs in current window"
+  },
+  "detachPanelButton": {
+    "message": "Run in independent window"
   },
   "currentTabRunningStatus": {
     "message": "Capturing current page..."
@@ -601,6 +607,69 @@
       }
     }
   },
+  "taskHistoryButton": {
+    "message": "Recent failed task"
+  },
+  "taskHistoryTitle": {
+    "message": "Recent Failed Task"
+  },
+  "taskHistoryEmpty": {
+    "message": "No recent failed task."
+  },
+  "taskHistoryEmptyDetail": {
+    "message": "Failed or unfinished URLs will appear here when the recent batch needs retry."
+  },
+  "taskHistoryClearButton": {
+    "message": "Clear retry alert"
+  },
+  "taskHistoryRetryAllButton": {
+    "message": "Retry failed items"
+  },
+  "taskHistoryRetrySummary": {
+    "message": "$COUNT$ failed item(s)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "taskHistoryRetryFailedButton": {
+    "message": "Retry"
+  },
+  "taskHistoryIgnoreFailedButton": {
+    "message": "Ignore"
+  },
+  "taskHistoryRetryStartedStatus": {
+    "message": "Retrying $COUNT$ item(s)...",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "taskHistoryNoFailures": {
+    "message": "No failed items in this task."
+  },
+  "taskHistoryMoreFailures": {
+    "message": "+$COUNT$ more item(s)",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
+  "taskHistoryLoadError": {
+    "message": "Could not load task details."
+  },
+  "taskHistoryNoRetryableFailures": {
+    "message": "No failed items."
+  },
+  "taskHistoryIncompleteItem": {
+    "message": "unfinished"
+  },
+  "taskHistoryClearStatus": {
+    "message": "Retry alerts cleared."
+  },
   "pausedStatus": {
     "message": "Paused."
   },
@@ -775,7 +844,7 @@
     "message": "Click the icon on top-right to pick manually"
   },
   "sequentialCaptureCountLabel": {
-    "message": "Capture Count"
+    "message": "Pages"
   },
   "detectNextPageButton": {
     "message": "Auto Fill"
@@ -816,6 +885,17 @@
   "sequentialRunningStatus": {
     "message": "Sequential capturing..."
   },
+  "sequentialOpenRunningStatus": {
+    "message": "Opening sequential pages..."
+  },
+  "sequentialOpenDoneStatus": {
+    "message": "Opened $COUNT$ sequential page(s).",
+    "placeholders": {
+      "count": {
+        "content": "$1"
+      }
+    }
+  },
   "sequentialDoneStatus": {
     "message": "Sequential capture done. $SUCCESSFUL$ successful, $FAILED$ failed.",
     "placeholders": {
@@ -855,5 +935,11 @@
   },
   "nextPageSelectorPickerPrompt": {
     "message": "Click the next page button on the page. Press Esc to cancel."
+  },
+  "dashboardTitle": {
+    "message": "Task Dashboard"
+  },
+  "dashboardLogStatusCapturing": {
+    "message": "Capturing..."
   }
 }

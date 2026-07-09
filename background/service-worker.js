@@ -4,17 +4,30 @@ import { runPrepareForms } from './form-prep-runner.js';
 import { setupMessageRouter } from './message-router.js';
 import { createScheduledTaskController } from './scheduled-task.js';
 import { statusFromError, statusError, errorResponse } from './status-error.js';
-import { captureCurrentTab, captureCurrentWindowTabs, runBatch, captureCurrentTabSequence } from './capture-page-runner.js';
+import { captureCurrentTab, captureCurrentWindowTabs, runBatch, captureCurrentTabSequence, openCurrentTabSequence } from './capture-page-runner.js';
 import { getActiveCapturableTab, sendTabMessage, waitForTabComplete } from './tab-utils.js';
 import { createExplicitJobs, createSearchJobs, createUrlJobs } from './job-factory.js';
+import {
+  clearTaskHistoryAlerts,
+  finishCaptureTaskHistory,
+  getRetryAllOptions,
+  getRetryOptions,
+  getTaskHistory,
+  saveCaptureTaskHistory,
+  startCaptureTaskHistory,
+  updateCaptureTaskHistory,
+  ignoreTaskHistoryRow
+} from './task-history.js';
 
 import {
   syncActionUi,
   syncActionPopup,
   openActionPopupFromMenu,
+  openDetachedPopup,
   appendSearchTemplateFromContextMenu,
   setNextPageSelectorFromContextMenu,
   ACTION_MENU_OPEN_POPUP,
+  ACTION_MENU_OPEN_DETACHED,
   ACTION_MENU_ADD_SEARCH_TEMPLATE,
   ACTION_MENU_SET_NEXT_PAGE
 } from './action-ui.js';
@@ -53,7 +66,11 @@ function getActionUiDeps() {
 function getCaptureRunnerDeps() {
   return {
     chrome,
-    batchStatus
+    batchStatus,
+    startCaptureTaskHistory: (task) => startCaptureTaskHistory(task, chrome),
+    updateCaptureTaskHistory: (taskId, row) => updateCaptureTaskHistory(taskId, row, chrome),
+    finishCaptureTaskHistory: (taskId, result) => finishCaptureTaskHistory(taskId, result, chrome),
+    saveCaptureTaskHistory: (task) => saveCaptureTaskHistory(task, chrome)
   };
 }
 
@@ -78,12 +95,18 @@ setupMessageRouter({
   openActionPopupFromMenu: () => openActionPopupFromMenu(getActionUiDeps()),
   syncActionUi: (settings) => syncActionUi(chrome, settings),
   scheduledTasks,
+  getTaskHistory: () => getTaskHistory(chrome),
+  getRetryAllOptions: () => getRetryAllOptions(chrome),
+  getRetryOptions: (taskId) => getRetryOptions(taskId, chrome),
+  clearTaskHistoryAlerts: () => clearTaskHistoryAlerts(chrome),
+  ignoreTaskHistoryRow: (taskId, url) => ignoreTaskHistoryRow(taskId, url, chrome),
   batchStatus,
   runBatch: (options) => runBatch(options, getCaptureRunnerDeps()),
   runPrepareForms,
   captureCurrentTab: (options) => captureCurrentTab(options, getCaptureRunnerDeps()),
   captureCurrentWindowTabs: (options) => captureCurrentWindowTabs(options, getCaptureRunnerDeps()),
   captureCurrentTabSequence: (options) => captureCurrentTabSequence(options, getCaptureRunnerDeps()),
+  openCurrentTabSequence: (options) => openCurrentTabSequence(options, getCaptureRunnerDeps()),
   setStatus,
   statusError,
   statusFromError,
@@ -161,6 +184,12 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
   if (info.menuItemId === ACTION_MENU_OPEN_POPUP) {
     openActionPopupFromMenu(getActionUiDeps())
+      .catch((error) => setStatus(statusFromError(error), false));
+    return;
+  }
+
+  if (info.menuItemId === ACTION_MENU_OPEN_DETACHED) {
+    openDetachedPopup(chrome)
       .catch((error) => setStatus(statusFromError(error), false));
     return;
   }
