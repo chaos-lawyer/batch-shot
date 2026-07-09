@@ -70,7 +70,7 @@
 }
 
 #urlListPane {
-  min-height: 223px;
+  min-height: 100px;
 }
 
 .url-pane.has-no-wrap,
@@ -85,7 +85,7 @@
 }
 
 .url-pane.has-no-wrap {
-  height: 223px;
+  height: 219px;
   resize: vertical;
 }
 
@@ -129,7 +129,7 @@
 
 #urlList {
   height: 100%;
-  min-height: 223px;
+  min-height: 219px;
 }
 
 .no-wrap {

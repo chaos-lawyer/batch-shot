@@ -246,7 +246,7 @@ export function bindAutoSaveEvents(elements, saveSettings) {
 }
 
 export function initTemplateResizing() {
-  const wrappers = document.querySelectorAll('.template-textarea-wrapper');
+  const wrappers = document.querySelectorAll('#urlTemplatePane .template-textarea-wrapper');
   if (wrappers.length !== 2) {
     return;
   }
