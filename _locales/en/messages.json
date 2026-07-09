@@ -620,10 +620,10 @@
     "message": "Failed or unfinished URLs will appear here when the recent batch needs retry."
   },
   "taskHistoryClearButton": {
-    "message": "Clear retry alert"
+    "message": "Clear all tasks"
   },
   "taskHistoryRetryAllButton": {
-    "message": "Retry failed items"
+    "message": "Retry all"
   },
   "taskHistoryRetrySummary": {
     "message": "$COUNT$ failed item(s)",
@@ -637,7 +637,7 @@
     "message": "Retry"
   },
   "taskHistoryIgnoreFailedButton": {
-    "message": "Ignore"
+    "message": "Delete"
   },
   "taskHistoryRetryStartedStatus": {
     "message": "Retrying $COUNT$ item(s)...",

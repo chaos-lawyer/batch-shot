@@ -617,10 +617,10 @@
     "message": "最近一次批量任务出现失败或中断后，会在这里显示可重试 URL。"
   },
   "taskHistoryClearButton": {
-    "message": "清除提醒"
+    "message": "清空全部任务"
   },
   "taskHistoryRetryAllButton": {
-    "message": "重试失败项"
+    "message": "重试全部"
   },
   "taskHistoryRetrySummary": {
     "message": "$COUNT$ 个失败项",
@@ -634,7 +634,7 @@
     "message": "重试"
   },
   "taskHistoryIgnoreFailedButton": {
-    "message": "忽略"
+    "message": "删除"
   },
   "taskHistoryRetryStartedStatus": {
     "message": "正在重试 $COUNT$ 个问题项...",

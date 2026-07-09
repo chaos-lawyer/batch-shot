@@ -91,8 +91,8 @@ export function createTaskHistory({
         el('button', {
           type: 'button',
           className: 'history-button task-history-ignore',
-          title: message('taskHistoryIgnoreFailedButton') || 'Ignore',
-          attrs: { 'aria-label': 'Ignore' },
+          title: message('taskHistoryIgnoreFailedButton') || 'Delete',
+          attrs: { 'aria-label': message('taskHistoryIgnoreFailedButton') || 'Delete' },
           dataset: { taskId, url: row.url, action: 'ignore' }
         }, [icon('trash', 14)])
       ])
