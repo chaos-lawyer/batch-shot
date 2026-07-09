@@ -25,8 +25,8 @@ export function sanitizeFilename(value) {
 export function sanitizePath(value) {
   return String(value ?? '')
     .split(/[\\/]+/)
-    .map((part) => sanitizeFilename(part))
     .filter(Boolean)
+    .map((part) => sanitizeFilename(part))
     .join('/');
 }
 
