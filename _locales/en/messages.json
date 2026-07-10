@@ -282,10 +282,10 @@
     "message": "Fields and order"
   },
   "reportFieldsHelp": {
-    "message": "Use <code>{index}</code>, <code>{url}</code>, <code>{title}</code>, <code>{status}</code>, <code>{filename}</code>, <code>{error}</code>. Chinese names are also supported. Separate fields with commas."
+    "message": "Use <code>{index}</code>, <code>{url}</code>, <code>{title}</code>, <code>{status}</code>, <code>{filename}</code>, <code>{error}</code>. Separate fields with commas."
   },
   "reportSectionTitle": {
-    "message": "Data & Reports"
+    "message": "Screenshot Report"
   },
   "othersSectionTitle": {
     "message": "General Settings"

@@ -264,7 +264,7 @@
     "message": "文件名"
   },
   "filenameHelp": {
-    "message": "可用 {index}/{序号}、{total}/{总数}、{host}/{域名}、{title}/{标题}、{keyword}/{关键词}、{folder}/{文件夹}、{datetime}/{日期时间}、{date}/{日期}、{time}/{时间}、{year}/{年}、{month}/{月}、{day}/{日}、{url}/{网址}"
+    "message": "可用 <code>{index}</code>/<code>{序号}</code>、<code>{total}</code>/<code>{总数}</code>、<code>{host}</code>/<code>{域名}</code>、<code>{title}</code>/<code>{标题}</code>、<code>{keyword}</code>/<code>{关键词}</code>、<code>{folder}</code>/<code>{文件夹}</code>、<code>{datetime}</code>/<code>{日期时间}</code>、<code>{date}</code>/<code>{日期}</code>、<code>{time}</code>/<code>{时间}</code>、<code>{year}</code>/<code>{年}</code>、<code>{month}</code>/<code>{月}</code>、<code>{day}</code>/<code>{日}</code>、<code>{url}</code>/<code>{网址}</code>"
   },
   "filenameDateTimeFormatLabel": {
     "message": "文件名日期时间格式"
@@ -279,10 +279,10 @@
     "message": "字段和顺序"
   },
   "reportFieldsHelp": {
-    "message": "可用 {序号}、{网址}、{页面标题}、{状态}、{文件名}、{错误}，也支持 {index}、{url}、{title}、{status}、{filename}、{error}。"
+    "message": "支持 <code>{index}</code>/<code>{序号}</code>、<code>{url}</code>/<code>{网址}</code>、<code>{title}</code>/<code>{页面标题}</code>、<code>{status}</code>/<code>{状态}</code>、<code>{filename}</code>/<code>{文件名}</code>、<code>{error}</code>/<code>{错误}</code>。多个字段用英文逗号分隔。"
   },
   "reportSectionTitle": {
-    "message": "截图"
+    "message": "截图报告"
   },
   "othersSectionTitle": {
     "message": "其他"
@@ -321,7 +321,7 @@
     "message": "每个历史菜单最多保存的记录条数。"
   },
   "dateTimeFormatHelp": {
-    "message": "可用 YYYY, MM, DD, HH, mm, ss"
+    "message": "可用 <code>YYYY</code>, <code>MM</code>, <code>DD</code>, <code>HH</code>, <code>mm</code>, <code>ss</code>"
   },
   "settingsButton": {
     "message": "设置"
@@ -754,7 +754,7 @@
     "message": "字段和顺序"
   },
   "metadataFieldsHelp": {
-    "message": "支持 {capturedAt}/{截图时间}、{url}/{网址}、{title}/{标题}、{host}/{域名}、{index}/{序号}、{total}/{总数}、{keyword}/{关键词}"
+    "message": "支持 <code>{capturedAt}</code>/<code>{截图时间}</code>、<code>{url}</code>/<code>{网址}</code>、<code>{title}</code>/<code>{标题}</code>、<code>{host}</code>/<code>{域名}</code>、<code>{index}</code>/<code>{序号}</code>、<code>{total}</code>/<code>{总数}</code>、<code>{keyword}</code>/<code>{关键词}</code>"
   },
   "metadataDateTimeFormatLabel": {
     "message": "元信息日期时间格式"
