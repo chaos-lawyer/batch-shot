@@ -230,6 +230,10 @@ export function createCaptureActions({
     await chrome.runtime.openOptionsPage();
   }
 
+  async function openHelp() {
+    await chrome.tabs.create({ url: chrome.runtime.getURL('help/help.html') });
+  }
+
   function bindCaptureEvents() {
     elements.currentTabButton.addEventListener('click', captureCurrentTab);
     elements.currentWindowTabsButton.addEventListener('click', captureCurrentWindowTabs);
@@ -238,6 +242,7 @@ export function createCaptureActions({
     elements.pauseButton.addEventListener('click', togglePauseCapture);
     elements.stopButton.addEventListener('click', stopCapture);
     elements.settingsButton.addEventListener('click', openSettings);
+    elements.helpButton.addEventListener('click', openHelp);
   }
 
   return {

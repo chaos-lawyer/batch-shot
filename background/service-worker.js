@@ -8,6 +8,14 @@ import { captureCurrentTab, captureCurrentWindowTabs, runBatch, captureCurrentTa
 import { getActiveCapturableTab, sendTabMessage, waitForTabComplete } from './tab-utils.js';
 import { createExplicitJobs, createSearchJobs, createUrlJobs } from './job-factory.js';
 import {
+  PREPARED_TAB_CONTEXT_ALARM,
+  cleanupPreparedTabContexts,
+  clearPreparedTabContextsForTabIds,
+  ensurePreparedTabContextCleanupAlarm,
+  getPreparedTabContextsForTabs,
+  rememberPreparedTabContext
+} from './prepared-tab-context.js';
+import {
   clearTaskHistoryAlerts,
   finishCaptureTaskHistory,
   getRetryAllOptions,
@@ -67,6 +75,8 @@ function getCaptureRunnerDeps() {
   return {
     chrome,
     batchStatus,
+    getPreparedTabContextsForTabs: (tabs) => getPreparedTabContextsForTabs(chrome, tabs),
+    clearPreparedTabContextsForTabIds: (tabIds) => clearPreparedTabContextsForTabIds(chrome, tabIds),
     startCaptureTaskHistory: (task) => startCaptureTaskHistory(task, chrome),
     updateCaptureTaskHistory: (taskId, row) => updateCaptureTaskHistory(taskId, row, chrome),
     finishCaptureTaskHistory: (taskId, result) => finishCaptureTaskHistory(taskId, result, chrome),
@@ -115,6 +125,7 @@ setupMessageRouter({
   waitWhilePaused,
   waitForTabComplete,
   sendTabMessage,
+  rememberPreparedTabContext: (tab, job) => rememberPreparedTabContext(chrome, tab, job),
   getActiveCapturableTab,
   createReportRow,
   createUrlJobs,
@@ -123,6 +134,12 @@ setupMessageRouter({
 });
 
 chrome.alarms.onAlarm.addListener((alarm) => {
+  if (alarm.name === PREPARED_TAB_CONTEXT_ALARM) {
+    cleanupPreparedTabContexts(chrome)
+      .catch((error) => setStatus(statusFromError(error), false));
+    return;
+  }
+
   loadSettings()
     .then((settings) => {
       if (settings.scheduledTasksEnabled) {
@@ -131,6 +148,13 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     })
     .catch((error) => setStatus(statusFromError(error), false));
 });
+
+if (chrome.tabs.onRemoved?.addListener) {
+  chrome.tabs.onRemoved.addListener((tabId) => {
+    clearPreparedTabContextsForTabIds(chrome, [tabId])
+      .catch((error) => setStatus(statusFromError(error), false));
+  });
+}
 
 chrome.action.onClicked.addListener(() => {
   loadSettings()
@@ -200,6 +224,7 @@ chrome.runtime.onInstalled.addListener(() => {
     .then(async (settings) => {
       await syncActionUi(chrome, settings);
       await restoreScheduledAlarmIfEnabled(settings);
+      await ensurePreparedTabContextCleanupAlarm(chrome);
     })
     .catch((error) => setStatus(statusFromError(error), false));
 });
@@ -209,6 +234,7 @@ chrome.runtime.onStartup.addListener(() => {
     .then(async (settings) => {
       await syncActionUi(chrome, settings);
       await restoreScheduledAlarmIfEnabled(settings);
+      await ensurePreparedTabContextCleanupAlarm(chrome);
     })
     .catch((error) => setStatus(statusFromError(error), false));
 });
@@ -230,5 +256,6 @@ loadSettings()
   .then(async (settings) => {
     await syncActionUi(chrome, settings);
     await restoreScheduledAlarmIfEnabled(settings);
+    await ensurePreparedTabContextCleanupAlarm(chrome);
   })
   .catch((error) => setStatus(statusFromError(error), false));

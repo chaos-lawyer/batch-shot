@@ -39,7 +39,7 @@ export const DEFAULT_SETTINGS = {
   metadataEnabled: false,
   metadataPosition: 'top',
   metadataLayout: 'stacked',
-  metadataFields: 'capturedAt,url',
+  metadataFields: '{capturedAt},{url}',
   metadataDateTimeFormat: 'YYYY/MM/DD HH:mm',
   metadataFontSize: 24,
   metadataPadding: 10,

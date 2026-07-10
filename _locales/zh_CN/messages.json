@@ -279,7 +279,7 @@
     "message": "字段和顺序"
   },
   "reportFieldsHelp": {
-    "message": "可用 序号、网址、页面标题、状态、文件名、错误，也支持 index、url、title、status、filename、error。"
+    "message": "可用 {序号}、{网址}、{页面标题}、{状态}、{文件名}、{错误}，也支持 {index}、{url}、{title}、{status}、{filename}、{error}。"
   },
   "reportSectionTitle": {
     "message": "截图"
@@ -307,6 +307,9 @@
   },
   "closeBatchTabsAfterCaptureLabel": {
     "message": "批量截图后关闭对应页面"
+  },
+  "closeBatchTabsAfterCaptureHelp": {
+    "message": "仅适用于 <code>列表模式</code> 和 <code>模板模式</code>。"
   },
   "urlListWrapLabel": {
     "message": "URL 列表按窗口宽度自动换行"
@@ -518,8 +521,17 @@
   "metadataSectionTitle": {
     "message": "元信息"
   },
+  "captureSectionTitle": {
+    "message": "截图设置"
+  },
   "resetOptionsButton": {
     "message": "重置"
+  },
+  "resetSettingsConfirm": {
+    "message": "确定要重置所有设置为默认值吗？此操作无法撤销。"
+  },
+  "confirmModalTitle": {
+    "message": "确认操作"
   },
   "savedStatus": {
     "message": "已保存"
@@ -742,7 +754,7 @@
     "message": "字段和顺序"
   },
   "metadataFieldsHelp": {
-    "message": "支持 capturedAt/截图时间、url/网址、title/标题、host/域名、index/序号、total/总数、keyword/关键词"
+    "message": "支持 {capturedAt}/{截图时间}、{url}/{网址}、{title}/{标题}、{host}/{域名}、{index}/{序号}、{total}/{总数}、{keyword}/{关键词}"
   },
   "metadataDateTimeFormatLabel": {
     "message": "元信息日期时间格式"
@@ -941,5 +953,179 @@
   },
   "dashboardLogStatusCapturing": {
     "message": "正在截图..."
+  },
+  "helpButton": {
+    "message": "帮助"
+  },
+  "helpTitle": {
+    "message": "帮助"
+  },
+  "helpSubtitle": {
+    "message": "BatchShot 详细功能指南与排错说明"
+  },
+  "helpSearchPlaceholder": {
+    "message": "输入关键词搜索..."
+  },
+  "helpLangLabel": {
+    "message": "语言"
+  },
+  "helpThemeLabel": {
+    "message": "外观主题"
+  },
+  "helpCategoryQuickStart": {
+    "message": "快速开始"
+  },
+  "helpQuickStartContent": {
+    "message": "BatchShot 支持四种高效截图与执行流程，满足从单页归档到大规模自动化审计的不同需求：<br><ul><li><strong>截取当前页面 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z\"></path><circle cx=\"12\" cy=\"13\" r=\"4\"></circle></svg></span></strong>：立即截取并拼接当前活动标签页的整页。悬浮头部会自动隐藏，以确保生成干净、带时间戳的记录。</li><li><strong>截取当前窗口 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16\"></path><path d=\"M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2\"></path><circle cx=\"13\" cy=\"7\" r=\"1\" fill=\"currentColor\"></circle><rect x=\"8\" y=\"2\" width=\"14\" height=\"14\" rx=\"2\"></rect></svg></span></strong>：自动循环截取当前窗口中所有打开的标签页——非常适合对比多个参考页面。</li><li><strong>仅打开链接 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"8\" y=\"2\" width=\"8\" height=\"4\" rx=\"1\" ry=\"1\"></rect><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"></path><path d=\"M16.5 10.5a2.121 2.121 0 0 1 3 3L13 20l-4 1 1-4 6.5-6.5z\"></path></svg></span></strong>：在后台或新标签页中导入并打开 URL，但不进行截图。这允许您在截图前手动登录、处理验证码或进行页面准备。</li><li><strong>批量自动化截图 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polygon points=\"5 3 19 12 5 21 5 3\"></polygon></svg></span></strong>：包括 <strong>URL 列表</strong>、<strong>URL 模板</strong>、<strong>CSS 选择器搜索</strong> 和 <strong>序列模式</strong>——专为大批量自动化工作流设计。</li></ul><div class=\"help-note note-info\"><p><strong>提示：</strong> 由于浏览器扩展的安全限制，无法截取浏览器内部页面（例如 <code>chrome://</code> 页面）、Chrome 应用商店和本地特权文件。我们建议在设置中为“截取当前页面”和“截取当前窗口”配置快捷键，以实现更快的触发速度。</p></div>"
+  },
+  "helpUrlListTitle": {
+    "message": "URL 列表模式"
+  },
+  "helpUrlListScenario": {
+    "message": "适用场景：已拥有一批明确的 URL 链接（如多个竞品首页、工作文档页面、测试用例页等）。"
+  },
+  "helpUrlListContent": {
+    "message": "<ul><li>1. 在 <strong>URL 列表</strong> 中每行输入一个页面地址；没有协议头的地址会自动补全为 <code>https://</code>。</li><li>2. 也可以点击 <strong>抓取当前页正文链接 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10 13a5 5 0 0 0 7.1 0l2.8-2.8a5 5 0 0 0-7.1-7.1L11.2 4.7\"></path><path d=\"M14 11a5 5 0 0 0-7.1 0l-2.8 2.8a5 5 0 0 0 7.1 7.1l1.6-1.6\"></path></svg></span></strong>，从当前网页抽取链接，再在链接选择器中按域名、标题或地址过滤。</li><li>3. 设置 <strong>截图模式</strong>、<strong>格式</strong>、<strong>延迟</strong>、<strong>文件夹</strong> 后点击开始。若开启报告，每个 URL 的结果都会写入报告。</li><li>4. 输入框右侧的历史按钮可恢复、置顶、重命名或删除之前用过的列表。</li></ul><pre><code>https://example.com\nexample.org/pricing\nhttps://docs.example.com/help</code></pre><div class=\"help-note note-info\"><p><strong>建议：</strong> 大批量任务先用少量 URL 测试延迟、格式和文件名模板，确认结果后再运行完整列表。</p></div>"
+  },
+  "helpTemplateTitle": {
+    "message": "URL 模板模式"
+  },
+  "helpTemplateScenario": {
+    "message": "适用场景：批量截图只在一两个变量（如商品 ID、搜索词、城市、页码）不同的 URL 时。"
+  },
+  "helpTemplateContent": {
+    "message": "<ul><li>1. 在 URL 模板输入框中输入包含 <code><span class=\"hl-kw\">%s</span></code> 占位符的链接。例如：<br><code>https://example.com/search?q=<span class=\"hl-kw\">%s</span></code><br><code>https://example.com/product/<span class=\"hl-kw\">%s</span></code></li><li>2. 在 <strong>文本列表 (Text List)</strong> 输入框中，输入要替换的关键词或 ID，每行一个。例如：<br><code>camera</code><br><code>tripod</code></li><li>3. 系统会将每个文本项依次替换到 <code><span class=\"hl-kw\">%s</span></code> 中生成最终的截图任务。</li><li>4. 文件名模板中可以使用 <code><span class=\"hl-kw\">{keyword}</span></code> 占位符，图片将自动以对应的文本命名。</li></ul>"
+  },
+  "helpSelectorSearchTitle": {
+    "message": "CSS 选择器搜索"
+  },
+  "helpSelectorSearchScenario": {
+    "message": "适用场景：目标网站通过 URL 参数无法直接访问搜索结果，必须在页面输入框输入内容并点击按钮或按回车搜索。"
+  },
+  "helpSelectorSearchContent": {
+    "message": "<ul><li>1. 基本格式为 <code>起始 URL <span class=\"hl-sep\">::</span> <span class=\"hl-sel\">输入框选择器</span></code>；如果必须点击提交按钮，在最后追加 <code><span class=\"hl-sep\">::</span> <span class=\"hl-sel\">按钮选择器</span></code>（默认连接符为 <code>::</code>，可在设置中修改）。</li><li>2. 文本列表默认每行一个搜索词。若模板包含多个输入框选择器，每行需提供多个字段，可用制表符或设置中的模板搜索连接符分隔。</li><li>3. 提交按钮是可选项：没有按钮选择器时，BatchShot 会填入字段后按回车；有按钮选择器时会点击按钮。</li><li>4. 起始 URL、输入框、按钮必须位于扩展可访问的同一页面上下文；跨域 iframe、封闭 Shadow DOM、验证码和复杂多步登录无法可靠自动化。</li><li>5. <strong>右键菜单快捷填入：</strong> 除了手动分析网页 DOM，您也可以在目标网页的搜索输入框上<strong>右键点击</strong>，选择 <strong>“添加搜索框到 BatchShot 模板”</strong>，插件会自动提取选择器并生成模板填充到输入框中。</li></ul><pre><code>https://example.com :: input[name=\"q\"]\nhttps://example.com :: input.search :: button[type=\"submit\"]\nhttps://example.com/advanced :: input[name=\"city\"] :: input[name=\"keyword\"] :: button.search</code></pre><div class=\"help-note note-warning\"><p><strong>选择器建议：</strong> 优先使用稳定属性，例如 <code>input[name=\"q\"]</code>、<code>[data-testid=\"search\"]</code>。自动生成的长路径选择器容易在页面改版后失效。</p></div>"
+  },
+  "helpSequentialTitle": {
+    "message": "序列模式"
+  },
+  "helpSequentialScenario": {
+    "message": "适用场景：分页列表、连续文章或搜索结果，需要不断点击“下一页”并逐页截图。"
+  },
+  "helpSequentialContent": {
+    "message": "<ul><li>1. 输入 <strong>网页 URL</strong>、<strong>下一页 CSS 选择器</strong> 和 <strong>截图页数</strong>。第一页也会被截图，所以页数为 3 表示“当前页 + 再点两次下一页”。</li><li>2. 可点击 <strong>从当前页一键填充</strong> 让扩展尝试识别当前页面和下一页按钮；也可点击 <strong>选择下一页 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z\"></path><path d=\"M13 13l6 6\"></path></svg></span></strong>，回到页面上用鼠标点选下一页按钮。</li><li>3. 点击开始后，BatchShot 会截图当前页、点击下一页、等待页面变化，再继续截图，直到达到页数或下一页不可用。</li><li>4. 也可以先使用 <strong>仅打开链接</strong> 准备序列页面，手动确认状态后再使用当前窗口截图。</li><li>5. <strong>右键菜单快捷填入：</strong> 您也可以在目标网页的“下一页”按钮上<strong>右键点击</strong>，选择 <strong>“设为序列截图下一页按钮”</strong>，即可直接填充该按钮的选择器。</li></ul><div class=\"help-note note-warning\"><p><strong>限制：</strong> 序列模式适合真实按钮或链接式分页；无限滚动、虚拟列表、需要拖动验证码或多条件交互的页面，应优先拆成 URL 列表或手动准备后截图。</p></div>"
+  },
+  "helpCurrentPageTitle": {
+    "message": "当前页面与当前窗口"
+  },
+  "helpCurrentPageScenario": {
+    "message": "适用场景：无需配置批量任务，临时对当前正在阅读的单个网页或当前窗口的所有标签页一键截图。"
+  },
+  "helpCurrentPageContent": {
+    "message": "在 Popup 底部工具区或通过快捷键：<br><ul><li><strong>截取当前页面 (Capture current page)</strong>：截取当前活动标签页。</li><li><strong>截取当前窗口 (Capture all tabs in current window)</strong>：依次截取当前窗口中所有可截图的网页标签页。</li></ul><div class=\"help-note note-info\"><p><strong>提示：</strong> 浏览器内置页面（如 <code>chrome://</code> 开头的页面）、应用商店页面及受保护的本地特殊页面由于浏览器安全策略限制，无法进行截图。</p></div>"
+  },
+  "helpFilenameFolderTitle": {
+    "message": "下载文件夹与文件名模板"
+  },
+  "helpFilenameFolderScenario": {
+    "message": "适用场景：截图后，期望自动将截图整理归档到不同子文件夹中，或按特定格式重命名文件名。"
+  },
+  "helpFilenameFolderContent": {
+    "message": "In 选项设置中可以配置文件夹和文件名的模板。<br><strong>文件夹 (Folder)：</strong> 支持使用斜杠 <code>/</code> 创建多级子目录。例如：<code>BatchShot/<span class=\"hl-kw\">{date}</span>/<span class=\"hl-kw\">{host}</span></code><br><strong>文件名模板 (Filename Pattern)：</strong> 支持以下占位符：<br><ul><li><code><span class=\"hl-kw\">{index}</span></code> - 当前任务序号 (001, 002...)</li><li><code><span class=\"hl-kw\">{total}</span></code> - 任务总数</li><li><code><span class=\"hl-kw\">{host}</span></code> / <code><span class=\"hl-kw\">{domain}</span></code> - 网站域名 (如 <code>example.com</code>)</li><li><code><span class=\"hl-kw\">{title}</span></code> - 页面标题</li><li><code><span class=\"hl-kw\">{keyword}</span></code> - 模板替换词/搜索关键词</li><li><code><span class=\"hl-kw\">{datetime}</span></code> - 完整日期时间</li><li><code><span class=\"hl-kw\">{date}</span></code> - 当前日期</li><li><code><span class=\"hl-kw\">{time}</span></code> - 当前时间</li><li><code><span class=\"hl-kw\">{url}</span></code> - 页面 URL (会自动替换非法文件名字符)</li></ul>"
+  },
+  "helpCaptureOutputTitle": {
+    "message": "截图模式与输出格式"
+  },
+  "helpCaptureOutputScenario": {
+    "message": "适用场景：需要长图归档时选择 Full Page，仅需要可见视口时选择 Viewport，根据需要选择图片格式或 PDF。"
+  },
+  "helpCaptureOutputContent": {
+    "message": "<ul><li><strong>Full page (整页模式)</strong>：通过滚动页面分段截图并拼接成一张完整的长图。对于固定定位 (fixed/sticky) 元素，扩展会尝试临时隐藏以避免重复拼接。</li><li><strong>Viewport (可视区模式)</strong>：只截取浏览器当前窗口可见的区域。</li><li><strong>PNG / JPG / PDF</strong>：支持输出为 PNG、JPG 格式或直接生成 PDF 文档。可以在设置中调整 JPG/PDF 的压缩质量。</li><li><strong>Delay (延迟)</strong>：如果页面包含大量的图片懒加载、动态入场动画或 Ajax 数据加载，请适当调大延迟时间以确保截图内容完整。</li></ul>"
+  },
+  "helpMetadataTitle": {
+    "message": "元信息水印"
+  },
+  "helpMetadataScenario": {
+    "message": "适用场景：截图需要防伪或需要保留抓取源头信息（如取证、审计、测试记录）时，将网址和时间刻印在图片上。"
+  },
+  "helpMetadataContent": {
+    "message": "在设置中启用“添加元信息水印”后，截图的顶部或底部会自动拼上一块栏目，刻印以下内容：<br><ul><li>截图日期时间 (<code>{capturedAt}</code> 或 <code>{time}</code>)</li><li>页面完整地址 (<code>{url}</code>)</li><li>页面标题 (<code>{title}</code>)</li><li>网页域名 (<code>{host}</code> 或 <code>{domain}</code>)</li><li>任务当前序号 (<code>{index}</code>)</li><li>任务总数 (<code>{total}</code>)</li><li>模板替换词/搜索关键词 (<code>{keyword}</code>)</li></ul>您可以在设置中自定义这块水印的字号、文字颜色、背景颜色、内边距、布局方式（分行或同行）等。"
+  },
+  "helpReportTitle": {
+    "message": "截图报告"
+  },
+  "helpReportScenario": {
+    "message": "适用场景：大批量截图完毕后，需要一份结构化的 Excel / CSV 清单，记录每个 URL 的截图结果及文件名。"
+  },
+  "helpReportContent": {
+    "message": "在设置中启用 <strong>导出截图报告</strong> 后，批量任务结束时会下载 CSV 或 XLSX 报告。报告会记录成功和失败任务，方便复核、交付或继续重试。<br>用户可以选择以下字段：<ul><li><code>{index}</code> / <code>{序号}</code>：任务序号。</li><li><code>{url}</code> / <code>{网址}</code>：页面地址；XLSX 中会尽量保留超链接。</li><li><code>{title}</code> / <code>{标题}</code>：页面标题。</li><li><code>{status}</code> / <code>{状态}</code>：成功或失败。</li><li><code>{filename}</code> / <code>{文件名}</code>：本地下载路径。</li><li><code>{error}</code> / <code>{失败原因}</code>：失败时的错误描述。</li></ul><pre><code>{index},{url},{title},{status},{filename},{error}\n{序号},{网址},{标题},{状态},{文件名},{失败原因}</code></pre>"
+  },
+  "helpScheduledTasksTitle": {
+    "message": "定时任务"
+  },
+  "helpScheduledTasksContent": {
+    "message": "<ul><li>1. 需在设置中启用 <strong>启用定时截图</strong>。</li><li>2. 在弹窗界面配置好模式 and 内容后，点击底部工具区右侧 <strong>开始</strong> 按钮旁边的 <strong>时钟 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><path d=\"M12 6v6l4 2\"></path></svg></span></strong> 图标按钮。</li><li>3. 设定任务的执行时间和任务名称，然后点击保存。</li><li>4. 定时任务依靠浏览器后台定时唤醒机制运行。</li></ul><div class=\"help-note note-warning\"><p><strong>重要提示：</strong> 确保浏览器在任务执行时未被完全关闭。系统休眠或关机可能会导致定时任务被跳过或延时执行。</p></div>"
+  },
+  "helpHistoryFailureHistoryTitle": {
+    "message": "历史记录与失败历史"
+  },
+  "helpHistoryFailureHistoryContent": {
+    "message": "<ul><li><strong>输入历史：</strong> URL 列表、URL 模板、文本列表、序列起始 URL 和下一页选择器都会保存近期记录。可以置顶 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><line x1=\"12\" y1=\"17\" x2=\"12\" y2=\"22\"></line><path d=\"M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V6h1a2 2 0 0 0 0-4H8a2 2 0 0 0 0 4h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24Z\"></path></svg></span>、重命名 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z\"></path></svg></span>、删除 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polyline points=\"3 6 5 6 21 6\"></polyline><path d=\"M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2\"></path><line x1=\"10\" y1=\"11\" x2=\"10\" y2=\"17\"></line><line x1=\"14\" y1=\"11\" x2=\"14\" y2=\"17\"></line></svg></span> 或清空；保存数量由设置页的历史上限控制。</li><li><strong>失败历史 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z\"></path><line x1=\"12\" y1=\"9\" x2=\"12\" y2=\"13\"></line><line x1=\"12\" y1=\"17\" x2=\"12.01\" y2=\"17\"></line></svg></span>：</strong> 批量任务中失败的项目会显示在失败历史面板，包含 URL、标题、错误原因和原任务上下文。</li><li><strong>重试全部：</strong> 只把失败项重新打包成新任务，不会重新下载已经成功的截图。适合调大延迟、重新登录或修正网络后继续补拍。</li><li><strong>报告配合：</strong> 开启报告后，失败原因也会写入 CSV/XLSX，便于离线筛查。</li></ul>"
+  },
+  "helpShortcutsTitle": {
+    "message": "快捷键"
+  },
+  "helpShortcutsContent": {
+    "message": "扩展预设了以下默认快捷键：<br><ul><li><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> - 打开/唤起 BatchShot 弹窗</li><li><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> - 截取当前活动页面 (Full page)</li><li><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>W</kbd> - 截取当前窗口所有标签页</li></ul>您可以在设置页的 “Shortcuts” 栏目中，点击 <strong>在 Chrome 中编辑 (Edit in Chrome)</strong> 跳转到浏览器的快捷键管理页面，重新绑定或清空快捷键。"
+  },
+  "helpTroubleshootingTitle": {
+    "message": "常见问题与排错"
+  },
+  "helpTroubleshootingContent": {
+    "message": "<div class=\"faq-item\"><h3>1. 为什么有些网页显示无法截图？</h3><p>由于浏览器的安全策略，扩展程序无权访问和截取 <code>chrome://</code> 内置页面、Chrome 应用商店 (Chrome Web Store) 以及某些本地特权页面。另外，若页面未完全加载，或服务器拒绝访问，也可能导致截图失败。</p></div><div class=\"faq-item\"><h3>2. 为什么整页截图 (Full page) 拼出来的图片中，导航栏重复出现或者缺失？</h3><p>整页截图通过滚动滚动条拼接，扩展会尝试查找 <code>fixed</code> 或 <code>sticky</code> 定位的悬浮元素并临时隐藏。但在某些非标准的复杂网页结构中，定位识别可能会失效。您可以尝试增加 <strong>Delay</strong>，或者改为使用 <strong>Viewport</strong> 模式只截可视区。</p></div><div class=\"faq-item\"><h3>3. 为什么搜索模板 (CSS selector) 无法成功提交？</h3><p>请确保您填写的 CSS 选择器在目标页面中是唯一且正确的。若是通过点击按钮提交，确保按钮选择器填入正确；若该按钮在 iframe 或 Shadow DOM 内部，由于沙箱限制可能无法被直接定位。请尝试在页面上右键“检查”重新获取稳定的 CSS 选择器。</p></div><div class=\"faq-item\"><h3>4. 为什么截图中的图片显示空白或未加载完成？</h3><p>许多现代网站使用延迟加载 (Lazy Load) 技术，图片只有滚动到可视区域且加载完成后才会显示。请在设置中将 <strong>Delay (延迟)</strong> 调大（如 2 或 3 秒），给予网页充足的时间去滚动和加载资源。</p></div><div class=\"faq-item\"><h3>5. 失败历史里的“重试全部”会重新下载成功的截图吗？</h3><p>不会。重试全部仅将失败的网页 URL 重新打包运行，已成功截图的网页不会被重新截图，也不会覆盖本地已下载的图片。</p></div>"
+  },
+  "helpCategoryQuickStart": {
+    "message": "快速开始"
+  },
+  "helpCategoryModes": {
+    "message": "选择截图模式"
+  },
+  "helpCategoryOutput": {
+    "message": "保存与文件"
+  },
+  "helpCategoryGeneral": {
+    "message": "常规与定时"
+  },
+  "helpCategoryTroubleshoot": {
+    "message": "常见问题与排错"
+  },
+  "helpNoResults": {
+    "message": "无相关结果"
+  },
+  "helpNoResultsDesc": {
+    "message": "检查拼写，或者清空搜索框以浏览完整帮助。"
+  },
+  "helpResetSearchBtn": {
+    "message": "清空搜索"
+  },
+  "metadataFormatLabel": {
+    "message": "布局方式"
+  },
+  "metadataFormatStacked": {
+    "message": "分行"
+  },
+  "metadataFormatInline": {
+    "message": "同行"
+  },
+  "helpRuntimeDashboardTitle": {
+    "message": "运行状态与任务控制"
+  },
+  "helpRuntimeDashboardContent": {
+    "message": "<ul><li><strong>运行状态看板：</strong>批量截图、模板截图、序列截图或当前窗口截图开始后，弹窗中会显示运行状态看板，展示任务进度、已完成数量以及每个页面的截图日志。</li><li><strong>暂停与继续 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"6\" y=\"4\" width=\"4\" height=\"16\" rx=\"1\"></rect><rect x=\"14\" y=\"4\" width=\"4\" height=\"16\" rx=\"1\"></rect></svg></span></strong>：任务运行中可使用暂停按钮临时停止队列推进，确认页面状态或处理网络/登录问题后再继续。</li><li><strong>中止任务 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"6\" y=\"6\" width=\"12\" height=\"12\" rx=\"2\"></rect></svg></span></strong>：点击停止按钮会请求中止当前批量任务。已经完成下载的截图会保留；尚未处理或正在处理的项目会停止继续执行。</li><li><strong>失败历史与报告 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z\"></path><line x1=\"12\" y1=\"9\" x2=\"12\" y2=\"13\"></line><line x1=\"12\" y1=\"17\" x2=\"12.01\" y2=\"17\"></line></svg></span></strong>：任务失败或中止后，失败项会在失败历史、状态看板或导出的报告中留下可追踪信息，便于稍后重试和复核。</li><li><strong>结束与清理：</strong>任务完成、失败或中止后，状态看板会保留最终结果，便于检查成功数量、失败原因和下载报告；确认无误后可关闭看板或开始下一次任务。</li></ul><div class=\"help-note note-info\"><p><strong>提示：</strong> 中止是尽快停止队列的请求，不一定能打断浏览器正在进行的单次截图或下载动作；如果某一页已经开始导出，可能会先完成当前步骤再停止后续任务。</p></div>"
+  },
+  "helpCopyrightTitle": {
+    "message": "版权声明"
+  },
+  "helpCopyrightContent": {
+    "message": "<p>BatchShot 批量截图 是一款网页截图及本地归档工具。当您使用它截取网页时，页面中包含的图片、文字、商标、界面等第三方内容，其版权、商标权等相关权益仍归原权利人所有。</p><p>您在使用扩展进行截图、保存、分发、展示、商业用途或二次传播时，应自行负责确认该行为符合目标网站的用户协议、著作权法、隐私政策及相关法律法规。BatchShot 绝不会将截图上传到任何服务器，亦不授予您对第三方内容的任何权利。</p><p>BatchShot 项目代码本身依据 <code>MIT 许可证</code> 开源，但项目代码的许可并不代表对所截取网页内容的授权。</p>"
   }
 }

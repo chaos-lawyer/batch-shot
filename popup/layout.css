@@ -85,16 +85,14 @@
 }
 
 .url-pane.has-no-wrap {
-  height: 219px;
+  height: 233px;
+  min-height: 233px;
   resize: vertical;
-}
-
-#urlListPane.has-no-wrap {
-  height: 223px;
 }
 
 .template-textarea-wrapper {
   height: 180px;
+  min-height: 180px;
   resize: vertical;
 }
 
@@ -129,7 +127,7 @@
 
 #urlList {
   height: 100%;
-  min-height: 219px;
+  min-height: 233px;
 }
 
 .no-wrap {
@@ -285,6 +283,10 @@ button.filter-button:hover:not(:disabled) {
   display: none;
 }
 
+#urlListLabelWrapper {
+  margin-bottom: 0;
+}
+
 .segmented {
   flex: 0 0 auto;
   gap: 2px;
@@ -300,6 +302,7 @@ button.filter-button:hover:not(:disabled) {
 
 #captureSettings {
   flex-wrap: nowrap;
+  margin-top: auto;
 }
 
 .grid.three {
@@ -385,6 +388,7 @@ input[type="color"] {
 }
 
 textarea {
+  display: block;
   resize: vertical;
   padding: 10px 12px;
 }

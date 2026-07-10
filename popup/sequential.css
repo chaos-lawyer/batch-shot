@@ -62,5 +62,5 @@
 
 .sequential-url-wrapper {
   height: 89px; /* 3 times default input height (38px) */
-  min-height: 38px;
+  min-height: 89px;
 }

@@ -35,6 +35,9 @@ export async function prepareSingleFormJob(job, index, total, deps) {
     tab = await chrome.tabs.create({ url: job.url, active: true });
     await waitForTabComplete(tab.id, 45000, 'searchPageLoadTimeoutError');
     const latestTab = await chrome.tabs.get(tab.id).catch(() => tab);
+    if (deps.rememberPreparedTabContext) {
+      await deps.rememberPreparedTabContext(latestTab, job);
+    }
     url = latestTab.url || tab.url || job.url;
     title = latestTab.title || '';
     batchStatus.updateProgress(index, total, url);

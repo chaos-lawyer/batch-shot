@@ -1,0 +1,195 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title data-i18n="helpTitle">Help & Documentation</title>
+    <link rel="stylesheet" href="help.css">
+  </head>
+  <body>
+    <main class="shell">
+      <div class="container">
+        <aside class="sidebar">
+          <div class="sidebar-brand">
+            <img src="../icons/icon-128.png" class="sidebar-logo" alt="Logo">
+            <h1 class="sidebar-title" data-i18n="helpTitle">Help</h1>
+          </div>
+          <div class="search-box">
+            <div class="search-input-wrapper">
+              <input type="search" id="helpSearch" data-i18n-placeholder="helpSearchPlaceholder" placeholder="Search..." autocomplete="off">
+              <button id="clearSearchBtn" class="clear-search-btn hidden" type="button" aria-label="Clear search">✕</button>
+            </div>
+          </div>
+          <nav aria-label="Help sections" id="helpNav">
+            <ul class="menu-list">
+              <li class="menu-item-group">
+                <a href="#quick-start" class="category-link active" data-i18n="helpCategoryQuickStart">Quick Start</a>
+              </li>
+              <li class="menu-item-group">
+                <a href="#capture-modes-section" class="category-link" data-i18n="helpCategoryModes">Capture Modes</a>
+                <ul class="submenu">
+                  <li><a href="#url-list-mode" class="submenu-link" data-i18n="helpUrlListTitle">URL List Mode</a></li>
+                  <li><a href="#template-mode" class="submenu-link" data-i18n="helpTemplateTitle">URL Template Mode</a></li>
+                  <li><a href="#selector-search-template" class="submenu-link" data-i18n="helpSelectorSearchTitle">CSS Selector Search</a></li>
+                  <li><a href="#sequential-mode" class="submenu-link" data-i18n="helpSequentialTitle">Sequential Capture</a></li>
+                </ul>
+              </li>
+              <li class="menu-item-group">
+                <a href="#save-output-section" class="category-link" data-i18n="helpCategoryOutput">Saving & Files</a>
+                <ul class="submenu">
+                  <li><a href="#filename-folder" class="submenu-link" data-i18n="helpFilenameFolderTitle">Subfolder & Filename</a></li>
+                  <li><a href="#capture-output" class="submenu-link" data-i18n="helpCaptureOutputTitle">Capture Mode & Formats</a></li>
+                  <li><a href="#metadata" class="submenu-link" data-i18n="helpMetadataTitle">Metadata Overlay</a></li>
+                  <li><a href="#report" class="submenu-link" data-i18n="helpReportTitle">Capture Report Sheet</a></li>
+                </ul>
+              </li>
+              <li class="menu-item-group">
+                <a href="#general-captures-section" class="category-link" data-i18n="helpCategoryGeneral">Schedules & History</a>
+                <ul class="submenu">
+                  <li><a href="#runtime-dashboard" class="submenu-link" data-i18n="helpRuntimeDashboardTitle">Task Dashboard</a></li>
+                  <li><a href="#scheduled-tasks" class="submenu-link" data-i18n="helpScheduledTasksTitle">Scheduled Tasks</a></li>
+                  <li><a href="#history-failure-history" class="submenu-link" data-i18n="helpHistoryFailureHistoryTitle">History & Retries</a></li>
+                  <li><a href="#shortcuts" class="submenu-link" data-i18n="helpShortcutsTitle">Keyboard Shortcuts</a></li>
+                </ul>
+              </li>
+              <li class="menu-item-group">
+                <a href="#troubleshooting-faq-section" class="category-link" data-i18n="helpCategoryTroubleshoot">Troubleshooting & FAQs</a>
+              </li>
+              <li class="menu-item-group">
+                <a href="#copyright-section" class="category-link" data-i18n="helpCopyrightTitle">Copyright Notice</a>
+              </li>
+            </ul>
+          </nav>
+
+          <div class="sidebar-footer-container">
+            <div class="sidebar-footer">
+              <a href="https://github.com/chaos-lawyer/batch-shot" target="_blank" rel="noopener noreferrer" class="github-link" data-i18n-title="githubLinkTitle" title="GitHub">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+                </svg>
+              </a>
+              <span id="versionString" class="version-string"></span>
+            </div>
+          </div>
+        </aside>
+
+        <main class="content">
+          <section id="quick-start-section" class="section">
+            <h2 data-i18n="helpCategoryQuickStart">Quick Start</h2>
+            <div class="help-article" id="quick-start">
+              <div class="body-content" data-i18n-html="helpQuickStartContent">Content</div>
+            </div>
+          </section>
+
+          <section id="capture-modes-section" class="section">
+            <h2 data-i18n="helpCategoryModes">Capture Modes</h2>
+
+            <div class="help-article" id="url-list-mode">
+              <h3 data-i18n="helpUrlListTitle">URL List Mode</h3>
+              <div class="scenario" data-i18n="helpUrlListScenario">Scenario</div>
+              <div class="body-content" data-i18n-html="helpUrlListContent">Content</div>
+            </div>
+
+            <div class="help-article" id="template-mode">
+              <h3 data-i18n="helpTemplateTitle">URL Template Mode</h3>
+              <div class="scenario" data-i18n="helpTemplateScenario">Scenario</div>
+              <div class="body-content" data-i18n-html="helpTemplateContent">Content</div>
+            </div>
+
+            <div class="help-article" id="selector-search-template">
+              <h3 data-i18n="helpSelectorSearchTitle">CSS Selector Search Template</h3>
+              <div class="scenario" data-i18n="helpSelectorSearchScenario">Scenario</div>
+              <div class="body-content" data-i18n-html="helpSelectorSearchContent">Content</div>
+            </div>
+
+            <div class="help-article" id="sequential-mode">
+              <h3 data-i18n="helpSequentialTitle">Sequential Capture Mode</h3>
+              <div class="scenario" data-i18n="helpSequentialScenario">Scenario</div>
+              <div class="body-content" data-i18n-html="helpSequentialContent">Content</div>
+            </div>
+
+          </section>
+
+          <section id="save-output-section" class="section">
+            <h2 data-i18n="helpCategoryOutput">Saving & Files</h2>
+
+            <div class="help-article" id="filename-folder">
+              <h3 data-i18n="helpFilenameFolderTitle">Subfolder & Filename Pattern</h3>
+              <div class="scenario" data-i18n="helpFilenameFolderScenario">Scenario</div>
+              <div class="body-content" data-i18n-html="helpFilenameFolderContent">Content</div>
+            </div>
+
+            <div class="help-article" id="capture-output">
+              <h3 data-i18n="helpCaptureOutputTitle">Capture Mode & Formats</h3>
+              <div class="scenario" data-i18n="helpCaptureOutputScenario">Scenario</div>
+              <div class="body-content" data-i18n-html="helpCaptureOutputContent">Content</div>
+            </div>
+
+            <div class="help-article" id="metadata">
+              <h3 data-i18n="helpMetadataTitle">Metadata Overlay Watermark</h3>
+              <div class="scenario" data-i18n="helpMetadataScenario">Scenario</div>
+              <div class="body-content" data-i18n-html="helpMetadataContent">Content</div>
+            </div>
+
+            <div class="help-article" id="report">
+              <h3 data-i18n="helpReportTitle">Capture Report Sheet</h3>
+              <div class="scenario" data-i18n="helpReportScenario">Scenario</div>
+              <div class="body-content" data-i18n-html="helpReportContent">Content</div>
+            </div>
+          </section>
+
+          <section id="general-captures-section" class="section">
+            <h2 data-i18n="helpCategoryGeneral">Schedules & History</h2>
+
+            <div class="help-article" id="runtime-dashboard">
+              <h3 data-i18n="helpRuntimeDashboardTitle">Task Dashboard</h3>
+              <div class="body-content" data-i18n-html="helpRuntimeDashboardContent">Content</div>
+            </div>
+
+            <div class="help-article" id="scheduled-tasks">
+              <h3 data-i18n="helpScheduledTasksTitle">Scheduled Tasks</h3>
+              <div class="body-content" data-i18n-html="helpScheduledTasksContent">Content</div>
+            </div>
+
+            <div class="help-article" id="history-failure-history">
+              <h3 data-i18n="helpHistoryFailureHistoryTitle">Input History & Failure Retries</h3>
+              <div class="body-content" data-i18n-html="helpHistoryFailureHistoryContent">Content</div>
+            </div>
+
+            <div class="help-article" id="shortcuts">
+              <h3 data-i18n="helpShortcutsTitle">Keyboard Shortcuts</h3>
+              <div class="body-content" data-i18n-html="helpShortcutsContent">Content</div>
+            </div>
+          </section>
+
+          <section id="troubleshooting-faq-section" class="section">
+            <h2 data-i18n="helpCategoryTroubleshoot">Troubleshooting & FAQs</h2>
+
+            <div class="help-article" id="troubleshooting">
+              <div class="body-content" data-i18n-html="helpTroubleshootingContent">Content</div>
+            </div>
+          </section>
+
+          <section id="copyright-section" class="section">
+            <h2 data-i18n="helpCopyrightTitle">Copyright Notice</h2>
+            <div class="help-article" id="copyright-notice">
+              <div class="body-content" data-i18n-html="helpCopyrightContent">Content</div>
+            </div>
+          </section>
+
+          <div id="noResults" class="no-results hidden">
+            <svg class="empty-illustration" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+              <line x1="8" y1="11" x2="14" y2="11"></line>
+            </svg>
+            <div class="empty-title" data-i18n="helpNoResults">No results found</div>
+            <p class="empty-desc" data-i18n="helpNoResultsDesc">Try checking the spelling or use the button below to clear the filter.</p>
+            <button id="resetSearchBtn" class="reset-search-btn" data-i18n="helpResetSearchBtn">Reset Search</button>
+          </div>
+        </main>
+      </div>
+    </main>
+    <script type="module" src="help.js"></script>
+  </body>
+</html>

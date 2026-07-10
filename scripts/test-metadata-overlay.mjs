@@ -36,11 +36,13 @@ const options = {
 
 const ctx = createMeasureContext();
 const rows = getMetadataRows(options);
+const braceRows = getMetadataRows({ ...options, metadataFields: '{capturedAt},{url},{title}' });
 const lines = buildMetadataLines(ctx, options, 120, 12, 'Arial', 8);
 const band = getMetadataBand(ctx, options, 120);
 const scaled = scaleMetadataOptions(options, 2);
 
 assert.deepEqual(rows.map((row) => row.label), ['Captured at', 'URL', 'Title']);
+assert.deepEqual(braceRows.map((row) => row.label), ['Captured at', 'URL', 'Title']);
 assert.equal(rows[0].value, '2026-05-30 12:34');
 assert.ok(lines.length > 1, 'narrow inline metadata should wrap to multiple lines');
 assert.ok(band.height > 0, 'metadata band should report a drawable height');

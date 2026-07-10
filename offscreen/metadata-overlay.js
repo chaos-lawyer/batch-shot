@@ -49,7 +49,11 @@ function getMetadataLanguage(options) {
 }
 
 function normalizeMetadataField(field) {
-  return METADATA_FIELD_ALIASES[String(field).trim().toLowerCase()] || field;
+  let cleaned = String(field).trim();
+  if (cleaned.startsWith('{') && cleaned.endsWith('}')) {
+    cleaned = cleaned.slice(1, -1).trim();
+  }
+  return METADATA_FIELD_ALIASES[cleaned.toLowerCase()] || cleaned;
 }
 
 export function getMetadataRows(options) {

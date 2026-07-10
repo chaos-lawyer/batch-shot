@@ -69,6 +69,7 @@ export function getPopupElements() {
     currentTabButton: $('currentTabButton'),
     currentWindowTabsButton: $('currentWindowTabsButton'),
     settingsButton: $('settingsButton'),
+    helpButton: $('helpButton'),
     openFillButton: $('openFillButton'),
     startButton: $('startButton'),
     pauseButton: $('pauseButton'),

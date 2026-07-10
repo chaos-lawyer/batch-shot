@@ -1,4 +1,4 @@
-export const DEFAULT_REPORT_FIELDS = 'index,url,title,status,filename,error';
+export const DEFAULT_REPORT_FIELDS = '{index},{url},{title},{status},{filename},{error}';
 
 const REPORT_FIELD_CONFIG = [
   { key: 'index', label: 'Index', zhLabel: '序号', aliases: ['no', 'number'], zhAliases: ['序号', '编号'] },
@@ -25,7 +25,13 @@ REPORT_FIELD_CONFIG.forEach((field) => {
 function parseReportFieldTokens(value) {
   return String(value || DEFAULT_REPORT_FIELDS)
     .split(/[\s,，、]+/)
-    .map((name) => name.trim())
+    .map((name) => {
+      let cleaned = name.trim();
+      if (cleaned.startsWith('{') && cleaned.endsWith('}')) {
+        cleaned = cleaned.slice(1, -1).trim();
+      }
+      return cleaned;
+    })
     .filter(Boolean)
     .map((name) => {
       const normalizedName = name.toLowerCase();
@@ -36,7 +42,7 @@ function parseReportFieldTokens(value) {
 
       return {
         ...field,
-        token: CHINESE_FIELD_NAMES.has(normalizedName) ? field.zhLabel : field.key,
+        token: CHINESE_FIELD_NAMES.has(normalizedName) ? `{${field.zhLabel}}` : `{${field.key}}`,
         label: CHINESE_FIELD_NAMES.has(normalizedName) ? field.zhLabel : field.label
       };
     })

@@ -49,13 +49,30 @@ const elements = Object.fromEntries([
   'metadataControls',
   'reportControls',
   'saveState',
-  'resetButton'
+  'resetButton',
+  'helpButton'
 ].map((id) => [id, $(id)]));
 
+let saveStateTimeout;
 let saveTimer;
+
+function applyOptionsI18n() {
+  applyI18n();
+  document.querySelectorAll('[data-i18n-html]').forEach((node) => {
+    node.innerHTML = message(node.dataset.i18nHtml);
+  });
+}
 
 function setSaveState(key) {
   elements.saveState.textContent = message(key);
+  elements.saveState.className = `save-state visible state-${key}`;
+  
+  clearTimeout(saveStateTimeout);
+  if (key === 'savedStatus') {
+    saveStateTimeout = setTimeout(() => {
+      elements.saveState.classList.remove('visible');
+    }, 2000);
+  }
 }
 
 function readNumberField(field) {
@@ -197,10 +214,9 @@ function bindSaveEvents() {
 async function restoreSettings() {
   const settings = await loadSettings();
   await initI18n(settings.appLanguage);
-  applyI18n();
+  applyOptionsI18n();
   writeForm(settings);
   await syncActionUi(settings);
-  setSaveState('savedStatus');
 }
 
 async function resetOptions() {
@@ -213,6 +229,7 @@ async function resetOptions() {
 document.addEventListener('DOMContentLoaded', async () => {
   await restoreSettings();
   await restoreShortcuts();
+  setupScrollObserver();
   document.documentElement.dataset.theme = elements.theme.value;
   
   const versionString = document.getElementById('versionString');
@@ -230,7 +247,7 @@ elements.theme.addEventListener('change', () => {
 elements.appLanguage.addEventListener('change', async () => {
   await persistForm();
   await initI18n(elements.appLanguage.value);
-  applyI18n();
+  applyOptionsI18n();
   await restoreShortcuts();
   setSaveState('savedStatus');
 });
@@ -240,9 +257,127 @@ elements.reportEnabled.addEventListener('change', updateReportControls);
 elements.metadataEnabled.addEventListener('change', updateMetadataControls);
 
 elements.resetButton.addEventListener('click', () => {
-  resetOptions().catch(() => setSaveState('saveErrorStatus'));
+  showConfirmModal('resetSettingsConfirm', () => {
+    resetOptions().catch(() => setSaveState('saveErrorStatus'));
+  });
 });
 
 elements.openChromeShortcutsButton.addEventListener('click', () => {
   openChromeShortcuts().catch(() => setSaveState('saveErrorStatus'));
 });
+
+elements.helpButton.addEventListener('click', () => {
+  chrome.tabs.create({ url: chrome.runtime.getURL('help/help.html') });
+});
+
+function showConfirmModal(messageKey, onConfirm) {
+  const modal = $('confirmModal');
+  const messageEl = $('confirmModalMessage');
+  const okBtn = $('confirmOkButton');
+  const cancelBtn = $('confirmCancelButton');
+
+  messageEl.textContent = message(messageKey);
+  modal.classList.add('visible');
+  modal.setAttribute('aria-hidden', 'false');
+
+  const cleanup = () => {
+    modal.classList.remove('visible');
+    modal.setAttribute('aria-hidden', 'true');
+    okBtn.removeEventListener('click', handleConfirm);
+    cancelBtn.removeEventListener('click', handleCancel);
+    modal.removeEventListener('click', handleOverlayClick);
+    document.removeEventListener('keydown', handleKeydown);
+  };
+
+  const handleConfirm = () => {
+    cleanup();
+    onConfirm();
+  };
+
+  const handleCancel = () => {
+    cleanup();
+  };
+
+  const handleOverlayClick = (e) => {
+    if (e.target === modal) handleCancel();
+  };
+
+  const handleKeydown = (e) => {
+    if (e.key === 'Escape') handleCancel();
+    if (e.key === 'Enter') handleConfirm();
+  };
+
+  okBtn.addEventListener('click', handleConfirm);
+  cancelBtn.addEventListener('click', handleCancel);
+  modal.addEventListener('click', handleOverlayClick);
+  document.addEventListener('keydown', handleKeydown);
+}
+
+function setupScrollObserver() {
+  const sections = document.querySelectorAll('.section');
+  const navLinks = document.querySelectorAll('#settingsNav a');
+
+  const observerOptions = {
+    root: null,
+    rootMargin: '-10% 0px -70% 0px',
+    threshold: 0
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50;
+    if (isAtBottom) {
+      navLinks.forEach((link, idx) => {
+        if (idx === navLinks.length - 1) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+      return;
+    }
+
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        const id = entry.target.getAttribute('id');
+        navLinks.forEach((link) => {
+          if (link.getAttribute('href') === `#${id}`) {
+            link.classList.add('active');
+          } else {
+            link.classList.remove('active');
+          }
+        });
+      }
+    });
+  }, observerOptions);
+
+  sections.forEach((section) => observer.observe(section));
+
+  // Handle boundary case when scroll reaches absolute bottom
+  window.addEventListener('scroll', () => {
+    const isAtBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 50;
+    if (isAtBottom) {
+      navLinks.forEach((link, idx) => {
+        if (idx === navLinks.length - 1) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    }
+  });
+
+  // Smooth anchor scrolling
+  navLinks.forEach((anchor) => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href');
+      const targetElement = document.querySelector(targetId);
+      if (targetElement) {
+        targetElement.scrollIntoView({
+          behavior: 'smooth'
+        });
+        history.pushState(null, null, targetId);
+      }
+    });
+  });
+}

@@ -283,7 +283,13 @@ export async function captureCurrentWindowTabs(options, deps) {
   }
 
   const originalTab = currentWindowTabs.find((tab) => tab.active);
-  const jobs = createTabJobs(tabs, { closeAfterCapture: false });
+  const preparedContexts = deps.getPreparedTabContextsForTabs
+    ? await deps.getPreparedTabContextsForTabs(tabs)
+    : { urlContexts: [], matchedTabIds: [] };
+  const jobs = createTabJobs(tabs, {
+    closeAfterCapture: false,
+    urlContexts: preparedContexts.urlContexts
+  });
   let rows = [];
   batchStatus.start('currentWindowTabsRunningStatus', jobs.length);
 
@@ -301,6 +307,9 @@ export async function captureCurrentWindowTabs(options, deps) {
     batchStatus.finish(rows, options.reportEnabled);
     return successful;
   } finally {
+    if (deps.clearPreparedTabContextsForTabIds) {
+      await deps.clearPreparedTabContextsForTabIds(preparedContexts.matchedTabIds).catch(() => {});
+    }
     if (originalTab?.id) {
       await activateTab(originalTab).catch(() => {});
     }
