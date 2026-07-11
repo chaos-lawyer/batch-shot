@@ -1118,5 +1118,11 @@
   },
   "helpCopyrightContent": {
     "message": "<p>BatchShot is a webpage screenshot and local archiving tool. When you capture webpages, images, text, trademarks, interfaces, or other third-party content, copyright, trademark, and other rights remain with their original owners.</p><p>You are responsible for confirming that capturing, saving, distributing, displaying, commercial use, or republication complies with the target site terms, copyright law, privacy rules, and applicable regulations. BatchShot does not upload screenshots to a remote server and does not grant additional rights to third-party content.</p><p>The BatchShot project code is open-sourced under the <code>MIT License</code>; the project code license is not a license for captured webpage content.</p>"
+  },
+  "tokenPickerHeader": {
+    "message": "Insert parameter"
+  },
+  "tokenPickerDatetimeHeader": {
+    "message": "Insert date/time format token"
   }
 }

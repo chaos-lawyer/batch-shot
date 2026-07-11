@@ -9,6 +9,7 @@ import { createScheduleActions } from './schedule.js';
 import { createTaskHistory } from './task-history.js';
 import { bindAutoSaveEvents, createPopupUiState, initTemplateResizing } from './ui-state.js';
 import { createUrlInput } from './url-input.js';
+import { initTokenPickers } from '../options/token-picker.js';
 
 const elements = getPopupElements();
 let historyLimit = 0;
@@ -175,6 +176,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     await scheduleActions.refreshScheduledTask();
     await taskHistory.refreshTaskHistory();
     initTemplateResizing();
+    initTokenPickers();
   } finally {
     document.body.classList.add('is-loaded');
   }

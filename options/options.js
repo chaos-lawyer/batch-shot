@@ -1,6 +1,7 @@
 import { DEFAULT_SETTINGS, loadSettings, resetSettings, saveSettings } from '../utils/settings.js';
 import { applyI18n, initI18n, message } from '../utils/i18n.js';
 import { clampInteger } from '../utils/number.js';
+import { initTokenPickers, updateTokenPickers } from './token-picker.js';
 
 const ACTION_POPUP_URL = 'popup/popup.html';
 
@@ -50,7 +51,8 @@ const elements = Object.fromEntries([
   'reportControls',
   'saveState',
   'resetButton',
-  'helpButton'
+  'helpButton',
+  'metadataSeparatorField'
 ].map((id) => [id, $(id)]));
 
 let saveStateTimeout;
@@ -61,6 +63,7 @@ function applyOptionsI18n() {
   document.querySelectorAll('[data-i18n-html]').forEach((node) => {
     node.innerHTML = message(node.dataset.i18nHtml);
   });
+  updateTokenPickers();
 }
 
 function setSaveState(key) {
@@ -132,8 +135,11 @@ function updateScreenshotQualityValue() {
 
 function updateMetadataControls() {
   const isEnabled = elements.metadataEnabled.checked;
+  const isInline = elements.metadataLayout.value === 'inline';
   elements.metadataControls.classList.toggle('expanded', isEnabled);
   elements.metadataEnabled.setAttribute('aria-expanded', String(isEnabled));
+  elements.metadataSeparatorField.classList.toggle('is-hidden', !isInline);
+  elements.metadataSeparator.disabled = !isEnabled || !isInline;
 }
 
 function updateReportControls() {
@@ -231,6 +237,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await restoreShortcuts();
   setupScrollObserver();
   document.documentElement.dataset.theme = elements.theme.value;
+  initTokenPickers();
   
   const versionString = document.getElementById('versionString');
   if (versionString) {
@@ -255,6 +262,7 @@ elements.appLanguage.addEventListener('change', async () => {
 elements.screenshotQuality.addEventListener('input', updateScreenshotQualityValue);
 elements.reportEnabled.addEventListener('change', updateReportControls);
 elements.metadataEnabled.addEventListener('change', updateMetadataControls);
+elements.metadataLayout.addEventListener('change', updateMetadataControls);
 
 elements.resetButton.addEventListener('click', () => {
   showConfirmModal('resetSettingsConfirm', () => {

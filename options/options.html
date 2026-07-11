@@ -3,6 +3,44 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script>
+      if (!window.chrome || !window.chrome.runtime || !window.chrome.runtime.sendMessage) {
+        window.chrome = {
+          runtime: {
+            getManifest: () => ({ version: "0.9.0" }),
+            getURL: (path) => {
+              if (window.location.protocol === 'file:') {
+                return '../' + path;
+              }
+              return path;
+            }
+          },
+          commands: {
+            getAll: async () => [
+              { name: 'capture-current-page', shortcut: 'Alt+Shift+S' },
+              { name: 'capture-current-window', shortcut: 'Alt+Shift+W' }
+            ]
+          },
+          storage: {
+            local: {
+              get: async (key) => {
+                const data = localStorage.getItem(key);
+                return data ? { [key]: JSON.parse(data) } : {};
+              },
+              set: async (obj) => {
+                Object.entries(obj).forEach(([k, v]) => {
+                  localStorage.setItem(k, JSON.stringify(v));
+                });
+              }
+            }
+          },
+          i18n: {
+            getUILanguage: () => 'en',
+            getMessage: (key) => key
+          }
+        };
+      }
+    </script>
     <title data-i18n="optionsTitle">BatchShot Settings</title>
     <link rel="stylesheet" href="options.css">
   </head>
@@ -111,13 +149,11 @@
             <div class="field">
               <label for="filenamePattern" data-i18n="filenameLabel">Filename</label>
               <input id="filenamePattern" type="text" value="{index}-{host}">
-              <small data-i18n-html="filenameHelp">Use {index}, {total}, {host}, {title}, {keyword}, {folder}, {datetime}, {date}, {time}, {year}, {month}, {day}, {url}</small>
             </div>
 
             <div class="field">
               <label for="filenameDateTimeFormat" data-i18n="filenameDateTimeFormatLabel">Filename date/time format</label>
               <input id="filenameDateTimeFormat" type="text" value="YYYY-MM-DD_HHmmss">
-              <small data-i18n-html="dateTimeFormatHelp">Use YYYY, MM, DD, HH, mm, ss</small>
             </div>
           </section>
 
@@ -131,7 +167,7 @@
 
             <div id="metadataControls">
               <div class="metadata-inner">
-                <div class="grid">
+                <div class="grid metadata-layout-grid">
                 <div class="field">
                   <label for="metadataPosition" data-i18n="metadataPositionLabel">Position</label>
                   <select id="metadataPosition">
@@ -147,18 +183,21 @@
                     <option value="inline" data-i18n="metadataFormatInline">Inline</option>
                   </select>
                 </div>
+
+                <div class="field metadata-separator-field" id="metadataSeparatorField">
+                  <label for="metadataSeparator" data-i18n="metadataSeparatorLabel">Inline separator</label>
+                  <input id="metadataSeparator" type="text" value="  |  ">
+                </div>
                 </div>
 
                 <div class="field">
                   <label for="metadataFields" data-i18n="metadataFieldsLabel">Fields and order</label>
                   <input id="metadataFields" type="text" value="{capturedAt},{url}">
-                  <small data-i18n-html="metadataFieldsHelp">Supports capturedAt/time, url, title, host/domain, index, total, keyword</small>
                 </div>
 
                 <div class="field">
                   <label for="metadataDateTimeFormat" data-i18n="metadataDateTimeFormatLabel">Metadata date/time format</label>
                   <input id="metadataDateTimeFormat" type="text" value="YYYY/MM/DD HH:mm">
-                  <small data-i18n-html="dateTimeFormatHelp">Use YYYY, MM, DD, HH, mm, ss</small>
                 </div>
 
                 <div class="grid three">
@@ -200,10 +239,6 @@
                   <span data-i18n="metadataBoldLabelsLabel">Bold labels</span>
                 </label>
 
-                <div class="field standalone" id="metadataSeparatorField">
-                  <label for="metadataSeparator" data-i18n="metadataSeparatorLabel">Inline separator</label>
-                  <input id="metadataSeparator" type="text" value="  |  ">
-                </div>
               </div>
             </div>
           </section>
@@ -229,7 +264,6 @@
                 <div class="field standalone">
                   <label for="reportFields" data-i18n="reportFieldsLabel">Fields and order</label>
                   <input id="reportFields" type="text" value="{index},{url},{title},{status},{filename},{error}" spellcheck="false">
-                  <small data-i18n-html="reportFieldsHelp">Use index, url, title, status, filename, error. Separate fields with commas.</small>
                 </div>
               </div>
             </div>
