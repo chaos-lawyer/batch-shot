@@ -5,8 +5,6 @@ const FILENAME_TOKENS = [
     key: 'index',
     enValue: '{index}',
     zhValue: '{序号}',
-    enLabel: '{index} · Index',
-    zhLabel: '{序号} · index',
     enDescription: 'Task sequence number (e.g. 001)',
     zhDescription: '任务序号，例如 001'
   },
@@ -14,8 +12,6 @@ const FILENAME_TOKENS = [
     key: 'total',
     enValue: '{total}',
     zhValue: '{总数}',
-    enLabel: '{total} · Total',
-    zhLabel: '{总数} · total',
     enDescription: 'Total number of tasks',
     zhDescription: '任务总数'
   },
@@ -23,8 +19,6 @@ const FILENAME_TOKENS = [
     key: 'host',
     enValue: '{host}',
     zhValue: '{域名}',
-    enLabel: '{host} · Host',
-    zhLabel: '{域名} · host',
     enDescription: 'Page domain (e.g. google.com)',
     zhDescription: '网页域名，例如 google.com'
   },
@@ -32,8 +26,6 @@ const FILENAME_TOKENS = [
     key: 'folder',
     enValue: '{folder}',
     zhValue: '{文件夹}',
-    enLabel: '{folder} · Folder',
-    zhLabel: '{文件夹} · folder',
     enDescription: 'Save folder path',
     zhDescription: '保存文件夹'
   },
@@ -41,8 +33,6 @@ const FILENAME_TOKENS = [
     key: 'datetime',
     enValue: '{datetime}',
     zhValue: '{日期时间}',
-    enLabel: '{datetime} · DateTime',
-    zhLabel: '{日期时间} · datetime',
     enDescription: 'Full date and time (customizable)',
     zhDescription: '完整日期时间（可自定义格式）'
   },
@@ -50,8 +40,6 @@ const FILENAME_TOKENS = [
     key: 'date',
     enValue: '{date}',
     zhValue: '{日期}',
-    enLabel: '{date} · Date',
-    zhLabel: '{日期} · date',
     enDescription: 'Date (e.g. 2026-07-11)',
     zhDescription: '当前日期，例如 2026-07-11'
   },
@@ -59,8 +47,6 @@ const FILENAME_TOKENS = [
     key: 'time',
     enValue: '{time}',
     zhValue: '{时间}',
-    enLabel: '{time} · Time',
-    zhLabel: '{时间} · time',
     enDescription: 'Time (e.g. 113958)',
     zhDescription: '当前时间，例如 113958'
   },
@@ -68,8 +54,6 @@ const FILENAME_TOKENS = [
     key: 'year',
     enValue: '{year}',
     zhValue: '{年}',
-    enLabel: '{year} · Year',
-    zhLabel: '{年} · year',
     enDescription: 'Year (e.g. 2026)',
     zhDescription: '当前年份，例如 2026'
   },
@@ -77,8 +61,6 @@ const FILENAME_TOKENS = [
     key: 'month',
     enValue: '{month}',
     zhValue: '{月}',
-    enLabel: '{month} · Month',
-    zhLabel: '{月} · month',
     enDescription: 'Month (e.g. 07)',
     zhDescription: '当前月份，例如 07'
   },
@@ -86,8 +68,6 @@ const FILENAME_TOKENS = [
     key: 'day',
     enValue: '{day}',
     zhValue: '{日}',
-    enLabel: '{day} · Day',
-    zhLabel: '{日} · day',
     enDescription: 'Day of the month (e.g. 11)',
     zhDescription: '当前日，例如 11'
   },
@@ -95,8 +75,6 @@ const FILENAME_TOKENS = [
     key: 'title',
     enValue: '{title}',
     zhValue: '{标题}',
-    enLabel: '{title} · Title',
-    zhLabel: '{标题} · title',
     enDescription: 'Page title',
     zhDescription: '页面标题'
   },
@@ -104,8 +82,6 @@ const FILENAME_TOKENS = [
     key: 'keyword',
     enValue: '{keyword}',
     zhValue: '{关键词}',
-    enLabel: '{keyword} · Keyword',
-    zhLabel: '{关键词} · keyword',
     enDescription: 'Search keyword or template term',
     zhDescription: '模板替换词或搜索关键词'
   },
@@ -113,8 +89,6 @@ const FILENAME_TOKENS = [
     key: 'url',
     enValue: '{url}',
     zhValue: '{网址}',
-    enLabel: '{url} · URL',
-    zhLabel: '{网址} · url',
     enDescription: 'Full page URL',
     zhDescription: '页面 URL'
   }
@@ -125,8 +99,6 @@ const FOLDER_TOKENS = [
     key: 'BatchShot',
     enValue: 'BatchShot',
     zhValue: 'BatchShot',
-    enLabel: 'BatchShot',
-    zhLabel: 'BatchShot',
     enDescription: 'Default download folder name',
     zhDescription: '默认下载文件夹名称'
   },
@@ -134,8 +106,6 @@ const FOLDER_TOKENS = [
     key: '/',
     enValue: '/',
     zhValue: '/',
-    enLabel: '/',
-    zhLabel: '/',
     enDescription: 'Folder path separator',
     zhDescription: '文件夹路径分隔符'
   },
@@ -147,8 +117,6 @@ const METADATA_TOKENS = [
     key: 'capturedAt',
     enValue: '{capturedAt}',
     zhValue: '{截图时间}',
-    enLabel: '{capturedAt} · Captured At',
-    zhLabel: '{截图时间} · capturedAt',
     enDescription: 'Capture timestamp',
     zhDescription: '截图时间'
   },
@@ -156,8 +124,6 @@ const METADATA_TOKENS = [
     key: 'url',
     enValue: '{url}',
     zhValue: '{网址}',
-    enLabel: '{url} · URL',
-    zhLabel: '{网址} · url',
     enDescription: 'Page URL',
     zhDescription: '页面 URL'
   },
@@ -165,8 +131,6 @@ const METADATA_TOKENS = [
     key: 'title',
     enValue: '{title}',
     zhValue: '{标题}',
-    enLabel: '{title} · Title',
-    zhLabel: '{标题} · title',
     enDescription: 'Page title',
     zhDescription: '页面标题'
   },
@@ -174,8 +138,6 @@ const METADATA_TOKENS = [
     key: 'host',
     enValue: '{host}',
     zhValue: '{域名}',
-    enLabel: '{host} · Host',
-    zhLabel: '{域名} · host',
     enDescription: 'Page domain',
     zhDescription: '网页域名'
   },
@@ -183,8 +145,6 @@ const METADATA_TOKENS = [
     key: 'index',
     enValue: '{index}',
     zhValue: '{序号}',
-    enLabel: '{index} · Index',
-    zhLabel: '{序号} · index',
     enDescription: 'Task sequence number',
     zhDescription: '任务序号'
   },
@@ -192,8 +152,6 @@ const METADATA_TOKENS = [
     key: 'total',
     enValue: '{total}',
     zhValue: '{总数}',
-    enLabel: '{total} · Total',
-    zhLabel: '{总数} · total',
     enDescription: 'Total number of tasks',
     zhDescription: '任务总数'
   },
@@ -201,8 +159,6 @@ const METADATA_TOKENS = [
     key: 'keyword',
     enValue: '{keyword}',
     zhValue: '{关键词}',
-    enLabel: '{keyword} · Keyword',
-    zhLabel: '{关键词} · keyword',
     enDescription: 'Search keyword',
     zhDescription: '搜索关键词'
   }
@@ -213,8 +169,6 @@ const REPORT_TOKENS = [
     key: 'index',
     enValue: '{index}',
     zhValue: '{序号}',
-    enLabel: '{index} · Index',
-    zhLabel: '{序号} · index',
     enDescription: 'Task sequence number',
     zhDescription: '任务序号'
   },
@@ -222,8 +176,6 @@ const REPORT_TOKENS = [
     key: 'url',
     enValue: '{url}',
     zhValue: '{网址}',
-    enLabel: '{url} · URL',
-    zhLabel: '{网址} · url',
     enDescription: 'Page URL',
     zhDescription: '页面 URL'
   },
@@ -231,8 +183,6 @@ const REPORT_TOKENS = [
     key: 'title',
     enValue: '{title}',
     zhValue: '{页面标题}',
-    enLabel: '{title} · Page Title',
-    zhLabel: '{页面标题} · title',
     enDescription: 'Page title',
     zhDescription: '页面标题'
   },
@@ -240,8 +190,6 @@ const REPORT_TOKENS = [
     key: 'status',
     enValue: '{status}',
     zhValue: '{状态}',
-    enLabel: '{status} · Status',
-    zhLabel: '{状态} · status',
     enDescription: 'Capture status',
     zhDescription: '截图状态'
   },
@@ -249,8 +197,6 @@ const REPORT_TOKENS = [
     key: 'filename',
     enValue: '{filename}',
     zhValue: '{文件名}',
-    enLabel: '{filename} · Filename',
-    zhLabel: '{文件名} · filename',
     enDescription: 'Saved filename',
     zhDescription: '文件名'
   },
@@ -258,8 +204,6 @@ const REPORT_TOKENS = [
     key: 'error',
     enValue: '{error}',
     zhValue: '{错误}',
-    enLabel: '{error} · Error',
-    zhLabel: '{错误} · error',
     enDescription: 'Error message if capture failed',
     zhDescription: '错误信息/失败原因'
   }
@@ -270,8 +214,6 @@ const DATETIME_TOKENS = [
     key: 'YYYY',
     enValue: 'YYYY',
     zhValue: 'YYYY',
-    enLabel: 'YYYY · Year',
-    zhLabel: 'YYYY · 年份',
     enDescription: '4-digit year (e.g. 2026)',
     zhDescription: '四位年份（如 2026）'
   },
@@ -279,8 +221,6 @@ const DATETIME_TOKENS = [
     key: 'MM',
     enValue: 'MM',
     zhValue: 'MM',
-    enLabel: 'MM · Month',
-    zhLabel: 'MM · 月份',
     enDescription: '2-digit month (01-12)',
     zhDescription: '两位月份（01-12）'
   },
@@ -288,8 +228,6 @@ const DATETIME_TOKENS = [
     key: 'DD',
     enValue: 'DD',
     zhValue: 'DD',
-    enLabel: 'DD · Day',
-    zhLabel: 'DD · 日期',
     enDescription: '2-digit day of month (01-31)',
     zhDescription: '两位日期（01-31）'
   },
@@ -297,8 +235,6 @@ const DATETIME_TOKENS = [
     key: 'HH',
     enValue: 'HH',
     zhValue: 'HH',
-    enLabel: 'HH · Hour',
-    zhLabel: 'HH · 小时',
     enDescription: '2-digit hour in 24h format (00-23)',
     zhDescription: '两位24小时制小时（00-23）'
   },
@@ -306,8 +242,6 @@ const DATETIME_TOKENS = [
     key: 'mm',
     enValue: 'mm',
     zhValue: 'mm',
-    enLabel: 'mm · Minute',
-    zhLabel: 'mm · 分钟',
     enDescription: '2-digit minute (00-59)',
     zhDescription: '两位分钟（00-59）'
   },
@@ -315,38 +249,36 @@ const DATETIME_TOKENS = [
     key: 'ss',
     enValue: 'ss',
     zhValue: 'ss',
-    enLabel: 'ss · Second',
-    zhLabel: 'ss · 秒数',
     enDescription: '2-digit second (00-59)',
     zhDescription: '两位秒数（00-59）'
   }
 ];
 
 const WEBHOOK_BODY_TOKENS = [
-  { key: 'runId', enValue: '{runId}', zhValue: '{runId}', enLabel: '{runId}', zhLabel: '{runId}', enDescription: 'Unique identifier for the run', zhDescription: '当前任务运行的唯一标识符 ID' },
-  { key: 'taskName', enValue: '{taskName}', zhValue: '{taskName}', enLabel: '{taskName}', zhLabel: '{taskName}', enDescription: 'Name of the task', zhDescription: '任务名称' },
-  { key: 'status', enValue: '{status}', zhValue: '{status}', enLabel: '{status}', zhLabel: '{status}', enDescription: 'Run status (success/failed/cancelled)', zhDescription: '任务状态 (success/failed/cancelled)' },
-  { key: 'startedAt', enValue: '{startedAt}', zhValue: '{startedAt}', enLabel: '{startedAt}', zhLabel: '{startedAt}', enDescription: 'Start time (ISO format)', zhDescription: '任务开始时间 (ISO格式)' },
-  { key: 'finishedAt', enValue: '{finishedAt}', zhValue: '{finishedAt}', enLabel: '{finishedAt}', zhLabel: '{finishedAt}', enDescription: 'Finish time (ISO format)', zhDescription: '任务结束时间 (ISO格式)' },
-  { key: 'durationMs', enValue: '{durationMs}', zhValue: '{durationMs}', enLabel: '{durationMs}', zhLabel: '{durationMs}', enDescription: 'Execution duration in milliseconds', zhDescription: '执行耗时 (毫秒)' },
-  { key: 'total', enValue: '{total}', zhValue: '{total}', enLabel: '{total}', zhLabel: '{total}', enDescription: 'Total number of items', zhDescription: '总截图数' },
-  { key: 'success', enValue: '{success}', zhValue: '{success}', enLabel: '{success}', zhLabel: '{success}', enDescription: 'Successful captures count', zhDescription: '成功截图数' },
-  { key: 'failed', enValue: '{failed}', zhValue: '{failed}', enLabel: '{failed}', zhLabel: '{failed}', enDescription: 'Failed captures count', zhDescription: '失败截图数' },
-  { key: 'cancelled', enValue: '{cancelled}', zhValue: '{cancelled}', enLabel: '{cancelled}', zhLabel: '{cancelled}', enDescription: 'Whether the task was cancelled (true/false)', zhDescription: '任务是否被用户中止 (true/false)' },
-  { key: 'folder', enValue: '{folder}', zhValue: '{folder}', enLabel: '{folder}', zhLabel: '{folder}', enDescription: 'Save folder path', zhDescription: '保存的文件夹路径' },
-  { key: 'reportFilename', enValue: '{reportFilename}', zhValue: '{reportFilename}', enLabel: '{reportFilename}', zhLabel: '{reportFilename}', enDescription: 'Exported report path', zhDescription: '导出的 CSV/XLSX 报告路径' },
-  { key: 'unfinishedTasksCount', enValue: '{unfinishedTasksCount}', zhValue: '{unfinishedTasksCount}', enLabel: '{unfinishedTasksCount}', zhLabel: '{unfinishedTasksCount}', enDescription: 'Number of unfinished scheduled tasks', zhDescription: '未完成的计划任务数' },
-  { key: 'items', enValue: '{items}', zhValue: '{items}', enLabel: '{items}', zhLabel: '{items}', enDescription: 'Array of detailed capture results', zhDescription: '包含所有单页截图详情的 JSON 数组' }
+  { key: 'runId', enValue: '{runId}', zhValue: '{运行ID}', enDescription: 'Unique identifier for the run', zhDescription: '当前任务运行的唯一标识符 ID' },
+  { key: 'taskName', enValue: '{taskName}', zhValue: '{任务名称}', enDescription: 'Name of the task', zhDescription: '任务名称' },
+  { key: 'status', enValue: '{status}', zhValue: '{任务状态}', enDescription: 'Run status (success/failed/cancelled)', zhDescription: '任务状态 (success/failed/cancelled)' },
+  { key: 'startedAt', enValue: '{startedAt}', zhValue: '{开始时间}', enDescription: 'Start time (ISO format)', zhDescription: '任务开始时间 (ISO 格式)' },
+  { key: 'finishedAt', enValue: '{finishedAt}', zhValue: '{结束时间}', enDescription: 'Finish time (ISO format)', zhDescription: '任务结束时间 (ISO 格式)' },
+  { key: 'durationMs', enValue: '{durationMs}', zhValue: '{耗时}', enDescription: 'Execution duration in milliseconds', zhDescription: '执行耗时 (毫秒)' },
+  { key: 'total', enValue: '{total}', zhValue: '{总数}', enDescription: 'Total number of items', zhDescription: '总截图数' },
+  { key: 'success', enValue: '{success}', zhValue: '{成功数}', enDescription: 'Successful captures count', zhDescription: '成功截图数' },
+  { key: 'failed', enValue: '{failed}', zhValue: '{失败数}', enDescription: 'Failed captures count', zhDescription: '失败截图数' },
+  { key: 'cancelled', enValue: '{cancelled}', zhValue: '{已取消}', enDescription: 'Whether the task was cancelled (true/false)', zhDescription: '任务是否被用户中止 (true/false)' },
+  { key: 'folder', enValue: '{folder}', zhValue: '{文件夹}', enDescription: 'Save folder path', zhDescription: '保存的文件夹路径' },
+  { key: 'reportFilename', enValue: '{reportFilename}', zhValue: '{报告文件名}', enDescription: 'Exported report path', zhDescription: '导出的 CSV/XLSX 报告路径' },
+  { key: 'unfinishedTasksCount', enValue: '{unfinishedTasksCount}', zhValue: '{未完成任务数}', enDescription: 'Number of unfinished scheduled tasks', zhDescription: '未完成的计划任务数' },
+  { key: 'items', enValue: '{items}', zhValue: '{详情列表}', enDescription: 'Array of detailed capture results', zhDescription: '包含所有单页截图详情的 JSON 数组' }
 ];
 
 const TEXT_TEMPLATE_TOKENS = [
-  { key: 'text', enValue: '{text}', zhValue: '{正文}', enLabel: '{text} · Text', zhLabel: '{正文} · text', enDescription: 'Extracted plain text of the page', zhDescription: '提取的网页正文纯文本' },
-  { key: 'url', enValue: '{url}', zhValue: '{网址}', enLabel: '{url} · URL', zhLabel: '{网址} · url', enDescription: 'Page URL', zhDescription: '网页完整 URL 地址' },
-  { key: 'title', enValue: '{title}', zhValue: '{标题}', enLabel: '{title} · Title', zhLabel: '{标题} · title', enDescription: 'Page Title', zhDescription: '网页标题' },
-  { key: 'keyword', enValue: '{keyword}', zhValue: '{关键词}', enLabel: '{keyword} · Keyword', zhLabel: '{关键词} · keyword', enDescription: 'Task keyword / template substitution', zhDescription: '任务关联关键词' },
-  { key: 'capturedAt', enValue: '{capturedAt}', zhValue: '{截图时间}', enLabel: '{capturedAt} · CapturedAt', zhLabel: '{截图时间} · capturedAt', enDescription: 'Captured timestamp (ISO format)', zhDescription: '截图与提取时间戳' },
-  { key: 'metaDescription', enValue: '{metaDescription}', zhValue: '{描述}', enLabel: '{metaDescription} · Description', zhLabel: '{描述} · description', enDescription: 'Page meta description tag', zhDescription: '网页 Meta Description 描述' },
-  { key: 'lang', enValue: '{lang}', zhValue: '{语言}', enLabel: '{lang} · Language', zhLabel: '{语言} · lang', enDescription: 'Page language setting', zhDescription: '网页声明的语言代码' }
+  { key: 'text', enValue: '{text}', zhValue: '{正文}', enDescription: 'Extracted plain text of the page', zhDescription: '提取的网页正文纯文本' },
+  { key: 'url', enValue: '{url}', zhValue: '{网址}', enDescription: 'Page URL', zhDescription: '网页完整 URL 地址' },
+  { key: 'title', enValue: '{title}', zhValue: '{标题}', enDescription: 'Page Title', zhDescription: '网页标题' },
+  { key: 'keyword', enValue: '{keyword}', zhValue: '{关键词}', enDescription: 'Task keyword / template substitution', zhDescription: '任务关联关键词' },
+  { key: 'capturedAt', enValue: '{capturedAt}', zhValue: '{截图时间}', enDescription: 'Captured timestamp (ISO format)', zhDescription: '截图与提取时间戳' },
+  { key: 'metaDescription', enValue: '{metaDescription}', zhValue: '{描述}', enDescription: 'Page meta description tag', zhDescription: '网页 Meta Description 描述' },
+  { key: 'lang', enValue: '{lang}', zhValue: '{语言}', enDescription: 'Page language setting', zhDescription: '网页声明的语言代码' }
 ];
 
 const PICKER_CONFIGS = [
@@ -425,11 +357,15 @@ function getTokensRegex(config) {
 }
 
 function getLanguage() {
+  const docLang = (document.documentElement.lang || '').toLowerCase();
+  if (docLang.startsWith('zh')) return 'zh_CN';
+  if (docLang.startsWith('en')) return 'en';
+
   const select = document.getElementById('appLanguage');
   const val = select ? select.value : 'auto';
   if (val === 'zh_CN') return 'zh_CN';
   if (val === 'en') return 'en';
-  // auto language check
+
   const uiLang = (globalThis.chrome?.i18n?.getUILanguage?.() || '').toLowerCase();
   return uiLang.startsWith('zh') ? 'zh_CN' : 'en';
 }
@@ -550,7 +486,11 @@ function syncInputToHtml(input, editableDiv, config) {
       const span = document.createElement('span');
       span.className = 'input-token-capsule';
       span.contentEditable = 'false';
-      span.textContent = part;
+      
+      const token = config.tokens.find(t => t.enValue === part || t.zhValue === part);
+      const isZh = getLanguage() === 'zh_CN';
+      span.textContent = token ? (isZh ? token.zhValue : token.enValue) : part;
+
       editableDiv.appendChild(span);
     } else {
       editableDiv.appendChild(document.createTextNode(part));

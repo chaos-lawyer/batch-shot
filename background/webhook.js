@@ -67,13 +67,34 @@ export async function sendWebhook(payload, options) {
       unfinishedTasksCount: String(payload.unfinishedTasksCount || 0)
     };
 
+    const chineseKeys = {
+      runId: '运行ID',
+      taskName: '任务名称',
+      status: '任务状态',
+      startedAt: '开始时间',
+      finishedAt: '结束时间',
+      durationMs: '耗时',
+      total: '总数',
+      success: '成功数',
+      failed: '失败数',
+      cancelled: '已取消',
+      folder: '文件夹',
+      reportFilename: '报告文件名',
+      unfinishedTasksCount: '未完成任务数'
+    };
+
     Object.entries(placeholders).forEach(([key, val]) => {
       const escapedVal = JSON.stringify(val).slice(1, -1);
       bodyStr = bodyStr.replaceAll(`{${key}}`, escapedVal);
+      const zhKey = chineseKeys[key];
+      if (zhKey) {
+        bodyStr = bodyStr.replaceAll(`{${zhKey}}`, escapedVal);
+      }
     });
 
     const itemsJson = JSON.stringify(payload.items || []);
     bodyStr = bodyStr.replace(/"?\{items\}"?/, itemsJson);
+    bodyStr = bodyStr.replace(/"?\{详情列表\}"?/, itemsJson);
     finalBody = bodyStr;
   } else {
     finalBody = JSON.stringify(payload);

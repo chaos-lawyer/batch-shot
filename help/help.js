@@ -260,5 +260,17 @@ document.querySelectorAll('#helpNav a').forEach((anchor) => {
   });
 });
 
+// Intercept Ctrl+F / Cmd+F to focus help search input
+document.addEventListener('keydown', (event) => {
+  if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'f') {
+    const searchInput = $('helpSearch');
+    if (searchInput) {
+      event.preventDefault();
+      searchInput.focus();
+      searchInput.select();
+    }
+  }
+});
+
 // Run initialization
 document.addEventListener('DOMContentLoaded', initPage);

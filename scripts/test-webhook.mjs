@@ -154,4 +154,24 @@ assert.ok(capturedPayload);
 assert.equal(capturedPayload.items[0].text, undefined);
 assert.equal(capturedPayload.unfinishedTasksCount, 2);
 
+// Test 8: Chinese placeholder mapping
+globalThis.fetch = async (url, options) => {
+  fetchCall = { url, options };
+  return {
+    ok: true,
+    status: 200
+  };
+};
+fetchCall = null;
+const zhBodyTemplate = '{\n  "id": "{运行ID}",\n  "name": "{任务名称}",\n  "items": {详情列表}\n}';
+await sendWebhook(payload, {
+  webhookUrl: 'http://example.com',
+  webhookBodyTemplate: zhBodyTemplate
+});
+assert.ok(fetchCall.options.body);
+const parsedZhBody = JSON.parse(fetchCall.options.body);
+assert.equal(parsedZhBody.id, '123');
+assert.equal(parsedZhBody.name, 'Task "Quotes" & \nNewlines');
+assert.deepEqual(parsedZhBody.items, payload.items);
+
 console.log('Webhook tests passed successfully!');

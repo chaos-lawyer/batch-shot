@@ -324,6 +324,10 @@ body .token-picker-panel {
   box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08), 0 -1px 3px rgba(0, 0, 0, 0.04);
 }
 
+.token-picker-container:has(#folder) .token-picker-panel {
+  width: 364px;
+}
+
 .token-picker-header {
   font-size: 11px;
   font-weight: 600;
