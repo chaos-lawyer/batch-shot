@@ -147,7 +147,18 @@ export async function captureSingleJob(job, index, total, options, deps) {
     filename = result.filename;
     title = result.title;
 
-    return createReportRow({ index, url, title, filename, status: 'ok' });
+    return createReportRow({
+      index,
+      url,
+      title,
+      filename,
+      status: 'ok',
+      textFilename: result.textFilename,
+      textLength: result.textLength,
+      textExcerpt: result.textExcerpt,
+      metaDescription: result.metaDescription,
+      text: result.text
+    });
   } catch (error) {
     const latestTab = activeJob.tab?.id ? await chrome.tabs.get(activeJob.tab.id).catch(() => null) : null;
     url = latestTab?.url || url;

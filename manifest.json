@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_appName__",
   "description": "__MSG_appDescription__",
-  "version": "0.9.1",
+  "version": "0.11.0",
   "author": "chaos-lawyer",
   "homepage_url": "https://github.com/chaos-lawyer/batch-shot",
   "default_locale": "en",
@@ -75,6 +75,7 @@
         "content/search-infer.js",
         "content/button-picker.js",
         "content/pagination.js",
+        "content/page-text.js",
         "content/messages.js"
       ],
       "run_at": "document_idle"

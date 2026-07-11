@@ -264,7 +264,7 @@
     "message": "文件名"
   },
   "filenameHelp": {
-    "message": "可用 <code>{index}</code>/<code>{序号}</code>、<code>{total}</code>/<code>{总数}</code>、<code>{host}</code>/<code>{域名}</code>、<code>{title}</code>/<code>{标题}</code>、<code>{keyword}</code>/<code>{关键词}</code>、<code>{folder}</code>/<code>{文件夹}</code>、<code>{datetime}</code>/<code>{日期时间}</code>、<code>{date}</code>/<code>{日期}</code>、<code>{time}</code>/<code>{时间}</code>、<code>{year}</code>/<code>{年}</code>、<code>{month}</code>/<code>{月}</code>、<code>{day}</code>/<code>{日}</code>、<code>{url}</code>/<code>{网址}</code>"
+    "message": "可用 {index}/{序号}、{total}/{总数}、{host}/{域名}、{title}/{标题}、{keyword}/{关键词}、{folder}/{文件夹}、{datetime}/{日期时间}、{date}/{日期}、{time}/{时间}、{year}/{年}、{month}/{月}、{day}/{日}、{url}/{网址}"
   },
   "filenameDateTimeFormatLabel": {
     "message": "文件名日期时间格式"
@@ -279,13 +279,13 @@
     "message": "字段和顺序"
   },
   "reportFieldsHelp": {
-    "message": "支持 <code>{index}</code>/<code>{序号}</code>、<code>{url}</code>/<code>{网址}</code>、<code>{title}</code>/<code>{页面标题}</code>、<code>{status}</code>/<code>{状态}</code>、<code>{filename}</code>/<code>{文件名}</code>、<code>{error}</code>/<code>{错误}</code>。多个字段用英文逗号分隔。"
+    "message": "可用 序号、网址、页面标题、状态、文件名、错误，也支持 index、url、title、status、filename、error。"
   },
   "reportSectionTitle": {
     "message": "截图报告"
   },
   "othersSectionTitle": {
-    "message": "其他"
+    "message": "常规设置"
   },
   "iconClickActionLabel": {
     "message": "点击扩展图标"
@@ -309,7 +309,7 @@
     "message": "批量截图后关闭对应页面"
   },
   "closeBatchTabsAfterCaptureHelp": {
-    "message": "仅适用于 <code>列表模式</code> 和 <code>模板模式</code>。"
+    "message": "仅在列表模式和模板模式下生效。"
   },
   "urlListWrapLabel": {
     "message": "URL 列表按窗口宽度自动换行"
@@ -321,7 +321,7 @@
     "message": "每个历史菜单最多保存的记录条数。"
   },
   "dateTimeFormatHelp": {
-    "message": "可用 <code>YYYY</code>, <code>MM</code>, <code>DD</code>, <code>HH</code>, <code>mm</code>, <code>ss</code>"
+    "message": "可用 YYYY, MM, DD, HH, mm, ss"
   },
   "settingsButton": {
     "message": "设置"
@@ -513,13 +513,13 @@
     "message": "设置"
   },
   "optionsSubtitle": {
-    "message": "配置输出和元信息默认值。"
+    "message": "个性化配置截图保存格式、元信息水印、定时任务及快捷键。"
   },
   "outputSectionTitle": {
-    "message": "输出"
+    "message": "文件与保存"
   },
   "metadataSectionTitle": {
-    "message": "元信息"
+    "message": "元信息水印"
   },
   "captureSectionTitle": {
     "message": "截图设置"
@@ -528,10 +528,16 @@
     "message": "重置"
   },
   "resetSettingsConfirm": {
-    "message": "确定要重置所有设置为默认值吗？此操作无法撤销。"
+    "message": "确定要将所有设置重置为默认值吗？此操作无法撤销。"
   },
   "confirmModalTitle": {
     "message": "确认操作"
+  },
+  "confirmModalCancel": {
+    "message": "取消"
+  },
+  "confirmModalConfirm": {
+    "message": "确定"
   },
   "savedStatus": {
     "message": "已保存"
@@ -754,7 +760,7 @@
     "message": "字段和顺序"
   },
   "metadataFieldsHelp": {
-    "message": "支持 <code>{capturedAt}</code>/<code>{截图时间}</code>、<code>{url}</code>/<code>{网址}</code>、<code>{title}</code>/<code>{标题}</code>、<code>{host}</code>/<code>{域名}</code>、<code>{index}</code>/<code>{序号}</code>、<code>{total}</code>/<code>{总数}</code>、<code>{keyword}</code>/<code>{关键词}</code>"
+    "message": "支持 capturedAt/截图时间、url/网址、title/标题、host/域名、index/序号、total/总数、keyword/关键词"
   },
   "metadataDateTimeFormatLabel": {
     "message": "元信息日期时间格式"
@@ -784,7 +790,7 @@
     "message": "同行分隔符"
   },
   "appearanceSectionTitle": {
-    "message": "外观"
+    "message": "外观与语言"
   },
   "themeLabel": {
     "message": "主题"
@@ -972,11 +978,8 @@
   "helpThemeLabel": {
     "message": "外观主题"
   },
-  "helpCategoryQuickStart": {
-    "message": "快速开始"
-  },
   "helpQuickStartContent": {
-    "message": "BatchShot 支持四种高效截图与执行流程，满足从单页归档到大规模自动化审计的不同需求：<br><ul><li><strong>截取当前页面 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z\"></path><circle cx=\"12\" cy=\"13\" r=\"4\"></circle></svg></span></strong>：立即截取并拼接当前活动标签页的整页。悬浮头部会自动隐藏，以确保生成干净、带时间戳的记录。</li><li><strong>截取当前窗口 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16\"></path><path d=\"M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2\"></path><circle cx=\"13\" cy=\"7\" r=\"1\" fill=\"currentColor\"></circle><rect x=\"8\" y=\"2\" width=\"14\" height=\"14\" rx=\"2\"></rect></svg></span></strong>：自动循环截取当前窗口中所有打开的标签页——非常适合对比多个参考页面。</li><li><strong>仅打开链接 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"8\" y=\"2\" width=\"8\" height=\"4\" rx=\"1\" ry=\"1\"></rect><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"></path><path d=\"M16.5 10.5a2.121 2.121 0 0 1 3 3L13 20l-4 1 1-4 6.5-6.5z\"></path></svg></span></strong>：在后台或新标签页中导入并打开 URL，但不进行截图。这允许您在截图前手动登录、处理验证码或进行页面准备。</li><li><strong>批量自动化截图 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polygon points=\"5 3 19 12 5 21 5 3\"></polygon></svg></span></strong>：包括 <strong>URL 列表</strong>、<strong>URL 模板</strong>、<strong>CSS 选择器搜索</strong> 和 <strong>序列模式</strong>——专为大批量自动化工作流设计。</li></ul><div class=\"help-note note-info\"><p><strong>提示：</strong> 由于浏览器扩展的安全限制，无法截取浏览器内部页面（例如 <code>chrome://</code> 页面）、Chrome 应用商店和本地特权文件。我们建议在设置中为“截取当前页面”和“截取当前窗口”配置快捷键，以实现更快的触发速度。</p></div>"
+    "message": "BatchShot 支持四种高效截图与执行流程，满足从单页归档到大规模自动化审计的不同需求：<br><ul><li><strong>截取当前页面 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z\"></path><circle cx=\"12\" cy=\"13\" r=\"4\"></circle></svg></span></strong>：立即截取并拼接当前活动标签页的整页。悬浮头部会自动隐藏，以确保生成干净、带时间戳的记录。</li><li><strong>截取当前窗口 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16\"></path><path d=\"M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2\"></path><circle cx=\"13\" cy=\"7\" r=\"1\" fill=\"currentColor\"></circle><rect x=\"8\" y=\"2\" width=\"14\" height=\"14\" rx=\"2\"></rect></svg></span></strong>：自动循环截取当前窗口中所有打开的标签页——非常适合对比多个参考页面。<em>如果这些标签页之前是通过“仅打开链接”功能批量打开并填充的，截图时会自动继承原任务上下文（如关键词 <code>{keyword}</code> 和序号 <code>{index}</code>），以便在文件名、水印或报告中正确解析和归档。</em></li><li><strong>仅打开链接 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"8\" y=\"2\" width=\"8\" height=\"4\" rx=\"1\" ry=\"1\"></rect><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"></path><path d=\"M16.5 10.5a2.121 2.121 0 0 1 3 3L13 20l-4 1 1-4 6.5-6.5z\"></path></svg></span></strong>：在后台或新标签页中导入并打开 URL，但不进行截图。这允许您在截图前手动登录、处理验证码或进行页面准备。</li><li><strong>批量自动化截图 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polygon points=\"5 3 19 12 5 21 5 3\"></polygon></svg></span></strong>：包括 <strong>URL 列表</strong>、<strong>URL 模板</strong>、<strong>CSS 选择器搜索</strong> 和 <strong>序列模式</strong>——专为大批量自动化工作流设计。</li></ul><div class=\"help-note note-info\"><p><strong>提示：</strong> 由于浏览器扩展的安全限制，无法截取浏览器内部页面（例如 <code>chrome://</code> 页面）、Chrome 应用商店和本地特权文件。我们建议在设置中为“截取当前页面”和“截取当前窗口”配置快捷键，以实现更快的触发速度。</p></div>"
   },
   "helpUrlListTitle": {
     "message": "URL 列表模式"
@@ -1030,7 +1033,7 @@
     "message": "适用场景：截图后，期望自动将截图整理归档到不同子文件夹中，或按特定格式重命名文件名。"
   },
   "helpFilenameFolderContent": {
-    "message": "In 选项设置中可以配置文件夹和文件名的模板。<br><strong>文件夹 (Folder)：</strong> 支持使用斜杠 <code>/</code> 创建多级子目录。例如：<code>BatchShot/<span class=\"hl-kw\">{date}</span>/<span class=\"hl-kw\">{host}</span></code><br><strong>文件名模板 (Filename Pattern)：</strong> 支持以下占位符：<br><ul><li><code><span class=\"hl-kw\">{index}</span></code> - 当前任务序号 (001, 002...)</li><li><code><span class=\"hl-kw\">{total}</span></code> - 任务总数</li><li><code><span class=\"hl-kw\">{host}</span></code> / <code><span class=\"hl-kw\">{domain}</span></code> - 网站域名 (如 <code>example.com</code>)</li><li><code><span class=\"hl-kw\">{title}</span></code> - 页面标题</li><li><code><span class=\"hl-kw\">{keyword}</span></code> - 模板替换词/搜索关键词</li><li><code><span class=\"hl-kw\">{datetime}</span></code> - 完整日期时间</li><li><code><span class=\"hl-kw\">{date}</span></code> - 当前日期</li><li><code><span class=\"hl-kw\">{time}</span></code> - 当前时间</li><li><code><span class=\"hl-kw\">{url}</span></code> - 页面 URL (会自动替换非法文件名字符)</li></ul>"
+    "message": "在选项设置中可以配置保存文件夹和文件名的模板。<strong>文件夹 (Folder)：</strong>支持使用斜杠 <code>/</code> 创建多级子目录。<strong>文件名 (Filename)：</strong>用于定义截图的命名格式。对于文件夹和文件名输入框，您可以直接点击其下方的<strong>参数选择器 (Token Picker)</strong>来选择并插入对应的变量（如序号、总数、域名、标题、关键词、日期时间等），无需手动记忆或输入占位符。系统在保存时会自动过滤非法文件名字符。"
   },
   "helpCaptureOutputTitle": {
     "message": "截图模式与输出格式"
@@ -1048,7 +1051,7 @@
     "message": "适用场景：截图需要防伪或需要保留抓取源头信息（如取证、审计、测试记录）时，将网址和时间刻印在图片上。"
   },
   "helpMetadataContent": {
-    "message": "在设置中启用“添加元信息水印”后，截图的顶部或底部会自动拼上一块栏目，刻印以下内容：<br><ul><li>截图日期时间 (<code>{capturedAt}</code> 或 <code>{time}</code>)</li><li>页面完整地址 (<code>{url}</code>)</li><li>页面标题 (<code>{title}</code>)</li><li>网页域名 (<code>{host}</code> 或 <code>{domain}</code>)</li><li>任务当前序号 (<code>{index}</code>)</li><li>任务总数 (<code>{total}</code>)</li><li>模板替换词/搜索关键词 (<code>{keyword}</code>)</li></ul>您可以在设置中自定义这块水印的字号、文字颜色、背景颜色、内边距、布局方式（分行或同行）等。"
+    "message": "在设置中启用“在图片上添加元信息”后，截图的顶部或底部会自动拼上一块水印展示栏。您可以通过输入框下方的<strong>参数选择器 (Token Picker)</strong>自由选择和排列要展示的元数据字段（如截图时间、网址、标题、域名、序号等），并可自定义字号、文字/背景颜色、内边距以及单行/多行布局。"
   },
   "helpReportTitle": {
     "message": "截图报告"
@@ -1057,13 +1060,37 @@
     "message": "适用场景：大批量截图完毕后，需要一份结构化的 Excel / CSV 清单，记录每个 URL 的截图结果及文件名。"
   },
   "helpReportContent": {
-    "message": "在设置中启用 <strong>导出截图报告</strong> 后，批量任务结束时会下载 CSV 或 XLSX 报告。报告会记录成功和失败任务，方便复核、交付或继续重试。<br>用户可以选择以下字段：<ul><li><code>{index}</code> / <code>{序号}</code>：任务序号。</li><li><code>{url}</code> / <code>{网址}</code>：页面地址；XLSX 中会尽量保留超链接。</li><li><code>{title}</code> / <code>{标题}</code>：页面标题。</li><li><code>{status}</code> / <code>{状态}</code>：成功或失败。</li><li><code>{filename}</code> / <code>{文件名}</code>：本地下载路径。</li><li><code>{error}</code> / <code>{失败原因}</code>：失败时的错误描述。</li></ul><pre><code>{index},{url},{title},{status},{filename},{error}\n{序号},{网址},{标题},{状态},{文件名},{失败原因}</code></pre>"
+    "message": "在设置中启用 <strong>导出截图报告</strong> 后，批量任务结束时会下载 CSV 或 XLSX 格式的报告清单。您可以直接在“字段和顺序”输入框下点击<strong>参数选择器 (Token Picker)</strong>来配置要包含在报告中的列及它们的排列顺序。XLSX 格式的报告会自动为网址应用超链接。<div class=\"help-note note-info\"><p><strong>保存目录说明：</strong>如果自定义文件夹模板使同一批截图保存在不同的子目录中，报告文件将自动保存到它们共同的最小上级目录。</p></div>"
+  },
+  "helpPageTextTitle": {
+    "message": "网页正文提取"
+  },
+  "helpPageTextScenario": {
+    "message": "适用场景：在保存截图的同时保存可检索的网页文本，用于内容复核、归档、全文检索或 AI 分析。"
+  },
+  "helpPageTextContent": {
+    "message": "启用<strong>网页正文提取</strong>后，BatchShot 会在每个页面截图时同步保存页面可见正文及元数据。<br>工作方式：<ul><li><strong>提取来源：</strong>正文来自网页自身的可见文本，不是对截图做 OCR，也不会绕过安全限制、登录墙或权限限制。</li><li><strong>单独保存：</strong>选择<strong>分别保存为单独的 .txt 文件</strong>时，每个成功页面都会额外下载一个 <code>.txt</code> 文件（保存在截图同一目录）。</li><li><strong>合并保存：</strong>选择<strong>合并保存为一个 .txt 文件</strong>时，任务结束后会生成一个合并文本文件，页面之间使用设置中的合并分隔符连接。</li><li><strong>最大字符数：</strong>可以使用最大字数限制来避免超长页面生成过大的文本文件。</li><li><strong>导出文本模板：</strong>支持自定义保存格式，您可以直接点击文本模板输入框下的<strong>参数选择器 (Token Picker)</strong>来一键插入各种参数变量，如正文内容、网址、标题、截图时间等。</li><li><strong>写入截图报告：</strong>启用<strong>在报告中包含正文相关字段</strong>后，CSV/XLSX 报告会自动追加文本文件名、文本长度、正文摘要和网页描述。</li></ul><div class=\"help-note note-warning\"><p><strong>限制说明：</strong>浏览器内部页面、受限制的扩展页面、无法访问的 iframe，或需要延迟交互后才渲染文字的页面，可能得到空正文。对于需要登录的页面，建议先使用<strong>仅打开链接</strong>准备就绪后再运行。</p></div>"
+  },
+  "helpRuntimeDashboardTitle": {
+    "message": "运行状态与任务控制"
+  },
+  "helpRuntimeDashboardContent": {
+    "message": "<ul><li><strong>运行状态看板：</strong>批量截图、模板截图、序列截图或当前窗口截图开始后，弹窗中会显示运行状态看板，展示任务进度、已完成数量以及每个页面的截图日志。</li><li><strong>暂停与继续 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"6\" y=\"4\" width=\"4\" height=\"16\" rx=\"1\"></rect><rect x=\"14\" y=\"4\" width=\"4\" height=\"16\" rx=\"1\"></rect></svg></span></strong>：任务运行中可使用暂停按钮临时停止队列推进，确认页面状态或处理网络/登录问题后再继续。</li><li><strong>中止任务 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"6\" y=\"6\" width=\"12\" height=\"12\" rx=\"2\"></rect></svg></span></strong>：点击停止按钮会请求中止当前批量任务。已经完成下载的截图会保留；尚未处理或正在处理的项目会停止继续执行。</li><li><strong>失败历史与报告 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z\"></path><line x1=\"12\" y1=\"9\" x2=\"12\" y2=\"13\"></line><line x1=\"12\" y1=\"17\" x2=\"12.01\" y2=\"17\"></line></svg></span></strong>：任务失败或中止后，失败项会在失败历史、状态看板或导出的报告中留下可追踪信息，便于稍后重试和复核。</li><li><strong>结束与清理：</strong>任务完成、失败或中止后，状态看板会保留最终结果，便于检查成功数量、失败原因和下载报告；确认无误后可关闭看板或开始下一次任务。</li></ul><div class=\"help-note note-info\"><p><strong>提示：</strong> 中止是尽快停止队列的请求，不一定能打断浏览器正在进行的单次截图或下载动作；如果某一页已经开始导出，可能会先完成当前步骤再停止后续任务。</p></div>"
   },
   "helpScheduledTasksTitle": {
     "message": "定时任务"
   },
   "helpScheduledTasksContent": {
     "message": "<ul><li>1. 需在设置中启用 <strong>启用定时截图</strong>。</li><li>2. 在弹窗界面配置好模式 and 内容后，点击底部工具区右侧 <strong>开始</strong> 按钮旁边的 <strong>时钟 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><path d=\"M12 6v6l4 2\"></path></svg></span></strong> 图标按钮。</li><li>3. 设定任务的执行时间和任务名称，然后点击保存。</li><li>4. 定时任务依靠浏览器后台定时唤醒机制运行。</li></ul><div class=\"help-note note-warning\"><p><strong>重要提示：</strong> 确保浏览器在任务执行时未被完全关闭。系统休眠或关机可能会导致定时任务被跳过或延时执行。</p></div>"
+  },
+  "helpAutomationTitle": {
+    "message": "Webhook 自动化"
+  },
+  "helpAutomationScenario": {
+    "message": "适用场景：任务结束后，把截图批次的结果通知到本地脚本、业务系统或自动化流程。"
+  },
+  "helpAutomationContent": {
+    "message": "启用<strong>任务完成 Webhook</strong> 后，BatchShot 会在当前批次结束时向指定 URL 发送 HTTP 请求。<br>主要配置：<ul><li><strong>触发条件：</strong>支持总是触发、全部成功时触发、存在失败项时触发、任务自然结束且未取消时触发。</li><li><strong>请求方法：</strong>支持 <code>POST</code> 和 <code>GET</code>。</li><li><strong>Headers：</strong>填写 JSON 对象，例如 <code>{&quot;Authorization&quot;:&quot;Bearer token&quot;}</code>。</li><li><strong>Body 模板：</strong>支持 <code>{runId}</code>、<code>{taskName}</code>、<code>{status}</code>、<code>{startedAt}</code>、<code>{finishedAt}</code>、<code>{durationMs}</code>、<code>{total}</code>、<code>{success}</code>、<code>{failed}</code>、<code>{cancelled}</code>、<code>{folder}</code>、<code>{reportFilename}</code>、<code>{unfinishedTasksCount}</code> 和 <code>{items}</code>。</li><li><strong>忽略错误：</strong>启用后，即使 Webhook 请求失败，截图任务本身仍可按截图结果结束；关闭后，Webhook 失败会让任务失败。</li><li><strong>测试请求：</strong>设置页可发送测试 payload，验证 URL、Header 和模板是否正确。</li></ul><div class=\"help-note note-info\"><p>Webhook 只发送任务结果摘要和单页截图结果，不负责上传截图文件本身。</p></div>"
   },
   "helpHistoryFailureHistoryTitle": {
     "message": "历史记录与失败历史"
@@ -1098,6 +1125,12 @@
   "helpCategoryTroubleshoot": {
     "message": "常见问题与排错"
   },
+  "helpCopyrightTitle": {
+    "message": "版权声明"
+  },
+  "helpCopyrightContent": {
+    "message": "<p>BatchShot 批量截图 是一款网页截图及本地归档工具。当您使用它截取网页时，页面中包含的图片、文字、商标、界面等第三方内容，其版权、商标权等相关权益仍归原权利人所有。</p><p>您在使用扩展进行截图、保存、分发、展示、商业用途或二次传播时，应自行负责确认该行为符合目标网站的用户协议、著作权法、隐私政策及相关法律法规。BatchShot 绝不会将截图上传到任何服务器，亦不授予您对第三方内容的任何权利。</p><p>BatchShot 项目代码本身依据 <code>MIT 许可证</code> 开源，但项目代码的许可并不代表对所截取网页内容的授权。</p>"
+  },
   "helpNoResults": {
     "message": "无相关结果"
   },
@@ -1107,6 +1140,93 @@
   "helpResetSearchBtn": {
     "message": "清空搜索"
   },
+  "pageTextSectionTitle": {
+    "message": "文本提取"
+  },
+  "extractPageTextLabel": {
+    "message": "截图时提取页面文本"
+  },
+  "saveTextModeLabel": {
+    "message": "保存文本文件方式"
+  },
+  "saveTextModeSeparate": {
+    "message": "为每个页面保存独立的文本文件"
+  },
+  "saveTextModeCombined": {
+    "message": "合并所有页面的文本到一个文件"
+  },
+  "saveTextCombinedSeparatorLabel": {
+    "message": "合并文本分隔符"
+  },
+  "saveTextTemplateLabel": {
+    "message": "文本保存模板"
+  },
+  "pageTextLengthLimitLabel": {
+    "message": "最大文本提取字符数限制"
+  },
+  "pageTextLengthLimitHelp": {
+    "message": "限制从每个网页提取的最大字符数量。默认值为 100,000。"
+  },
+  "includeTextInReportLabel": {
+    "message": "在数据报告中包含文本摘要"
+  },
+  "includeTextInReportHelp": {
+    "message": "启用后，导出的截图报告中将追加四个字段：文本文件名、文本长度、文本摘要和元描述。"
+  },
+  "automationSectionTitle": {
+    "message": "自动化"
+  },
+  "webhookEnabledLabel": {
+    "message": "启用任务完成 Webhook"
+  },
+  "webhookUrlLabel": {
+    "message": "Webhook 链接"
+  },
+  "webhookMethodLabel": {
+    "message": "请求方法"
+  },
+  "webhookTriggerConditionLabel": {
+    "message": "触发条件"
+  },
+  "webhookTriggerAlways": {
+    "message": "总是触发"
+  },
+  "webhookTriggerSuccess": {
+    "message": "全部成功时"
+  },
+  "webhookTriggerFailed": {
+    "message": "有失败项时"
+  },
+  "webhookTriggerCompleted": {
+    "message": "任务完成时 (未取消)"
+  },
+  "webhookHeadersLabel": {
+    "message": "自定义请求头 (JSON)"
+  },
+  "webhookBodyTemplateLabel": {
+    "message": "请求体模板 (JSON)"
+  },
+  "webhookTimeoutLabel": {
+    "message": "超时时间 (秒)"
+  },
+  "webhookIgnoreErrorsLabel": {
+    "message": "忽略 Webhook 错误"
+  },
+  "webhookIgnoreErrorsHelp": {
+    "message": "启用后，即使 Webhook 请求失败，截图任务仍会标记为成功。如果禁用，Webhook 失败将导致整个截图任务标记为失败。"
+  },
+  "testWebhookButton": {
+    "message": "测试发送"
+  },
+  "testWebhookSending": {
+    "message": "正在发送..."
+  },
+  "testWebhookSuccess": {
+    "message": "成功: $1"
+  },
+  "testWebhookFailed": {
+    "message": "失败: $1"
+  },
   "metadataFormatLabel": {
     "message": "布局方式"
   },
@@ -1115,18 +1235,6 @@
   },
   "metadataFormatInline": {
     "message": "同行"
-  },
-  "helpRuntimeDashboardTitle": {
-    "message": "运行状态与任务控制"
-  },
-  "helpRuntimeDashboardContent": {
-    "message": "<ul><li><strong>运行状态看板：</strong>批量截图、模板截图、序列截图或当前窗口截图开始后，弹窗中会显示运行状态看板，展示任务进度、已完成数量以及每个页面的截图日志。</li><li><strong>暂停与继续 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"6\" y=\"4\" width=\"4\" height=\"16\" rx=\"1\"></rect><rect x=\"14\" y=\"4\" width=\"4\" height=\"16\" rx=\"1\"></rect></svg></span></strong>：任务运行中可使用暂停按钮临时停止队列推进，确认页面状态或处理网络/登录问题后再继续。</li><li><strong>中止任务 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"6\" y=\"6\" width=\"12\" height=\"12\" rx=\"2\"></rect></svg></span></strong>：点击停止按钮会请求中止当前批量任务。已经完成下载的截图会保留；尚未处理或正在处理的项目会停止继续执行。</li><li><strong>失败历史与报告 <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z\"></path><line x1=\"12\" y1=\"9\" x2=\"12\" y2=\"13\"></line><line x1=\"12\" y1=\"17\" x2=\"12.01\" y2=\"17\"></line></svg></span></strong>：任务失败或中止后，失败项会在失败历史、状态看板或导出的报告中留下可追踪信息，便于稍后重试和复核。</li><li><strong>结束与清理：</strong>任务完成、失败或中止后，状态看板会保留最终结果，便于检查成功数量、失败原因和下载报告；确认无误后可关闭看板或开始下一次任务。</li></ul><div class=\"help-note note-info\"><p><strong>提示：</strong> 中止是尽快停止队列的请求，不一定能打断浏览器正在进行的单次截图或下载动作；如果某一页已经开始导出，可能会先完成当前步骤再停止后续任务。</p></div>"
-  },
-  "helpCopyrightTitle": {
-    "message": "版权声明"
-  },
-  "helpCopyrightContent": {
-    "message": "<p>BatchShot 批量截图 是一款网页截图及本地归档工具。当您使用它截取网页时，页面中包含的图片、文字、商标、界面等第三方内容，其版权、商标权等相关权益仍归原权利人所有。</p><p>您在使用扩展进行截图、保存、分发、展示、商业用途或二次传播时，应自行负责确认该行为符合目标网站的用户协议、著作权法、隐私政策及相关法律法规。BatchShot 绝不会将截图上传到任何服务器，亦不授予您对第三方内容的任何权利。</p><p>BatchShot 项目代码本身依据 <code>MIT 许可证</code> 开源，但项目代码的许可并不代表对所截取网页内容的授权。</p>"
   },
   "tokenPickerHeader": {
     "message": "可插入参数"

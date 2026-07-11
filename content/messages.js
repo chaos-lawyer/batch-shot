@@ -62,5 +62,10 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     return true;
   }
 
+  if (message.action === 'extractPageText') {
+    sendResponse(extractPageText(message.payload || {}));
+    return true;
+  }
+
   return false;
 });

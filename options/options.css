@@ -508,8 +508,8 @@ select {
 
 input:focus,
 select:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
 input[type="checkbox"]:focus {
@@ -572,10 +572,6 @@ small code {
 
 .grid .check-row {
   flex: 1;
-}
-
-.check-row.compact {
-  min-height: 40px;
 }
 
 .check-row-wrapper {
@@ -662,14 +658,18 @@ button.secondary:hover {
 }
 
 #metadataControls,
-#reportControls {
+#reportControls,
+#webhookControls,
+#pageTextControls {
   display: grid;
   grid-template-rows: 0fr;
   transition: grid-template-rows 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 #metadataControls .metadata-inner,
-#reportControls .report-inner {
+#reportControls .report-inner,
+#webhookControls .webhook-inner,
+#pageTextControls .page-text-inner {
   overflow: hidden;
   opacity: 0;
   transform: translateY(-8px);
@@ -677,12 +677,16 @@ button.secondary:hover {
 }
 
 #metadataControls.expanded,
-#reportControls.expanded {
+#reportControls.expanded,
+#webhookControls.expanded,
+#pageTextControls.expanded {
   grid-template-rows: 1fr;
 }
 
 #metadataControls.expanded .metadata-inner,
-#reportControls.expanded .report-inner {
+#reportControls.expanded .report-inner,
+#webhookControls.expanded .webhook-inner,
+#pageTextControls.expanded .page-text-inner {
   opacity: 1;
   transform: translateY(0);
   margin-top: 16px;
@@ -807,8 +811,17 @@ button.secondary:hover {
   margin-top: auto;
 }
 
-.sidebar-reset-btn {
+.sidebar-btn-row {
+  display: flex;
+  gap: 8px;
   margin-bottom: 12px;
+  width: 100%;
+}
+
+.sidebar-btn-row .sidebar-action-btn {
+  flex: 1;
+  margin-bottom: 0;
+  width: auto;
 }
 
 .sidebar-action-btn.danger:hover {
@@ -1175,4 +1188,71 @@ body .token-picker-editable-input {
   opacity: 0.62;
   pointer-events: none;
   display: block;
+}
+
+/* Page Text & Webhook Subsection Styling */
+.subsection-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-top: 24px;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+.subsection-divider {
+  border-top: 1px solid var(--border);
+  margin: 24px 0;
+}
+
+.code-textarea {
+  font-family: var(--font-code, monospace);
+  font-size: 0.85rem;
+  line-height: 1.4;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background-color: var(--bg-input, #ffffff);
+  color: var(--text);
+  width: 100%;
+  resize: vertical;
+}
+
+[data-theme="dark"] .code-textarea {
+  background-color: #1e1e1e;
+  border-color: #333333;
+}
+
+.field-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-top: 16px;
+}
+
+.test-status {
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.test-status.success {
+  color: #10b981;
+}
+
+.test-status.error {
+  color: #ef4444;
+}
+
+.test-status.sending {
+  color: #3b82f6;
+}
+
+.inline-check {
+  margin-top: 24px;
+}
+
+.token-picker-container:has(#webhookBodyTemplate) .token-picker-editable-input,
+.token-picker-container:has(#saveTextTemplate) .token-picker-editable-input {
+  min-height: 160px;
+  height: 160px;
+  resize: vertical;
 }

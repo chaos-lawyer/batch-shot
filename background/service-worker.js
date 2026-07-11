@@ -2,6 +2,7 @@ import { loadSettings, saveSettings, DEFAULT_URL_TEMPLATE_DELIMITER } from '../u
 import { createBatchStatusState, runCaptureJobs, createReportRow } from './capture-flow.js';
 import { runPrepareForms } from './form-prep-runner.js';
 import { setupMessageRouter } from './message-router.js';
+import { sendWebhook } from './webhook.js';
 import { createScheduledTaskController } from './scheduled-task.js';
 import { statusFromError, statusError, errorResponse } from './status-error.js';
 import { captureCurrentTab, captureCurrentWindowTabs, runBatch, captureCurrentTabSequence, openCurrentTabSequence } from './capture-page-runner.js';
@@ -80,7 +81,8 @@ function getCaptureRunnerDeps() {
     startCaptureTaskHistory: (task) => startCaptureTaskHistory(task, chrome),
     updateCaptureTaskHistory: (taskId, row) => updateCaptureTaskHistory(taskId, row, chrome),
     finishCaptureTaskHistory: (taskId, result) => finishCaptureTaskHistory(taskId, result, chrome),
-    saveCaptureTaskHistory: (task) => saveCaptureTaskHistory(task, chrome)
+    saveCaptureTaskHistory: (task) => saveCaptureTaskHistory(task, chrome),
+    scheduledTasks
   };
 }
 
@@ -102,6 +104,7 @@ setupMessageRouter({
   getBatchState,
   loadSettings,
   saveSettings,
+  sendWebhook,
   openActionPopupFromMenu: () => openActionPopupFromMenu(getActionUiDeps()),
   syncActionUi: (settings) => syncActionUi(chrome, settings),
   scheduledTasks,

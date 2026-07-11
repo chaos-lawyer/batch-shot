@@ -99,7 +99,7 @@
 .url-pane.has-no-wrap:focus-within,
 .template-textarea-wrapper:focus-within {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
 .url-pane.has-no-wrap #urlList,
@@ -402,7 +402,7 @@ textarea:focus,
 input:focus,
 select:focus {
   border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  box-shadow: 0 0 0 3px var(--accent-glow);
 }
 
 .template-pane {

@@ -6,5 +6,6 @@ export const CONTENT_SCRIPT_FILES = [
   'content/search-infer.js',
   'content/button-picker.js',
   'content/pagination.js',
+  'content/page-text.js',
   'content/messages.js'
 ];

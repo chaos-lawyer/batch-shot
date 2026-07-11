@@ -1,11 +1,12 @@
-export function createReportRow({ index, url, title = '', filename = '', status, error = '' }) {
+export function createReportRow({ index, url, title = '', filename = '', status, error = '', ...extra }) {
   return {
     index: index + 1,
     url,
     title,
     filename,
     status,
-    error
+    error,
+    ...extra
   };
 }
 

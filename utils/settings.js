@@ -48,7 +48,21 @@ export const DEFAULT_SETTINGS = {
   metadataBackgroundColor: '#000000',
   metadataLabelsEnabled: true,
   metadataBoldLabels: true,
-  metadataSeparator: '  |  '
+  metadataSeparator: '  |  ',
+  webhookEnabled: false,
+  webhookUrl: '',
+  webhookMethod: 'POST',
+  webhookHeaders: '{}',
+  webhookBodyTemplate: '{\n  "source": "BatchShot",\n  "event": "capture.completed",\n  "runId": "{runId}",\n  "taskName": "{taskName}",\n  "status": "{status}",\n  "startedAt": "{startedAt}",\n  "finishedAt": "{finishedAt}",\n  "durationMs": "{durationMs}",\n  "total": "{total}",\n  "success": "{success}",\n  "failed": "{failed}",\n  "cancelled": "{cancelled}",\n  "folder": "{folder}",\n  "reportFilename": "{reportFilename}",\n  "unfinishedTasksCount": "{unfinishedTasksCount}",\n  "items": "{items}"\n}',
+  webhookTriggerCondition: 'always',
+  webhookTimeout: 10,
+  webhookIgnoreErrors: true,
+  extractPageText: false,
+  saveTextMode: 'separate',
+  saveTextTemplate: 'URL: {url}\nTitle: {title}\nKeyword: {keyword}\n\n{text}',
+  saveTextCombinedSeparator: '---',
+  includeTextInReport: false,
+  pageTextLengthLimit: 100000
 };
 
 function migrateSettings(settings) {
@@ -78,6 +92,25 @@ function migrateSettings(settings) {
   const urlTemplateDelimiter = settings.urlTemplateDelimiter && settings.urlTemplateDelimiter !== '\\'
     ? settings.urlTemplateDelimiter
     : DEFAULT_SETTINGS.urlTemplateDelimiter;
+
+  const webhookTimeout = Number(settings.webhookTimeout);
+  const webhookMethod = ['POST', 'GET'].includes(settings.webhookMethod)
+    ? settings.webhookMethod
+    : DEFAULT_SETTINGS.webhookMethod;
+  const webhookTriggerCondition = ['always', 'success', 'failed', 'completed'].includes(settings.webhookTriggerCondition)
+    ? settings.webhookTriggerCondition
+    : DEFAULT_SETTINGS.webhookTriggerCondition;
+  const saveTextMode = ['separate', 'combined'].includes(settings.saveTextMode)
+    ? settings.saveTextMode
+    : DEFAULT_SETTINGS.saveTextMode;
+  const saveTextTemplate = typeof settings.saveTextTemplate === 'string'
+    ? settings.saveTextTemplate
+    : DEFAULT_SETTINGS.saveTextTemplate;
+  const saveTextCombinedSeparator = typeof settings.saveTextCombinedSeparator === 'string'
+    ? settings.saveTextCombinedSeparator
+    : DEFAULT_SETTINGS.saveTextCombinedSeparator;
+  const pageTextLengthLimit = Number(settings.pageTextLengthLimit);
+
 
   const sequentialCaptureCount = Number(settings.sequentialCaptureCount);
   const sequentialStartUrl = typeof settings.sequentialStartUrl === 'string'
@@ -118,7 +151,39 @@ function migrateSettings(settings) {
       || DEFAULT_SETTINGS.filenameDateTimeFormat,
     metadataDateTimeFormat: settings.metadataDateTimeFormat
       || [settings.metadataDateFormat, settings.metadataTimeFormat].filter(Boolean).join(' ')
-      || DEFAULT_SETTINGS.metadataDateTimeFormat
+      || DEFAULT_SETTINGS.metadataDateTimeFormat,
+    webhookEnabled: typeof settings.webhookEnabled === 'boolean'
+      ? settings.webhookEnabled
+      : DEFAULT_SETTINGS.webhookEnabled,
+    webhookUrl: typeof settings.webhookUrl === 'string'
+      ? settings.webhookUrl.trim()
+      : DEFAULT_SETTINGS.webhookUrl,
+    webhookMethod,
+    webhookHeaders: typeof settings.webhookHeaders === 'string'
+      ? settings.webhookHeaders
+      : DEFAULT_SETTINGS.webhookHeaders,
+    webhookBodyTemplate: typeof settings.webhookBodyTemplate === 'string'
+      ? settings.webhookBodyTemplate
+      : DEFAULT_SETTINGS.webhookBodyTemplate,
+    webhookTriggerCondition,
+    webhookTimeout: Number.isFinite(webhookTimeout)
+      ? clampInteger(webhookTimeout, DEFAULT_SETTINGS.webhookTimeout, 1, 120)
+      : DEFAULT_SETTINGS.webhookTimeout,
+    webhookIgnoreErrors: typeof settings.webhookIgnoreErrors === 'boolean'
+      ? settings.webhookIgnoreErrors
+      : DEFAULT_SETTINGS.webhookIgnoreErrors,
+    extractPageText: typeof settings.extractPageText === 'boolean'
+      ? settings.extractPageText
+      : DEFAULT_SETTINGS.extractPageText,
+    saveTextMode,
+    saveTextTemplate,
+    saveTextCombinedSeparator,
+    includeTextInReport: typeof settings.includeTextInReport === 'boolean'
+      ? settings.includeTextInReport
+      : DEFAULT_SETTINGS.includeTextInReport,
+    pageTextLengthLimit: Number.isFinite(pageTextLengthLimit)
+      ? clampInteger(pageTextLengthLimit, DEFAULT_SETTINGS.pageTextLengthLimit, 1, 10000000)
+      : DEFAULT_SETTINGS.pageTextLengthLimit
   };
 }
 

@@ -129,7 +129,7 @@
     "message": "Template search delimiter"
   },
   "urlTemplateDelimiterHelp": {
-    "message": "Separates the start <code>URL</code>, input selector, and optional button selector in template search lines, for example: <code>https://example.com :: input[name=&quot;q&quot;] :: button[type=&quot;submit&quot;]</code>."
+    "message": "Separates the start URL, input selector, and optional button selector in Template search lines, for example: https://example.com :: input[name=\"q\"] :: button[type=\"submit\"]."
   },
   "urlPreviewCount": {
     "message": "$COUNT$ URL(s)",
@@ -163,7 +163,7 @@
     "message": "Screenshot quality"
   },
   "screenshotQualityHelp": {
-    "message": "Only affects <code>JPG</code> and <code>PDF</code>; <code>PNG</code> stays lossless."
+    "message": "Only affects JPG and PDF; PNG stays lossless."
   },
   "delayLabel": {
     "message": "Delay"
@@ -267,7 +267,7 @@
     "message": "Filename"
   },
   "filenameHelp": {
-    "message": "Use <code>{index}</code>, <code>{total}</code>, <code>{host}</code>, <code>{title}</code>, <code>{keyword}</code>, <code>{folder}</code>, <code>{datetime}</code>, <code>{date}</code>, <code>{time}</code>, <code>{year}</code>, <code>{month}</code>, <code>{day}</code>, <code>{url}</code>"
+    "message": "Use {index}, {total}, {host}, {title}, {keyword}, {folder}, {datetime}, {date}, {time}, {year}, {month}, {day}, {url}"
   },
   "filenameDateTimeFormatLabel": {
     "message": "Filename date/time format"
@@ -282,7 +282,7 @@
     "message": "Fields and order"
   },
   "reportFieldsHelp": {
-    "message": "Use <code>{index}</code>, <code>{url}</code>, <code>{title}</code>, <code>{status}</code>, <code>{filename}</code>, <code>{error}</code>. Separate fields with commas."
+    "message": "Use index, url, title, status, filename, error. Chinese names are also supported. Separate fields with commas."
   },
   "reportSectionTitle": {
     "message": "Screenshot Report"
@@ -303,7 +303,7 @@
     "message": "Capture all pages in current window"
   },
   "iconClickActionHelp": {
-    "message": "Also applies to <code>Chrome</code> extension action shortcuts."
+    "message": "Also applies to Chrome's extension action shortcut."
   },
   "scheduledTasksEnabledLabel": {
     "message": "Enable scheduled captures"
@@ -312,7 +312,7 @@
     "message": "Close each page after batch capture"
   },
   "closeBatchTabsAfterCaptureHelp": {
-    "message": "Only applicable to <code>List mode</code> and <code>Template mode</code>."
+    "message": "Only applicable to List mode and Template mode."
   },
   "urlListWrapLabel": {
     "message": "Wrap URLs in the popup URL list"
@@ -324,7 +324,7 @@
     "message": "Maximum saved records for each history menu."
   },
   "dateTimeFormatHelp": {
-    "message": "Use <code>YYYY</code>, <code>MM</code>, <code>DD</code>, <code>HH</code>, <code>mm</code>, <code>ss</code>"
+    "message": "Use YYYY, MM, DD, HH, mm, ss"
   },
   "settingsButton": {
     "message": "Settings"
@@ -763,7 +763,7 @@
     "message": "Fields and order"
   },
   "metadataFieldsHelp": {
-    "message": "Supports <code>{capturedAt}</code>/<code>{time}</code>, <code>{url}</code>, <code>{title}</code>, <code>{host}</code>/<code>{domain}</code>, <code>{index}</code>, <code>{total}</code>, <code>{keyword}</code>"
+    "message": "Supports capturedAt/time, url, title, host/domain, index, total, keyword"
   },
   "metadataDateTimeFormatLabel": {
     "message": "Metadata date/time format"
@@ -835,7 +835,7 @@
     "message": "Open popup"
   },
   "shortcutsHelp": {
-    "message": "<code>Chrome</code> manages extension shortcuts. Use the button to change or remove them."
+    "message": "Chrome manages extension shortcuts. Use the button to change or remove them."
   },
   "shortcutNotSet": {
     "message": "Not set"
@@ -978,6 +978,9 @@
   "helpThemeLabel": {
     "message": "Theme"
   },
+  "helpQuickStartContent": {
+    "message": "BatchShot supports four efficient capture and execution workflows to meet diverse needs, from single-page archiving to large-scale automated audits:<br><ul><li><strong>Capture Current Page <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z\"></path><circle cx=\"12\" cy=\"13\" r=\"4\"></circle></svg></span></strong>: Instantly capture and stitch the full length of your active tab. Floating headers are hidden automatically to ensure a clean, timestamped record.</li><li><strong>Capture Current Window <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16\"></path><path d=\"M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2\"></path><circle cx=\"13\" cy=\"7\" r=\"1\" fill=\"currentColor\"></circle><rect x=\"8\" y=\"2\" width=\"14\" height=\"14\" rx=\"2\"></rect></svg></span></strong>: Automatically cycle through and capture all open tabs in your current window—ideal for comparing multiple referenced pages. <em>If these tabs were previously opened in batch using the \"Only Open Links\" feature, the capture will automatically inherit and use the original job context (such as <code>{keyword}</code> and <code>{index}</code>) so screenshots are correctly named, watermarked, or reported.</em></li><li><strong>Only Open Links <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"8\" y=\"2\" width=\"8\" height=\"4\" rx=\"1\" ry=\"1\"></rect><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"></path><path d=\"M16.5 10.5a2.121 2.121 0 0 1 3 3L13 20l-4 1 1-4 6.5-6.5z\"></path></svg></span></strong>: Import and open URLs in the background or new tabs without capturing. This allows you to manually log in, handle CAPTCHAs, or perform setup before capture.</li><li><strong>Batch Automated Capture <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polygon points=\"5 3 19 12 5 21 5 3\"></polygon></svg></span></strong>: Includes <strong>URL List</strong>, <strong>URL Template</strong>, <strong>CSS Selector Search</strong>, and <strong>Sequential Click</strong> modes—engineered for high-volume, automated workflows.</li></ul><div class=\"help-note note-info\"><p><strong>Tip:</strong> Browser-internal pages (e.g., <code>chrome://</code> pages), the Chrome Web Store, and local privileged files cannot be captured due to browser extension security restrictions. We recommend configuring shortcuts for 'Capture Current Page' and 'Capture Current Window' in settings for even faster trigger times.</p></div>"
+  },
   "helpUrlListTitle": {
     "message": "List Mode"
   },
@@ -1014,12 +1017,6 @@
   "helpSequentialContent": {
     "message": "<ul><li>1. Enter the <strong>Page URL</strong>, <strong>Next page CSS selector</strong>, and number of <strong>Pages</strong>. The first page is included, so 3 pages means the current page plus two next clicks.</li><li>2. Click <strong>Fill from current page</strong> to let BatchShot infer the current URL and next button, or click <strong>Pick next page <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z\"></path><path d=\"M13 13l6 6\"></path></svg></span></strong> and select the next button directly on the page.</li><li>3. Once started, BatchShot captures the current page, clicks next, waits for the page to change, and repeats until the target count is reached or the next page is unavailable.</li><li>4. You can also use <strong>Open links only</strong> to prepare sequential pages, verify them manually, then capture the current window.</li><li>5. <strong>Right-click shortcut:</strong> You can also <strong>right-click</strong> the next page button on the target page and select <strong>\"Set as next page button for sequential capture\"</strong> to auto-populate the selector.</li></ul><div class=\"help-note note-warning\"><p><strong>Limits:</strong> Sequential mode works best with real pagination buttons or links. Infinite scrolling, virtual lists, CAPTCHAs, and multi-step interactions are better handled as URL lists or manually prepared tabs.</p></div>"
   },
-  "helpCategoryQuickStart": {
-    "message": "Quick Start"
-  },
-  "helpQuickStartContent": {
-    "message": "BatchShot supports four efficient capture and execution workflows to meet diverse needs, from single-page archiving to large-scale automated audits:<br><ul><li><strong>Capture Current Page <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z\"></path><circle cx=\"12\" cy=\"13\" r=\"4\"></circle></svg></span></strong>: Instantly capture and stitch the full length of your active tab. Floating headers are hidden automatically to ensure a clean, timestamped record.</li><li><strong>Capture Current Window <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16\"></path><path d=\"M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2\"></path><circle cx=\"13\" cy=\"7\" r=\"1\" fill=\"currentColor\"></circle><rect x=\"8\" y=\"2\" width=\"14\" height=\"14\" rx=\"2\"></rect></svg></span></strong>: Automatically cycle through and capture all open tabs in your current window—ideal for comparing multiple referenced pages.</li><li><strong>Only Open Links <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"8\" y=\"2\" width=\"8\" height=\"4\" rx=\"1\" ry=\"1\"></rect><path d=\"M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2\"></path><path d=\"M16.5 10.5a2.121 2.121 0 0 1 3 3L13 20l-4 1 1-4 6.5-6.5z\"></path></svg></span></strong>: Import and open URLs in the background or new tabs without capturing. This allows you to manually log in, handle CAPTCHAs, or perform setup before capture.</li><li><strong>Batch Automated Capture <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><polygon points=\"5 3 19 12 5 21 5 3\"></polygon></svg></span></strong>: Includes <strong>URL List</strong>, <strong>URL Template</strong>, <strong>CSS Selector Search</strong>, and <strong>Sequential Click</strong> modes—engineered for high-volume, automated workflows.</li></ul><div class=\"help-note note-info\"><p><strong>Tip:</strong> Browser-internal pages (e.g., <code>chrome://</code> pages), the Chrome Web Store, and local privileged files cannot be captured due to browser extension security restrictions. We recommend configuring shortcuts for 'Capture Current Page' and 'Capture Current Window' in settings for even faster trigger times.</p></div>"
-  },
   "helpFilenameFolderTitle": {
     "message": "Subfolder & Filename Pattern"
   },
@@ -1027,7 +1024,7 @@
     "message": "Best for: Automatically organizing screenshots into folders or renaming them according to specific conventions."
   },
   "helpFilenameFolderContent": {
-    "message": "Folder and filename templates are configured in Settings. BatchShot automatically removes characters that the operating system cannot use in filenames.<br><strong>Folder:</strong> Use <code>/</code> to create nested directories, for example <code>BatchShot/<span class=\"hl-kw\">{date}</span>/<span class=\"hl-kw\">{host}</span></code>.<br><strong>Filename:</strong> The default is <code><span class=\"hl-kw\">{index}</span>-<span class=\"hl-kw\">{host}</span></code>; the exported extension is appended automatically.<br><ul><li><code>{index}</code>: three-digit sequence number, such as 001.</li><li><code>{total}</code>: total task count.</li><li><code>{host}</code> / <code>{domain}</code>: page host.</li><li><code>{title}</code>: page title.</li><li><code>{keyword}</code>: text item from template or search tasks.</li><li><code>{datetime}</code>, <code>{date}</code>, <code>{time}</code>, <code>{year}</code>, <code>{month}</code>, <code>{day}</code>: current time.</li><li><code>{folder}</code>: rendered download folder; <code>{url}</code>: page URL.</li></ul><pre><code>Folder: BatchShot/{date}/{host}\nFilename: {index}-{keyword}-{title}\nDatetime format: YYYY-MM-DD_HHmmss</code></pre>"
+    "message": "Folder and filename templates can be configured in Settings. <strong>Folder:</strong> Use <code>/</code> to create nested directories. <strong>Filename:</strong> Defines the naming format of screenshots. For both fields, you can click the <strong>Token Picker</strong> below the input box to directly choose and insert variables (such as index, total, host, title, keyword, datetime, etc.) without manually typing them. Filename sanitization is performed automatically."
   },
   "helpCaptureOutputTitle": {
     "message": "Capture Mode & Formats"
@@ -1045,7 +1042,7 @@
     "message": "Best for: Auditing, forensic evidence, or test logs where screenshot integrity is critical and source info must be hardcoded on the image."
   },
   "helpMetadataContent": {
-    "message": "When 'Add metadata to image' is enabled, an overlay band will be appended to the top or bottom of the screenshot displaying:<br><ul><li>Capture Date/Time (<code>{capturedAt}</code> or <code>{time}</code>)</li><li>Page URL (<code>{url}</code>)</li><li>Page Title (<code>{title}</code>)</li><li>Page Host/Domain (<code>{host}</code> or <code>{domain}</code>)</li><li>Current Task Index (<code>{index}</code>)</li><li>Total Tasks Count (<code>{total}</code>)</li><li>Replaced Keyword/Search Item (<code>{keyword}</code>)</li></ul>You can customize the font size, text/background color, padding, gap, and layout (stacked or inline with a separator) in the settings."
+    "message": "When 'Add metadata to image' is enabled, an overlay band is appended to the top or bottom of screenshots. You can click the <strong>Token Picker</strong> below the inputs to select and arrange the fields (such as capturedAt, url, title, host, index, etc.) you want to display, and customize the font size, colors, padding, and layout in the settings."
   },
   "helpReportTitle": {
     "message": "Capture Report Sheet"
@@ -1054,13 +1051,37 @@
     "message": "Best for: Auditing and reviewing large-scale batch tasks with an Excel / CSV manifest sheet of results and paths."
   },
   "helpReportContent": {
-    "message": "When <strong>Export screenshot report</strong> is enabled, BatchShot downloads a CSV or XLSX report after the batch finishes. The report records both successful and failed tasks for review, delivery, or retry planning.<br>Users can choose the following fields:<ul><li><code>{index}</code>: task sequence number.</li><li><code>{url}</code>: page URL; XLSX reports preserve hyperlinks where possible.</li><li><code>{title}</code>: page title.</li><li><code>{status}</code>: success or failure.</li><li><code>{filename}</code>: local download path.</li><li><code>{error}</code>: failure message when capture fails.</li></ul><pre><code>{index},{url},{title},{status},{filename},{error}</code></pre>"
+    "message": "When <strong>Export screenshot report</strong> is enabled, BatchShot downloads a CSV or XLSX report after the batch finishes. You can click the <strong>Token Picker</strong> below the fields input in Settings to customize the columns and their order. XLSX format reports automatically preserve clickable hyperlinks.<div class=\"help-note note-info\"><p><strong>Save directory:</strong> If folder templates place screenshots into different subfolders, the report is saved to their lowest common parent folder.</p></div>"
+  },
+  "helpPageTextTitle": {
+    "message": "Page Text Extraction"
+  },
+  "helpPageTextScenario": {
+    "message": "Scenario: Save searchable page text alongside screenshots for review, archiving, full-text retrieval, or AI analysis."
+  },
+  "helpPageTextContent": {
+    "message": "Enable <strong>Page Text Extraction</strong> to save the page's visible text and metadata while each screenshot is captured.<br>How it works:<ul><li><strong>Extraction source:</strong> Text comes from the page's visible body text. It is not OCR from the screenshot image, and does not bypass security or login restrictions.</li><li><strong>Separate text files:</strong> Saves a <code>.txt</code> file for each page, named matching the screenshot and saved in the same folder.</li><li><strong>Combined text file:</strong> Exports a single merged <code>.txt</code> file at the end, joining pages with the configured separator.</li><li><strong>Maximum length:</strong> Caps the saved text length per page to avoid oversized files.</li><li><strong>Export text template:</strong> Supports customizing the text output format. You can click the <strong>Token Picker</strong> below the template box to insert parameters like text body, url, title, capturedAt, etc.</li><li><strong>Report fields:</strong> Enabling report inclusion appends text filename, text length, excerpt, and meta description columns to the report.</li></ul><div class=\"help-note note-warning\"><p><strong>Limitations:</strong> Internal browser pages, restricted pages, inaccessible frames, or elements rendered with significant delays may result in empty or incomplete text. Use <strong>Only Open Links</strong> first if manual setup is needed.</p></div>"
+  },
+  "helpRuntimeDashboardTitle": {
+    "message": "Task Dashboard & Controls"
+  },
+  "helpRuntimeDashboardContent": {
+    "message": "<ul><li><strong>Task dashboard:</strong> When a batch, template, sequential, or current-window capture starts, the popup shows a task dashboard with progress, completed count, and per-page logs.</li><li><strong>Pause and resume <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"6\" y=\"4\" width=\"4\" height=\"16\" rx=\"1\"></rect><rect x=\"14\" y=\"4\" width=\"4\" height=\"16\" rx=\"1\"></rect></svg></span>:</strong> While a task is running, use the pause control to temporarily stop queue advancement, then resume after checking page state, login, or network conditions.</li><li><strong>Stop a task <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"6\" y=\"6\" width=\"12\" height=\"12\" rx=\"2\"></rect></svg></span>:</strong> Clicking the stop button requests cancellation of the current batch. Screenshots that have already downloaded are kept; pending or in-progress items stop advancing.</li><li><strong>Failure history and reports <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z\"></path><path d=\"M12 9v4\"></path><path d=\"M12 17h.01\"></path></svg></span>:</strong> After a failure or stopped task, failed items remain traceable through failure history, the dashboard status, or exported reports, making later retries and review easier.</li><li><strong>Completion and cleanup:</strong> After a task completes, fails, or is stopped, the dashboard keeps the final result so you can review successful captures, failure reasons, and downloaded reports before closing it or starting another task.</li></ul><div class=\"help-note note-info\"><p><strong>Tip:</strong> Stop is a best-effort request to halt the queue. It may not interrupt a single screenshot or download that is already being exported; that step may finish before later tasks are skipped.</p></div>"
   },
   "helpScheduledTasksTitle": {
     "message": "Scheduled Tasks"
   },
   "helpScheduledTasksContent": {
     "message": "<ul><li>1. Enable <strong>Enable scheduled captures</strong> in the settings first.</li><li>2. Set up your capture task in the popup, then click the <strong>Clock <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><circle cx=\"12\" cy=\"12\" r=\"10\"></circle><path d=\"M12 6v6l4 2\"></path></svg></span> (Schedule)</strong> icon in the footer.</li><li>3. Set the target run time and a task name, then click save.</li><li>4. Capture schedules rely on background Alarms.</li></ul><div class=\"help-note note-warning\"><p><strong>Important Note:</strong> Ensure the browser is not fully shut down when the task triggers. System sleep/hibernation might delay or prevent scheduled captures.</p></div>"
+  },
+  "helpAutomationTitle": {
+    "message": "Webhook Automation"
+  },
+  "helpAutomationScenario": {
+    "message": "Scenario: Notify a local script, business system, or automation workflow after a capture batch finishes."
+  },
+  "helpAutomationContent": {
+    "message": "When <strong>Completion Webhook</strong> is enabled, BatchShot sends an HTTP request to the configured URL after the current batch ends.<br>Configuration:<ul><li><strong>Trigger condition:</strong> Always, all successful, any failed, or completed without user cancellation.</li><li><strong>Method:</strong> Supports <code>POST</code> and <code>GET</code>.</li><li><strong>Headers:</strong> Enter a JSON object, for example <code>{&quot;Authorization&quot;:&quot;Bearer token&quot;}</code>.</li><li><strong>Body template:</strong> Supports <code>{runId}</code>, <code>{taskName}</code>, <code>{status}</code>, <code>{startedAt}</code>, <code>{finishedAt}</code>, <code>{durationMs}</code>, <code>{total}</code>, <code>{success}</code>, <code>{failed}</code>, <code>{cancelled}</code>, <code>{folder}</code>, <code>{reportFilename}</code>, <code>{unfinishedTasksCount}</code>, and <code>{items}</code>.</li><li><strong>Ignore errors:</strong> If enabled, webhook failure will not fail the capture task. If disabled, webhook failure marks the task as failed.</li><li><strong>Test request:</strong> Use the settings page test button to verify the URL, headers, and template.</li></ul><div class=\"help-note note-info\"><p>Webhook sends task summaries and per-page capture results. It does not upload screenshot files by itself.</p></div>"
   },
   "helpHistoryFailureHistoryTitle": {
     "message": "Input History & Failure Retries"
@@ -1077,6 +1098,9 @@
   "helpTroubleshootingContent": {
     "message": "<div class=\"faq-item\"><h3>1. Why do some pages fail to capture?</h3><p>Browsers block extensions from capturing <code>chrome://</code> pages, the Chrome Web Store, extension pages, and some privileged local pages. For normal websites, failures are usually caused by login state, network timeouts, unfinished loading, or server access rules. Use Open links only first when you need to confirm page state.</p></div><div class=\"faq-item\"><h3>2. What should I do when Full page stitching repeats or misses headers?</h3><p>Full page capture relies on scrolling and stitching. BatchShot temporarily hides fixed/sticky elements, but complex layouts may still misbehave. Try increasing Delay, switching to Viewport, or manually placing the page in a stable state first.</p></div><div class=\"faq-item\"><h3>3. Why does CSS selector search fail to submit?</h3><p>Check that selectors are unique, the elements are not inside an inaccessible iframe or Shadow DOM, and the button is actually clickable. If results update asynchronously, increase Delay. For multi-field templates, make sure each text-list row has the expected number of fields.</p></div><div class=\"faq-item\"><h3>4. Why are images blank or table data missing?</h3><p>This is usually lazy loading, animation, or Ajax data still in progress. Increase Delay to 2-5 seconds. For pages that need login or manual filters, open the batch first, verify the tabs, then capture the current window.</p></div><div class=\"faq-item\"><h3>5. Why did a scheduled task not run exactly on time?</h3><p>Scheduled captures rely on the browser's background Alarm. If the browser is fully closed, the system sleeps, the network is unavailable, or another task is already running, the task may be delayed or skipped. Leave review time for important scheduled jobs.</p></div><div class=\"faq-item\"><h3>6. Does Retry All overwrite successful screenshots?</h3><p>No. Retry All only creates a new task from failed items. Successful captures are not re-downloaded. If filename collisions worry you, include <code>{datetime}</code> in filenames or change the download folder.</p></div>"
   },
+  "helpCategoryQuickStart": {
+    "message": "Quick Start"
+  },
   "helpCategoryModes": {
     "message": "Capture Modes"
   },
@@ -1089,6 +1113,12 @@
   "helpCategoryTroubleshoot": {
     "message": "Troubleshooting & FAQs"
   },
+  "helpCopyrightTitle": {
+    "message": "Copyright Notice"
+  },
+  "helpCopyrightContent": {
+    "message": "<p>BatchShot is a webpage screenshot and local archiving tool. When you capture webpages, images, text, trademarks, interfaces, or other third-party content, copyright, trademark, and other rights remain with their original owners.</p><p>You are responsible for confirming that capturing, saving, distributing, displaying, commercial use, or republication complies with the target site terms, copyright law, privacy rules, and applicable regulations. BatchShot does not upload screenshots to a remote server and does not grant additional rights to third-party content.</p><p>The BatchShot project code is open-sourced under the <code>MIT License</code>; the project code license is not a license for captured webpage content.</p>"
+  },
   "helpNoResults": {
     "message": "No results found"
   },
@@ -1098,6 +1128,93 @@
   "helpResetSearchBtn": {
     "message": "Clear search"
   },
+  "pageTextSectionTitle": {
+    "message": "Page Text"
+  },
+  "extractPageTextLabel": {
+    "message": "Extract page text during capture"
+  },
+  "saveTextModeLabel": {
+    "message": "Save text files"
+  },
+  "saveTextModeSeparate": {
+    "message": "Save separate text file for each page"
+  },
+  "saveTextModeCombined": {
+    "message": "Combine all pages into one text file"
+  },
+  "saveTextCombinedSeparatorLabel": {
+    "message": "Combined separator"
+  },
+  "saveTextTemplateLabel": {
+    "message": "Save Text Template"
+  },
+  "pageTextLengthLimitLabel": {
+    "message": "Max text extraction length limit"
+  },
+  "pageTextLengthLimitHelp": {
+    "message": "Limits the maximum character count extracted from each webpage. Default is 100,000."
+  },
+  "includeTextInReportLabel": {
+    "message": "Include text/excerpt in report"
+  },
+  "includeTextInReportHelp": {
+    "message": "Once enabled, four fields will be appended to the exported screenshot report: text filename, text length, text excerpt, and meta description."
+  },
+  "automationSectionTitle": {
+    "message": "Automation"
+  },
+  "webhookEnabledLabel": {
+    "message": "Enable completion webhook"
+  },
+  "webhookUrlLabel": {
+    "message": "URL"
+  },
+  "webhookMethodLabel": {
+    "message": "Method"
+  },
+  "webhookTriggerConditionLabel": {
+    "message": "Trigger condition"
+  },
+  "webhookTriggerAlways": {
+    "message": "Always"
+  },
+  "webhookTriggerSuccess": {
+    "message": "All Successful"
+  },
+  "webhookTriggerFailed": {
+    "message": "Any Failed"
+  },
+  "webhookTriggerCompleted": {
+    "message": "Completed (Not Cancelled)"
+  },
+  "webhookHeadersLabel": {
+    "message": "Headers (JSON)"
+  },
+  "webhookBodyTemplateLabel": {
+    "message": "Body template (JSON)"
+  },
+  "webhookTimeoutLabel": {
+    "message": "Timeout (seconds)"
+  },
+  "webhookIgnoreErrorsLabel": {
+    "message": "Ignore webhook errors"
+  },
+  "webhookIgnoreErrorsHelp": {
+    "message": "When enabled, the capture task will finish successfully even if the Webhook fails. If disabled, a Webhook failure will mark the entire task as failed."
+  },
+  "testWebhookButton": {
+    "message": "Test Request"
+  },
+  "testWebhookSending": {
+    "message": "Sending..."
+  },
+  "testWebhookSuccess": {
+    "message": "Success: $1"
+  },
+  "testWebhookFailed": {
+    "message": "Failed: $1"
+  },
   "metadataFormatLabel": {
     "message": "Layout"
   },
@@ -1106,18 +1223,6 @@
   },
   "metadataFormatInline": {
     "message": "Inline"
-  },
-  "helpRuntimeDashboardTitle": {
-    "message": "Task Dashboard & Controls"
-  },
-  "helpRuntimeDashboardContent": {
-    "message": "<ul><li><strong>Task dashboard:</strong> When a batch, template, sequential, or current-window capture starts, the popup shows a task dashboard with progress, completed count, and per-page logs.</li><li><strong>Pause and resume <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"6\" y=\"4\" width=\"4\" height=\"16\" rx=\"1\"></rect><rect x=\"14\" y=\"4\" width=\"4\" height=\"16\" rx=\"1\"></rect></svg></span>:</strong> While a task is running, use the pause control to temporarily stop queue advancement, then resume after checking page state, login, or network conditions.</li><li><strong>Stop a task <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><rect x=\"6\" y=\"6\" width=\"12\" height=\"12\" rx=\"2\"></rect></svg></span>:</strong> Clicking the stop button requests cancellation of the current batch. Screenshots that have already downloaded are kept; pending or in-progress items stop advancing.</li><li><strong>Failure history and reports <span class=\"help-icon-inline\"><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z\"></path><path d=\"M12 9v4\"></path><path d=\"M12 17h.01\"></path></svg></span>:</strong> After a failure or stopped task, failed items remain traceable through failure history, the dashboard status, or exported reports, making later retries and review easier.</li><li><strong>Completion and cleanup:</strong> After a task completes, fails, or is stopped, the dashboard keeps the final result so you can review successful captures, failure reasons, and downloaded reports before closing it or starting another task.</li></ul><div class=\"help-note note-info\"><p><strong>Tip:</strong> Stop is a best-effort request to halt the queue. It may not interrupt a single screenshot or download that is already being exported; that step may finish before later tasks are skipped.</p></div>"
-  },
-  "helpCopyrightTitle": {
-    "message": "Copyright Notice"
-  },
-  "helpCopyrightContent": {
-    "message": "<p>BatchShot is a webpage screenshot and local archiving tool. When you capture webpages, images, text, trademarks, interfaces, or other third-party content, copyright, trademark, and other rights remain with their original owners.</p><p>You are responsible for confirming that capturing, saving, distributing, displaying, commercial use, or republication complies with the target site terms, copyright law, privacy rules, and applicable regulations. BatchShot does not upload screenshots to a remote server and does not grant additional rights to third-party content.</p><p>The BatchShot project code is open-sourced under the <code>MIT License</code>; the project code license is not a license for captured webpage content.</p>"
   },
   "tokenPickerHeader": {
     "message": "Insert parameter"

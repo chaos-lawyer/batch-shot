@@ -57,7 +57,9 @@
               <li><a href="#capture-settings" data-i18n="captureSectionTitle" class="active">Capture Settings</a></li>
               <li><a href="#save-output-settings" data-i18n="outputSectionTitle">Files & Saving</a></li>
               <li><a href="#metadata-settings" data-i18n="metadataSectionTitle">Metadata Overlay</a></li>
-              <li><a href="#report-settings" data-i18n="reportSectionTitle">Data & Reports</a></li>
+              <li><a href="#report-settings" data-i18n="reportSectionTitle">Screenshot Report</a></li>
+              <li><a href="#page-text-settings" data-i18n="pageTextSectionTitle">Page Text</a></li>
+              <li><a href="#automation-settings" data-i18n="automationSectionTitle">Automation</a></li>
               <li><a href="#general-settings" data-i18n="othersSectionTitle">General Settings</a></li>
               <li><a href="#shortcuts-settings" data-i18n="shortcutsSectionTitle">Keyboard Shortcuts</a></li>
               <li><a href="#appearance-settings" data-i18n="appearanceSectionTitle">Appearance & Language</a></li>
@@ -65,21 +67,23 @@
           </nav>
 
           <div class="sidebar-footer-container">
-            <button id="helpButton" type="button" class="sidebar-action-btn sidebar-btn secondary">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-              </svg>
-              <span data-i18n="helpButton">Help</span>
-            </button>
-            <button id="resetButton" type="button" class="sidebar-action-btn sidebar-reset-btn secondary danger">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                <path d="M3 3v5h5"/>
-              </svg>
-              <span data-i18n="resetOptionsButton">Reset</span>
-            </button>
+            <div class="sidebar-btn-row">
+              <button id="helpButton" type="button" class="sidebar-action-btn sidebar-btn secondary">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                  <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                </svg>
+                <span data-i18n="helpButton">Help</span>
+              </button>
+              <button id="resetButton" type="button" class="sidebar-action-btn sidebar-reset-btn secondary danger">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                  <path d="M3 3v5h5"/>
+                </svg>
+                <span data-i18n="resetOptionsButton">Reset</span>
+              </button>
+            </div>
             <div class="sidebar-footer">
               <a href="https://github.com/chaos-lawyer/batch-shot" target="_blank" rel="noopener noreferrer" class="github-link" data-i18n-title="githubLinkTitle" title="GitHub">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -244,7 +248,7 @@
           </section>
 
           <section id="report-settings" class="section">
-            <h2 data-i18n="reportSectionTitle">Data & Reports</h2>
+            <h2 data-i18n="reportSectionTitle">Screenshot Report</h2>
 
             <label class="check-row">
               <input id="reportEnabled" type="checkbox" aria-controls="reportControls" aria-expanded="false">
@@ -264,6 +268,117 @@
                 <div class="field standalone">
                   <label for="reportFields" data-i18n="reportFieldsLabel">Fields and order</label>
                   <input id="reportFields" type="text" value="{index},{url},{title},{status},{filename},{error}" spellcheck="false">
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="page-text-settings" class="section">
+            <h2 data-i18n="pageTextSectionTitle">Page Text</h2>
+
+            <label class="check-row">
+              <input id="extractPageText" type="checkbox" aria-controls="pageTextControls" aria-expanded="false">
+              <span data-i18n="extractPageTextLabel">Extract page text during capture</span>
+            </label>
+
+            <div id="pageTextControls">
+              <div class="page-text-inner">
+                <div class="field">
+                  <label for="saveTextMode" data-i18n="saveTextModeLabel">Save text files</label>
+                  <select id="saveTextMode">
+                    <option value="separate" data-i18n="saveTextModeSeparate">Save separate text file for each page</option>
+                    <option value="combined" data-i18n="saveTextModeCombined">Combine all pages into one text file</option>
+                  </select>
+                </div>
+
+                <div class="field" id="combinedSeparatorField">
+                  <label for="saveTextCombinedSeparator" data-i18n="saveTextCombinedSeparatorLabel">Combined separator</label>
+                  <input id="saveTextCombinedSeparator" type="text" value="---">
+                </div>
+
+                <div class="field">
+                  <label for="saveTextTemplate" data-i18n="saveTextTemplateLabel">Save Text Template</label>
+                  <textarea id="saveTextTemplate" rows="4"></textarea>
+                </div>
+
+                <div class="field">
+                  <label for="pageTextLengthLimit" data-i18n="pageTextLengthLimitLabel">Max text extraction length limit</label>
+                  <input id="pageTextLengthLimit" type="number" min="1" max="10000000" step="1000">
+                  <small class="check-help" data-i18n="pageTextLengthLimitHelp">Limits the maximum character count extracted from each webpage. Default is 100,000.</small>
+                </div>
+
+                <div class="check-row-wrapper">
+                  <label class="check-row">
+                    <input id="includeTextInReport" type="checkbox">
+                    <span data-i18n="includeTextInReportLabel">Include text/excerpt in report</span>
+                  </label>
+                  <small class="check-help" data-i18n-html="includeTextInReportHelp">Once enabled, four fields will be appended to the exported screenshot report: text filename, text length, text excerpt, and meta description.</small>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section id="automation-settings" class="section">
+            <h2 data-i18n="automationSectionTitle">Automation</h2>
+
+            <label class="check-row">
+              <input id="webhookEnabled" type="checkbox" aria-controls="webhookControls" aria-expanded="false">
+              <span data-i18n="webhookEnabledLabel">Enable completion webhook</span>
+            </label>
+
+            <div id="webhookControls">
+              <div class="webhook-inner">
+                <div class="field">
+                  <label for="webhookUrl" data-i18n="webhookUrlLabel">URL</label>
+                  <input id="webhookUrl" type="url" placeholder="http://127.0.0.1:8080/webhook" spellcheck="false">
+                </div>
+
+                <div class="grid">
+                  <div class="field">
+                    <label for="webhookMethod" data-i18n="webhookMethodLabel">Method</label>
+                    <select id="webhookMethod">
+                      <option value="POST">POST</option>
+                      <option value="GET">GET</option>
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="webhookTriggerCondition" data-i18n="webhookTriggerConditionLabel">Trigger condition</label>
+                    <select id="webhookTriggerCondition">
+                      <option value="always" data-i18n="webhookTriggerAlways">Always</option>
+                      <option value="success" data-i18n="webhookTriggerSuccess">All Successful</option>
+                      <option value="failed" data-i18n="webhookTriggerFailed">Any Failed</option>
+                      <option value="completed" data-i18n="webhookTriggerCompleted">Completed (Not Cancelled)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="field">
+                  <label for="webhookHeaders" data-i18n="webhookHeadersLabel">Headers (JSON)</label>
+                  <textarea id="webhookHeaders" rows="3" placeholder='{ "Authorization": "Bearer token" }' spellcheck="false" class="code-textarea"></textarea>
+                </div>
+
+                <div class="field">
+                  <label for="webhookBodyTemplate" data-i18n="webhookBodyTemplateLabel">Body template (JSON)</label>
+                  <textarea id="webhookBodyTemplate" rows="8" spellcheck="false" class="code-textarea"></textarea>
+                </div>
+
+                <div class="field">
+                  <label for="webhookTimeout" data-i18n="webhookTimeoutLabel">Timeout (seconds)</label>
+                  <input id="webhookTimeout" type="number" min="1" max="120" value="10" inputmode="numeric">
+                </div>
+
+                <div class="check-row-wrapper">
+                  <label class="check-row">
+                    <input id="webhookIgnoreErrors" type="checkbox">
+                    <span data-i18n="webhookIgnoreErrorsLabel">Ignore webhook errors</span>
+                  </label>
+                  <small class="check-help" data-i18n="webhookIgnoreErrorsHelp">When enabled, the capture task will finish successfully even if the Webhook fails. If disabled, a Webhook failure will mark the entire task as failed.</small>
+                </div>
+
+                <div class="field-actions">
+                  <button id="testWebhookButton" type="button" class="secondary" data-i18n="testWebhookButton">Test Request</button>
+                  <span id="testWebhookStatus" class="test-status"></span>
                 </div>
               </div>
             </div>

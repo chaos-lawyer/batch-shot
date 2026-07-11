@@ -6,7 +6,11 @@ const REPORT_FIELD_CONFIG = [
   { key: 'title', label: 'Page title', zhLabel: '页面标题', aliases: ['pageTitle'], zhAliases: ['页面标题', '标题'] },
   { key: 'status', label: 'Status', zhLabel: '状态', aliases: ['result'], zhAliases: ['结果', '状态'] },
   { key: 'filename', label: 'Filename', zhLabel: '文件名', aliases: ['file', 'path'], zhAliases: ['文件名', '文件'] },
-  { key: 'error', label: 'Error', zhLabel: '错误', aliases: ['message'], zhAliases: ['失败原因', '错误'] }
+  { key: 'error', label: 'Error', zhLabel: '错误', aliases: ['message'], zhAliases: ['失败原因', '错误'] },
+  { key: 'textFilename', label: 'Text Filename', zhLabel: '正文文件名', aliases: ['textfile', 'textpath'], zhAliases: ['正文文件名', '文本文件名'] },
+  { key: 'textLength', label: 'Text Length', zhLabel: '正文字数', aliases: ['textlen'], zhAliases: ['正文字数', '字数'] },
+  { key: 'textExcerpt', label: 'Text Excerpt', zhLabel: '正文摘要', aliases: ['excerpt', 'summary'], zhAliases: ['正文摘要', '摘要'] },
+  { key: 'metaDescription', label: 'Meta Description', zhLabel: '网页描述', aliases: ['description'], zhAliases: ['网页描述', '描述'] }
 ];
 
 const FIELD_BY_NAME = new Map();
@@ -66,8 +70,20 @@ export function normalizeReportFields(value) {
   return uniqueFields.length ? uniqueFields.join(',') : DEFAULT_REPORT_FIELDS;
 }
 
-export function getReportColumns(value) {
-  const fields = parseReportFieldTokens(normalizeReportFields(value));
+export function getReportColumns(value, includeTextInReport) {
+  let fieldsValue = value;
+  if (includeTextInReport) {
+    const normalized = normalizeReportFields(value);
+    const textFields = ['textFilename', 'textLength', 'textExcerpt', 'metaDescription'];
+    const newFields = normalized.split(',');
+    textFields.forEach((tf) => {
+      if (!newFields.some((f) => f.includes(tf))) {
+        newFields.push(`{${tf}}`);
+      }
+    });
+    fieldsValue = newFields.join(',');
+  }
+  const fields = parseReportFieldTokens(normalizeReportFields(fieldsValue));
   const uniqueFields = [];
   const usedKeys = new Set();
 

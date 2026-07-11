@@ -4,7 +4,8 @@ import { buildDownloadPath, buildFilename, buildFolderPath, csvEscape } from '..
 import { createXlsxReportDataUrl } from '../utils/xlsx.js';
 import { createReportRow, runCaptureJobs } from './capture-flow.js';
 import { createUrlJobs, createExplicitJobs, createSearchJobs, createTabJobs } from './job-factory.js';
-import { captureTabToDownload, downloadReport } from './report-download.js';
+import { captureTabToDownload, downloadReport, downloadCombinedTextIfNeeded } from './report-download.js';
+import { triggerWebhookIfNeeded } from './webhook.js';
 import { runCaptureJobList } from './search-runner.js';
 import { getActiveCapturableTab, getTargetWindowId, isCapturableTab, activateTab, sendTabMessage, waitForTabComplete, waitForTabReadyForCapture } from './tab-utils.js';
 import { ensureOffscreenDocument, closeOffscreenDocument } from './offscreen-manager.js';
@@ -252,16 +253,26 @@ export async function captureCurrentTab(options, deps) {
   batchStatus.start('currentTabRunningStatus', jobs.length);
 
   const captureDeps = getCaptureDeps(batchStatus, deps);
+  let rows = [];
+  const startedAt = new Date().toISOString();
+  const runId = 'run_' + Math.random().toString(36).substring(2, 11);
 
   try {
     await ensureOffscreenDocument();
-    const rows = await runCaptureJobList(jobs, options, captureDeps);
+    rows = await runCaptureJobList(jobs, options, captureDeps);
+    await downloadCombinedTextIfNeeded(rows, options, getReportDeps()).catch(console.error);
     const failed = rows.find((row) => row.status === 'error');
     if (failed) {
       throw statusError(failed.error || 'unknownCaptureError');
     }
     setStatus({ statusKey: 'currentTabDoneStatus' }, false, false);
   } finally {
+    await triggerWebhookIfNeeded(rows, options, {
+      taskName: 'Capture Current Page',
+      runId,
+      startedAt,
+      isCancelled: getBatchState().stopping
+    }, deps);
     await closeOffscreenDocument().catch(() => {});
     batchStatus.reset();
   }
@@ -294,19 +305,31 @@ export async function captureCurrentWindowTabs(options, deps) {
   batchStatus.start('currentWindowTabsRunningStatus', jobs.length);
 
   const captureDeps = getCaptureDeps(batchStatus, deps);
+  const startedAt = new Date().toISOString();
+  const runId = 'run_' + Math.random().toString(36).substring(2, 11);
+  let reportFilename = '';
 
   try {
     await ensureOffscreenDocument();
     rows = await runCaptureJobList(jobs, options, captureDeps);
 
+    await downloadCombinedTextIfNeeded(rows, options, getReportDeps()).catch(console.error);
+
     if (options.reportEnabled) {
-      await downloadReport(rows, options, getReportDeps());
+      reportFilename = await downloadReport(rows, options, getReportDeps());
     }
 
     const successful = rows.filter((row) => row.status === 'ok').length;
     batchStatus.finish(rows, options.reportEnabled);
     return successful;
   } finally {
+    await triggerWebhookIfNeeded(rows, options, {
+      taskName: 'Capture Current Window',
+      runId,
+      startedAt,
+      isCancelled: getBatchState().stopping,
+      reportFilename
+    }, deps);
     if (deps.clearPreparedTabContextsForTabIds) {
       await deps.clearPreparedTabContextsForTabIds(preparedContexts.matchedTabIds).catch(() => {});
     }
@@ -347,6 +370,9 @@ export async function runBatch(options, deps) {
 
   let rows = [];
   let taskHistoryId = '';
+  const startedAt = new Date().toISOString();
+  const runId = 'run_' + Math.random().toString(36).substring(2, 11);
+  let reportFilename = '';
 
   try {
     if (startCaptureTaskHistory) {
@@ -364,13 +390,22 @@ export async function runBatch(options, deps) {
       )
     });
 
+    await downloadCombinedTextIfNeeded(rows, options, getReportDeps()).catch(console.error);
+
     if (options.reportEnabled) {
-      await downloadReport(rows, options, getReportDeps());
+      reportFilename = await downloadReport(rows, options, getReportDeps());
     }
     batchStatus.finish(rows, options.reportEnabled);
   } catch (error) {
     setStatus(statusFromError(error), false, false);
   } finally {
+    await triggerWebhookIfNeeded(rows, options, {
+      taskName: options.taskName || 'Batch Capture',
+      runId,
+      startedAt,
+      isCancelled: getBatchState().stopping,
+      reportFilename
+    }, deps);
     if (taskHistoryId && finishCaptureTaskHistory) {
       await finishCaptureTaskHistory(taskHistoryId, {
         rows,
@@ -448,6 +483,10 @@ export async function captureCurrentTabSequence(options, deps) {
   const captureDeps = getCaptureDeps(batchStatus, deps);
 
   const rows = [];
+  const startedAt = new Date().toISOString();
+  const runId = 'run_' + Math.random().toString(36).substring(2, 11);
+  let reportFilename = '';
+
   try {
     if (startUrl && startUrl !== tab.url) {
       await chrome.tabs.update(tab.id, { url: startUrl });
@@ -484,7 +523,12 @@ export async function captureCurrentTabSequence(options, deps) {
           url: result.url,
           title: result.title,
           filename: result.filename,
-          status: 'ok'
+          status: 'ok',
+          textFilename: result.textFilename,
+          textLength: result.textLength,
+          textExcerpt: result.textExcerpt,
+          metaDescription: result.metaDescription,
+          text: result.text
         });
         rows.push(row);
         if (batchStatus.addLog) {
@@ -512,8 +556,10 @@ export async function captureCurrentTabSequence(options, deps) {
       }
     }
 
+    await downloadCombinedTextIfNeeded(rows, options, getReportDeps()).catch(console.error);
+
     if (options.reportEnabled) {
-      await downloadReport(rows, options, getReportDeps());
+      reportFilename = await downloadReport(rows, options, getReportDeps());
     }
 
     const successful = rows.filter((row) => row.status === 'ok').length;
@@ -525,14 +571,24 @@ export async function captureCurrentTabSequence(options, deps) {
 
     return rows.length;
   } catch (error) {
-    if (rows.length > 0 && options.reportEnabled) {
-      await downloadReport(rows, options, getReportDeps()).catch(() => {});
+    if (rows.length > 0) {
+      await downloadCombinedTextIfNeeded(rows, options, getReportDeps()).catch(() => {});
+      if (options.reportEnabled) {
+        reportFilename = await downloadReport(rows, options, getReportDeps()).catch(() => '');
+      }
     }
     const successful = rows.filter((row) => row.status === 'ok').length;
     const failed = count - successful;
     const statusKey = error.statusKey || 'unknownCaptureError';
     throw new SequentialCaptureError(statusKey, successful, failed, error);
   } finally {
+    await triggerWebhookIfNeeded(rows, options, {
+      taskName: 'Sequential Capture',
+      runId,
+      startedAt,
+      isCancelled: getBatchState().stopping,
+      reportFilename
+    }, deps);
     await closeOffscreenDocument().catch(() => {});
     batchStatus.reset();
   }

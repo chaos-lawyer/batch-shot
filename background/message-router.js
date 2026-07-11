@@ -4,6 +4,7 @@ export function setupMessageRouter(deps) {
     getBatchState,
     loadSettings,
     saveSettings,
+    sendWebhook,
     openActionPopupFromMenu,
     syncActionUi,
     scheduledTasks,
@@ -297,6 +298,13 @@ export function setupMessageRouter(deps) {
         })
         .catch(() => {});
       return false;
+    }
+
+    if (message.action === 'testWebhook') {
+      sendWebhook(message.payload.payload, message.payload.options)
+        .then((result) => sendResponse({ ok: true, result }))
+        .catch((error) => sendResponse({ ok: false, error: error.message }));
+      return true;
     }
 
     return false;

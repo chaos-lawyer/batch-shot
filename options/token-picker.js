@@ -322,6 +322,33 @@ const DATETIME_TOKENS = [
   }
 ];
 
+const WEBHOOK_BODY_TOKENS = [
+  { key: 'runId', enValue: '{runId}', zhValue: '{runId}', enLabel: '{runId}', zhLabel: '{runId}', enDescription: 'Unique identifier for the run', zhDescription: '当前任务运行的唯一标识符 ID' },
+  { key: 'taskName', enValue: '{taskName}', zhValue: '{taskName}', enLabel: '{taskName}', zhLabel: '{taskName}', enDescription: 'Name of the task', zhDescription: '任务名称' },
+  { key: 'status', enValue: '{status}', zhValue: '{status}', enLabel: '{status}', zhLabel: '{status}', enDescription: 'Run status (success/failed/cancelled)', zhDescription: '任务状态 (success/failed/cancelled)' },
+  { key: 'startedAt', enValue: '{startedAt}', zhValue: '{startedAt}', enLabel: '{startedAt}', zhLabel: '{startedAt}', enDescription: 'Start time (ISO format)', zhDescription: '任务开始时间 (ISO格式)' },
+  { key: 'finishedAt', enValue: '{finishedAt}', zhValue: '{finishedAt}', enLabel: '{finishedAt}', zhLabel: '{finishedAt}', enDescription: 'Finish time (ISO format)', zhDescription: '任务结束时间 (ISO格式)' },
+  { key: 'durationMs', enValue: '{durationMs}', zhValue: '{durationMs}', enLabel: '{durationMs}', zhLabel: '{durationMs}', enDescription: 'Execution duration in milliseconds', zhDescription: '执行耗时 (毫秒)' },
+  { key: 'total', enValue: '{total}', zhValue: '{total}', enLabel: '{total}', zhLabel: '{total}', enDescription: 'Total number of items', zhDescription: '总截图数' },
+  { key: 'success', enValue: '{success}', zhValue: '{success}', enLabel: '{success}', zhLabel: '{success}', enDescription: 'Successful captures count', zhDescription: '成功截图数' },
+  { key: 'failed', enValue: '{failed}', zhValue: '{failed}', enLabel: '{failed}', zhLabel: '{failed}', enDescription: 'Failed captures count', zhDescription: '失败截图数' },
+  { key: 'cancelled', enValue: '{cancelled}', zhValue: '{cancelled}', enLabel: '{cancelled}', zhLabel: '{cancelled}', enDescription: 'Whether the task was cancelled (true/false)', zhDescription: '任务是否被用户中止 (true/false)' },
+  { key: 'folder', enValue: '{folder}', zhValue: '{folder}', enLabel: '{folder}', zhLabel: '{folder}', enDescription: 'Save folder path', zhDescription: '保存的文件夹路径' },
+  { key: 'reportFilename', enValue: '{reportFilename}', zhValue: '{reportFilename}', enLabel: '{reportFilename}', zhLabel: '{reportFilename}', enDescription: 'Exported report path', zhDescription: '导出的 CSV/XLSX 报告路径' },
+  { key: 'unfinishedTasksCount', enValue: '{unfinishedTasksCount}', zhValue: '{unfinishedTasksCount}', enLabel: '{unfinishedTasksCount}', zhLabel: '{unfinishedTasksCount}', enDescription: 'Number of unfinished scheduled tasks', zhDescription: '未完成的计划任务数' },
+  { key: 'items', enValue: '{items}', zhValue: '{items}', enLabel: '{items}', zhLabel: '{items}', enDescription: 'Array of detailed capture results', zhDescription: '包含所有单页截图详情的 JSON 数组' }
+];
+
+const TEXT_TEMPLATE_TOKENS = [
+  { key: 'text', enValue: '{text}', zhValue: '{正文}', enLabel: '{text} · Text', zhLabel: '{正文} · text', enDescription: 'Extracted plain text of the page', zhDescription: '提取的网页正文纯文本' },
+  { key: 'url', enValue: '{url}', zhValue: '{网址}', enLabel: '{url} · URL', zhLabel: '{网址} · url', enDescription: 'Page URL', zhDescription: '网页完整 URL 地址' },
+  { key: 'title', enValue: '{title}', zhValue: '{标题}', enLabel: '{title} · Title', zhLabel: '{标题} · title', enDescription: 'Page Title', zhDescription: '网页标题' },
+  { key: 'keyword', enValue: '{keyword}', zhValue: '{关键词}', enLabel: '{keyword} · Keyword', zhLabel: '{关键词} · keyword', enDescription: 'Task keyword / template substitution', zhDescription: '任务关联关键词' },
+  { key: 'capturedAt', enValue: '{capturedAt}', zhValue: '{截图时间}', enLabel: '{capturedAt} · CapturedAt', zhLabel: '{截图时间} · capturedAt', enDescription: 'Captured timestamp (ISO format)', zhDescription: '截图与提取时间戳' },
+  { key: 'metaDescription', enValue: '{metaDescription}', zhValue: '{描述}', enLabel: '{metaDescription} · Description', zhLabel: '{描述} · description', enDescription: 'Page meta description tag', zhDescription: '网页 Meta Description 描述' },
+  { key: 'lang', enValue: '{lang}', zhValue: '{语言}', enLabel: '{lang} · Language', zhLabel: '{语言} · lang', enDescription: 'Page language setting', zhDescription: '网页声明的语言代码' }
+];
+
 const PICKER_CONFIGS = [
   {
     inputId: 'filenamePattern',
@@ -359,6 +386,20 @@ const PICKER_CONFIGS = [
     isDatetime: false,
     position: 'top',
     tokens: FOLDER_TOKENS
+  },
+  {
+    inputId: 'webhookBodyTemplate',
+    mode: 'inline',
+    isDatetime: false,
+    multiline: true,
+    tokens: WEBHOOK_BODY_TOKENS
+  },
+  {
+    inputId: 'saveTextTemplate',
+    mode: 'inline',
+    isDatetime: false,
+    multiline: true,
+    tokens: TEXT_TEMPLATE_TOKENS
   }
 ];
 
@@ -520,17 +561,27 @@ function syncInputToHtml(input, editableDiv, config) {
 // Convert contenteditable HTML content back to flat text value in input
 function syncHtmlToInput(input, editableDiv) {
   let textVal = '';
-  editableDiv.childNodes.forEach((node) => {
+
+  function traverse(node) {
     if (node.nodeType === Node.TEXT_NODE) {
       textVal += node.textContent;
     } else if (node.nodeType === Node.ELEMENT_NODE) {
       if (node.classList.contains('input-token-capsule')) {
         textVal += node.textContent;
+      } else if (node.nodeName === 'BR') {
+        textVal += '\n';
+      } else if (node.nodeName === 'DIV' || node.nodeName === 'P') {
+        if (textVal && !textVal.endsWith('\n')) {
+          textVal += '\n';
+        }
+        node.childNodes.forEach(traverse);
       } else {
-        textVal += node.innerText || '';
+        node.childNodes.forEach(traverse);
       }
     }
-  });
+  }
+
+  editableDiv.childNodes.forEach(traverse);
 
   if (input.value !== textVal) {
     input.value = textVal;
@@ -614,7 +665,7 @@ function renderPanelContent(panel, config) {
     btn.addEventListener('click', (e) => {
       e.preventDefault();
       const editableDiv = btn.closest('.token-picker-container').querySelector('.token-picker-editable-input');
-      const input = btn.closest('.token-picker-container').querySelector('input');
+      const input = btn.closest('.token-picker-container').querySelector('input, textarea');
       handleInsert(input, editableDiv, token, config);
     });
 
@@ -697,7 +748,7 @@ export function initTokenPickers() {
     });
 
     editableDiv.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
+      if (e.key === 'Enter' && !config.multiline) {
         // Prevent line-break behaviors inside settings fields
         e.preventDefault();
       }
