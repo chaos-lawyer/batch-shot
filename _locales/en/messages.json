@@ -272,6 +272,9 @@
   "filenameDateTimeFormatLabel": {
     "message": "Filename date/time format"
   },
+  "filenameDateTimeFormatHelp": {
+    "message": "Also applies to the <code>{datetime}</code> placeholder in folder templates."
+  },
   "reportEnabledLabel": {
     "message": "Export screenshot report"
   },

@@ -269,6 +269,9 @@
   "filenameDateTimeFormatLabel": {
     "message": "文件名日期时间格式"
   },
+  "filenameDateTimeFormatHelp": {
+    "message": "同时适用于文件夹模板中的 <code>{datetime}</code> / <code>{日期时间}</code> 变量。"
+  },
   "reportEnabledLabel": {
     "message": "导出截图报告"
   },
