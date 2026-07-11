@@ -7,7 +7,7 @@
       if (!window.chrome || !window.chrome.runtime || !window.chrome.runtime.sendMessage) {
         window.chrome = {
           runtime: {
-            getManifest: () => ({ version: "0.9.0" }),
+            getManifest: () => ({ version: "0.9.1" }),
             getURL: (path) => {
               if (window.location.protocol === 'file:') {
                 return '../' + path;
