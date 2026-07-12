@@ -255,16 +255,19 @@
     "message": "文件夹"
   },
   "folderPlaceholder": {
-    "message": "BatchShot/{date}/{域名}"
+    "message": "BatchShot/{日期时间}/{域名}"
   },
   "folderTooltip": {
-    "message": "留空会保存到下载文件夹根目录；可用 {date}/{域名}/{关键词} 等参数生成子文件夹。"
+    "message": "留空会保存到下载文件夹根目录；可用 {日期时间}/{域名}/{关键词} 等参数生成子文件夹。"
+  },
+  "folderDateTimeTokenTooltip": {
+    "message": "插入日期时间；显示样式请前往后台设置中的“文件名日期时间格式”修改。"
   },
   "filenameLabel": {
     "message": "文件名"
   },
   "filenameHelp": {
-    "message": "可用 {index}/{序号}、{total}/{总数}、{host}/{域名}、{title}/{标题}、{keyword}/{关键词}、{folder}/{文件夹}、{datetime}/{日期时间}、{date}/{日期}、{time}/{时间}、{year}/{年}、{month}/{月}、{day}/{日}、{url}/{网址}"
+    "message": "可用 {index}/{序号}、{total}/{总数}、{host}/{域名}、{title}/{标题}、{keyword}/{关键词}、{folder}/{文件夹}、{datetime}/{日期时间}、{url}/{网址}"
   },
   "filenameDateTimeFormatLabel": {
     "message": "文件名日期时间格式"
@@ -288,7 +291,7 @@
     "message": "截图报告"
   },
   "othersSectionTitle": {
-    "message": "常规设置"
+    "message": "其他"
   },
   "iconClickActionLabel": {
     "message": "点击扩展图标"

@@ -258,16 +258,19 @@
     "message": "Folder"
   },
   "folderPlaceholder": {
-    "message": "BatchShot/{date}/{domain}"
+    "message": "BatchShot/{datetime}/{domain}"
   },
   "folderTooltip": {
-    "message": "Leave empty to save in the Downloads folder root, or use placeholders such as {date}/{domain}/{keyword} for subfolders."
+    "message": "Leave empty to save in the Downloads folder root, or use placeholders such as {datetime}/{domain}/{keyword} for subfolders."
+  },
+  "folderDateTimeTokenTooltip": {
+    "message": "Insert date and time. Change its style under Filename date/time format in Settings."
   },
   "filenameLabel": {
     "message": "Filename"
   },
   "filenameHelp": {
-    "message": "Use {index}, {total}, {host}, {title}, {keyword}, {folder}, {datetime}, {date}, {time}, {year}, {month}, {day}, {url}"
+    "message": "Use {index}, {total}, {host}, {title}, {keyword}, {folder}, {datetime}, {url}"
   },
   "filenameDateTimeFormatLabel": {
     "message": "Filename date/time format"

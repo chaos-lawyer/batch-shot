@@ -36,11 +36,6 @@ const PATH_TEMPLATE_ALIASES = {
   host: ['host', 'hostname', 'domain', '域名', '主机名', '网站'],
   folder: ['folder', '文件夹', '目录'],
   datetime: ['datetime', 'dateTime', '日期时间', '时间戳'],
-  date: ['date', '日期'],
-  time: ['time', '时间'],
-  year: ['year', '年份', '年'],
-  month: ['month', '月份', '月'],
-  day: ['day', '日期日', '日'],
   title: ['title', '标题', '页面标题'],
   keyword: ['keyword', 'searchKeyword', 'query', '搜索关键词', '关键词', '搜索词'],
   url: ['url', '网址', '链接', '地址']
@@ -72,8 +67,6 @@ function pathTemplateValues(url, index, total, options, context = {}, folder = '
   const parsed = new URL(url);
   const now = new Date();
   const datetime = formatDateTime(now, options.filenameDateTimeFormat || 'YYYY-MM-DD_HHmmss');
-  const date = formatDateTime(now, 'YYYY-MM-DD');
-  const time = formatDateTime(now, 'HHmmss');
 
   return {
     index: String(index + 1).padStart(3, '0'),
@@ -81,11 +74,6 @@ function pathTemplateValues(url, index, total, options, context = {}, folder = '
     host: parsed.hostname.replace(/^www\./, ''),
     folder: folder || 'download',
     datetime,
-    date,
-    time,
-    year: formatDateTime(now, 'YYYY'),
-    month: formatDateTime(now, 'MM'),
-    day: formatDateTime(now, 'DD'),
     title: context.title || '',
     keyword: context.keyword || context.searchKeyword || searchKeywordFromUrl(parsed),
     url

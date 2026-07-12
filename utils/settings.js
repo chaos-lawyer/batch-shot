@@ -36,7 +36,7 @@ export const DEFAULT_SETTINGS = {
   sequentialPanelExpanded: false,
   filenamePattern: '{index}-{host}',
   filenameDateTimeFormat: 'YYYY-MM-DD_HHmmss',
-  metadataEnabled: false,
+  metadataEnabled: true,
   metadataPosition: 'top',
   metadataLayout: 'stacked',
   metadataFields: '{capturedAt},{url}',

@@ -6,7 +6,37 @@ function closestSubmitElement(target) {
     return null;
   }
 
-  return target.closest('button,input[type="button"],input[type="submit"],[role="button"],a');
+  const nativeControl = target.closest('button,input[type="button"],input[type="submit"],[role="button"],a');
+  if (nativeControl) {
+    return nativeControl;
+  }
+
+  // Some component libraries render buttons as plain div/span elements and
+  // attach their click handler to that element or one of its ancestors. Keep
+  // the picker usable on those pages without treating every arbitrary element
+  // as a submit control.
+  const submitHint = /(btn|button|search|submit|query|lookup|搜索|查询|检索|提交)/i;
+  let current = target;
+  while (current && current instanceof Element && current !== document.body) {
+    if (current.matches('div,span')) {
+      const hint = [
+        current.id,
+        current.className,
+        current.getAttribute('aria-label'),
+        current.getAttribute('title')
+      ].join(' ');
+      if (submitHint.test(hint)) {
+        return current;
+      }
+    }
+
+    if (current.matches('form')) {
+      break;
+    }
+    current = current.parentElement;
+  }
+
+  return null;
 }
 
 function closestTemplateFieldElement(target) {

@@ -37,41 +37,6 @@ const FILENAME_TOKENS = [
     zhDescription: '完整日期时间（可自定义格式）'
   },
   {
-    key: 'date',
-    enValue: '{date}',
-    zhValue: '{日期}',
-    enDescription: 'Date (e.g. 2026-07-11)',
-    zhDescription: '当前日期，例如 2026-07-11'
-  },
-  {
-    key: 'time',
-    enValue: '{time}',
-    zhValue: '{时间}',
-    enDescription: 'Time (e.g. 113958)',
-    zhDescription: '当前时间，例如 113958'
-  },
-  {
-    key: 'year',
-    enValue: '{year}',
-    zhValue: '{年}',
-    enDescription: 'Year (e.g. 2026)',
-    zhDescription: '当前年份，例如 2026'
-  },
-  {
-    key: 'month',
-    enValue: '{month}',
-    zhValue: '{月}',
-    enDescription: 'Month (e.g. 07)',
-    zhDescription: '当前月份，例如 07'
-  },
-  {
-    key: 'day',
-    enValue: '{day}',
-    zhValue: '{日}',
-    enDescription: 'Day of the month (e.g. 11)',
-    zhDescription: '当前日，例如 11'
-  },
-  {
     key: 'title',
     enValue: '{title}',
     zhValue: '{标题}',
@@ -594,8 +559,11 @@ function renderPanelContent(panel, config) {
     btn.type = 'button';
     btn.className = 'token-picker-capsule';
     btn.textContent = isZh ? token.zhValue : token.enValue;
-    btn.title = isZh ? token.zhDescription : token.enDescription;
-    btn.setAttribute('aria-label', isZh ? token.zhDescription : token.enDescription);
+    const description = token.key === 'datetime' && config.datetimeTitleKey
+      ? message(config.datetimeTitleKey)
+      : (isZh ? token.zhDescription : token.enDescription);
+    btn.title = description;
+    btn.setAttribute('aria-label', description);
 
     btn.addEventListener('mousedown', (e) => {
       // Prevent focus blur from firing on contenteditable
@@ -626,6 +594,17 @@ export function initTokenPickers() {
     // Ensure we do not double-initialize if called multiple times or on hot-reloads
     if (!input || input.dataset.tokenPickerInit) return;
     input.dataset.tokenPickerInit = 'true';
+    const excludedTokens = new Set(
+      String(input.dataset.tokenPickerExclude || '')
+        .split(',')
+        .map((key) => key.trim())
+        .filter(Boolean)
+    );
+    config = {
+      ...config,
+      tokens: config.tokens.filter((token) => !excludedTokens.has(token.key)),
+      datetimeTitleKey: input.dataset.tokenPickerDatetimeTitle || ''
+    };
 
     // Create wrapper container and replace element positions
     const container = document.createElement('div');
