@@ -16,7 +16,7 @@ export function createPrepareFormJobs(options, deps) {
     }));
 }
 
-export async function prepareSingleFormJob(job, index, total, deps) {
+export async function prepareSingleFormJob(job, index, total, deps, options = {}) {
   const {
     chrome,
     batchStatus,
@@ -33,7 +33,9 @@ export async function prepareSingleFormJob(job, index, total, deps) {
 
   try {
     tab = await chrome.tabs.create({ url: job.url, active: true });
-    await waitForTabComplete(tab.id, 45000, 'searchPageLoadTimeoutError');
+    const timeoutSeconds = Number(options.pageLoadTimeout);
+    const timeoutMs = (Number.isFinite(timeoutSeconds) ? Math.min(300, Math.max(5, timeoutSeconds)) : 45) * 1000;
+    await waitForTabComplete(tab.id, timeoutMs, 'searchPageLoadTimeoutError');
     const latestTab = await chrome.tabs.get(tab.id).catch(() => tab);
     if (deps.rememberPreparedTabContext) {
       await deps.rememberPreparedTabContext(latestTab, job);
@@ -83,7 +85,7 @@ export async function runPrepareForms(options, deps) {
     const rows = await runCaptureJobs(jobs, options, {
       shouldStop: () => batchStatus.getState().stopping,
       waitWhilePaused,
-      captureSingleJob: (job, index, total) => prepareSingleFormJob(job, index, total, deps),
+      captureSingleJob: (job, index, total) => prepareSingleFormJob(job, index, total, deps, options),
       onJobComplete: (row) => {
         if (batchStatus && batchStatus.addLog) {
           batchStatus.addLog(row.url, row.status, row.error, row.title);

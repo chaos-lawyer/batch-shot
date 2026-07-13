@@ -2,6 +2,13 @@ import { message } from '../utils/i18n.js';
 
 const FILENAME_TOKENS = [
   {
+    key: 'datetime',
+    enValue: '{datetime}',
+    zhValue: '{日期时间}',
+    enDescription: 'Full date and time (customizable)',
+    zhDescription: '完整日期时间（可自定义格式）'
+  },
+  {
     key: 'index',
     enValue: '{index}',
     zhValue: '{序号}',
@@ -28,13 +35,6 @@ const FILENAME_TOKENS = [
     zhValue: '{文件夹}',
     enDescription: 'Save folder path',
     zhDescription: '保存文件夹'
-  },
-  {
-    key: 'datetime',
-    enValue: '{datetime}',
-    zhValue: '{日期时间}',
-    enDescription: 'Full date and time (customizable)',
-    zhDescription: '完整日期时间（可自定义格式）'
   },
   {
     key: 'title',

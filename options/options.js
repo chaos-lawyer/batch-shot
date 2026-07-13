@@ -15,6 +15,7 @@ const SETTINGS_FIELDS = [
   { key: 'urlListWrap', type: 'checked' },
   { key: 'urlTemplateDelimiter', type: 'value', fallback: true },
   { key: 'captureMode', type: 'value' },
+  { key: 'pageLoadTimeout', type: 'number', min: 5, max: 300 },
   { key: 'reportEnabled', type: 'checked' },
   { key: 'reportFormat', type: 'value' },
   { key: 'reportFields', type: 'text' },

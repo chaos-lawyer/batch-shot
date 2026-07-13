@@ -1,11 +1,12 @@
 export async function downloadDataUrl(dataUrl, filename, deps) {
-  const { chrome } = deps;
-  return chrome.downloads.download({
+  const { chrome, runWithStop } = deps;
+  const download = chrome.downloads.download({
     url: dataUrl,
     filename,
     conflictAction: 'uniquify',
     saveAs: false
   });
+  return runWithStop ? runWithStop(download) : download;
 }
 
 export async function downloadReport(rows, options, deps) {

@@ -24,6 +24,7 @@ export const DEFAULT_SETTINGS = {
   format: 'png',
   screenshotQuality: 92,
   delay: 3,
+  pageLoadTimeout: 45,
   folder: 'BatchShot',
   reportEnabled: false,
   reportFormat: 'csv',
@@ -68,6 +69,7 @@ export const DEFAULT_SETTINGS = {
 function migrateSettings(settings) {
   const screenshotQuality = Number(settings.screenshotQuality);
   const historyLimit = Number(settings.historyLimit);
+  const pageLoadTimeout = Number(settings.pageLoadTimeout);
   const appLanguage = ['auto', 'en', 'zh_CN'].includes(settings.appLanguage)
     ? settings.appLanguage
     : DEFAULT_SETTINGS.appLanguage;
@@ -146,6 +148,9 @@ function migrateSettings(settings) {
     historyLimit: Number.isFinite(historyLimit)
       ? clampInteger(historyLimit, DEFAULT_SETTINGS.historyLimit, 1, 50)
       : DEFAULT_SETTINGS.historyLimit,
+    pageLoadTimeout: Number.isFinite(pageLoadTimeout)
+      ? clampInteger(pageLoadTimeout, DEFAULT_SETTINGS.pageLoadTimeout, 5, 300)
+      : DEFAULT_SETTINGS.pageLoadTimeout,
     filenameDateTimeFormat: settings.filenameDateTimeFormat
       || [settings.filenameDateFormat, settings.filenameTimeFormat].filter(Boolean).join('_')
       || DEFAULT_SETTINGS.filenameDateTimeFormat,

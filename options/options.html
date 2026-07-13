@@ -107,6 +107,12 @@
               </select>
             </div>
 
+            <div class="field">
+              <label for="pageLoadTimeout" data-i18n="pageLoadTimeoutLabel">Page access timeout</label>
+              <input id="pageLoadTimeout" type="number" min="5" max="300" step="1" value="45" inputmode="numeric">
+              <small data-i18n-html="pageLoadTimeoutHelp">Maximum seconds to wait for a page to finish loading before marking it as an error.</small>
+            </div>
+
             <label class="check-row">
               <input id="scheduledTasksEnabled" type="checkbox">
               <span data-i18n="scheduledTasksEnabledLabel">Enable scheduled captures</span>

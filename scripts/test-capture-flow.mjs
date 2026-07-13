@@ -73,9 +73,21 @@ assert.equal(batch.getState().statusKey, 'batchDoneWithReportStatus');
 assert.deepEqual(batch.getState().statusArgs, ['1', '1']);
 
 batch.start('runningStatus');
+batch.addLog('https://bad.example', 'error', 'pageLoadTimeoutError', 'Bad page');
+let stopSignals = 0;
+batch.onStop(() => {
+  stopSignals += 1;
+});
 batch.requestStop();
 assert.equal(batch.getState().stopping, true);
 assert.equal(batch.getState().statusKey, 'stoppingStatus');
+assert.equal(stopSignals, 1);
+assert.deepEqual(batch.getState().logs, [{
+  url: 'https://bad.example',
+  status: 'error',
+  error: 'pageLoadTimeoutError',
+  title: 'Bad page'
+}]);
 assert.equal(batch.togglePause(), false);
 assert.ok(emitted.length >= 6);
 

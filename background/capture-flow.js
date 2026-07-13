@@ -30,6 +30,7 @@ export async function runCaptureJobs(jobs, options, controls) {
 }
 
 export function createBatchStatusState(onStatus = () => {}) {
+  const stopListeners = new Set();
   let state = {
     running: false,
     paused: false,
@@ -86,6 +87,15 @@ export function createBatchStatusState(onStatus = () => {}) {
     requestStop() {
       state = { ...state, stopping: true };
       emit({ statusKey: 'stoppingStatus' }, true, false);
+      stopListeners.forEach((listener) => listener());
+    },
+    onStop(listener) {
+      if (state.stopping) {
+        listener();
+        return () => {};
+      }
+      stopListeners.add(listener);
+      return () => stopListeners.delete(listener);
     },
     togglePause() {
       if (!state.running || state.stopping) {

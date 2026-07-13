@@ -45,7 +45,12 @@ export function waitForRelatedNewTab(sourceTab, timeoutMs = 2000, deps) {
   });
 }
 
-export async function prepareCaptureJob(job, deps) {
+function pageLoadTimeoutMs(options = {}) {
+  const seconds = Number(options.pageLoadTimeout);
+  return (Number.isFinite(seconds) ? Math.min(300, Math.max(5, seconds)) : 45) * 1000;
+}
+
+export async function prepareCaptureJob(job, deps, options = {}) {
   const {
     chrome,
     waitForTabComplete,
@@ -62,7 +67,8 @@ export async function prepareCaptureJob(job, deps) {
 
   if (job.kind === 'search') {
     const tab = await chrome.tabs.create({ url: job.url, active: true });
-    await waitForTabComplete(tab.id, 45000, 'searchPageLoadTimeoutError');
+    const timeoutMs = pageLoadTimeoutMs(options);
+    await waitForTabComplete(tab.id, timeoutMs, 'searchPageLoadTimeoutError');
 
     const resultTabPromise = waitForRelatedNewTab(tab, 2000, deps);
     const response = await sendTabMessage(tab.id, {
@@ -80,7 +86,7 @@ export async function prepareCaptureJob(job, deps) {
       ? await chrome.tabs.get(openedTab.id).catch(() => openedTab)
       : tab;
 
-    await waitForTabReadyForCapture(captureTarget.id, 45000, 'searchPageLoadTimeoutError');
+    await waitForTabReadyForCapture(captureTarget.id, timeoutMs, 'searchPageLoadTimeoutError');
     await sleepWithControls(Math.max(0, Number(job.searchResultDelay ?? 0)) * 1000);
     const latestTab = await chrome.tabs.get(captureTarget.id).catch(() => captureTarget);
     return {
@@ -130,12 +136,12 @@ export async function captureSingleJob(job, index, total, options, deps) {
   let url = job.url;
 
   try {
-    activeJob = await prepareCaptureJob(job, deps);
+    activeJob = await prepareCaptureJob(job, deps, options);
     url = activeJob.url || activeJob.tab?.url || url;
     batchStatus.updateProgress(index, total, url);
 
     if (activeJob.tab?.id && activeJob.waitForLoad !== false) {
-      await waitForTabComplete(activeJob.tab.id);
+      await waitForTabComplete(activeJob.tab.id, pageLoadTimeoutMs(options));
     }
 
     if (activeJob.applyDelay !== false) {

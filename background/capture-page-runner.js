@@ -19,6 +19,46 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function pageLoadTimeoutMs(options = {}) {
+  const seconds = Number(options.pageLoadTimeout);
+  return (Number.isFinite(seconds) ? Math.min(300, Math.max(5, seconds)) : 45) * 1000;
+}
+
+function runWithStop(promise, batchStatus) {
+  if (batchStatus.getState().stopping) {
+    return Promise.reject(statusError('captureStoppedError'));
+  }
+  if (typeof batchStatus.onStop !== 'function') {
+    return promise;
+  }
+
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    let unsubscribe = () => {};
+    unsubscribe = batchStatus.onStop(() => {
+      if (settled) return;
+      settled = true;
+      unsubscribe();
+      reject(statusError('captureStoppedError'));
+    });
+
+    Promise.resolve(promise).then(
+      (value) => {
+        if (settled) return;
+        settled = true;
+        unsubscribe();
+        resolve(value);
+      },
+      (error) => {
+        if (settled) return;
+        settled = true;
+        unsubscribe();
+        reject(error);
+      }
+    );
+  });
+}
+
 async function waitWhilePaused(getBatchState) {
   while (getBatchState().paused && !getBatchState().stopping) {
     await sleep(250);
@@ -52,15 +92,15 @@ function getCaptureQuality(options) {
 }
 
 export async function captureViewport(tab, options, deps) {
-  const prep = await sendTabMessage(tab.id, {
+  const prep = await deps.sendTabMessage(tab.id, {
     action: 'prepare',
     payload: { hideFixedElements: false }
   }).catch(() => null);
 
   try {
     if (options.metadataEnabled || options.format === 'pdf') {
-      const dataUrl = await captureVisibleTab(tab, { format: 'png' });
-      const [injection] = await chrome.scripting.executeScript({
+      const dataUrl = await deps.runWithStop(captureVisibleTab(tab, { format: 'png' }));
+      const [injection] = await deps.runWithStop(chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: () => ({
           scrollHeight: window.innerHeight,
@@ -69,13 +109,13 @@ export async function captureViewport(tab, options, deps) {
           viewportWidth: window.innerWidth,
           devicePixelRatio: window.devicePixelRatio || 1
         })
-      });
-      const stitchResponse = await chrome.runtime.sendMessage({
+      }));
+      const stitchResponse = await deps.runWithStop(chrome.runtime.sendMessage({
         action: 'stitch',
         segments: [{ dataUrl, actualScrollX: 0, actualScrollY: 0, isLastFrame: true }],
         metrics: injection.result,
         options
-      });
+      }));
 
       if (!stitchResponse?.ok) {
         throw statusError('stitchError', [stitchResponse?.error || '']);
@@ -91,10 +131,13 @@ export async function captureViewport(tab, options, deps) {
       captureOptions.quality = getCaptureQuality(options);
     }
 
-    return captureVisibleTab(tab, captureOptions);
+    return deps.runWithStop(captureVisibleTab(tab, captureOptions));
   } finally {
     if (prep?.ok) {
-      await sendTabMessage(tab.id, { action: 'cleanup' }).catch(() => {});
+      await Promise.race([
+        deps.rawSendTabMessage(tab.id, { action: 'cleanup' }).catch(() => {}),
+        sleep(500)
+      ]);
     }
   }
 }
@@ -118,7 +161,7 @@ export function createScrollPositions(totalSize, viewportSize) {
 
 export async function captureFullPage(tab, options, deps) {
   const { getBatchState } = deps;
-  const prep = await sendTabMessage(tab.id, { action: 'prepare' });
+  const prep = await deps.sendTabMessage(tab.id, { action: 'prepare' });
   if (!prep?.ok) {
     throw statusError('capturePrepareError');
   }
@@ -130,7 +173,7 @@ export async function captureFullPage(tab, options, deps) {
   // real content bottom.
   if (metrics.scrollHeight <= metrics.viewportHeight) {
     try {
-      const [injection] = await chrome.scripting.executeScript({
+      const [injection] = await deps.runWithStop(chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: () => {
           const body = document.body;
@@ -144,7 +187,7 @@ export async function captureFullPage(tab, options, deps) {
           });
           return Math.ceil(maxBottom);
         }
-      });
+      }));
       if (injection?.result && injection.result > metrics.scrollHeight) {
         metrics = { ...metrics, scrollHeight: injection.result };
       }
@@ -167,10 +210,10 @@ export async function captureFullPage(tab, options, deps) {
 
       const requestedX = scrollXs[column];
       const requestedY = scrollYs[row];
-      const scrollResponse = await sendTabMessage(tab.id, { action: 'scrollTo', x: requestedX, y: requestedY });
+      const scrollResponse = await deps.sendTabMessage(tab.id, { action: 'scrollTo', x: requestedX, y: requestedY });
       await sleepWithControls(CAPTURE_SETTLE_MS, getBatchState);
 
-      const dataUrl = await captureVisibleTab(tab, { format: 'png' });
+      const dataUrl = await deps.runWithStop(captureVisibleTab(tab, { format: 'png' }));
       segments.push({
         dataUrl,
         requestedX,
@@ -184,12 +227,12 @@ export async function captureFullPage(tab, options, deps) {
     }
   }
 
-  const stitchResponse = await chrome.runtime.sendMessage({
+  const stitchResponse = await deps.runWithStop(chrome.runtime.sendMessage({
     action: 'stitch',
     segments,
     metrics,
     options
-  });
+  }));
 
   if (!stitchResponse?.ok) {
     throw statusError('stitchError', [stitchResponse?.error || '']);
@@ -200,10 +243,11 @@ export async function captureFullPage(tab, options, deps) {
 
 function getCaptureDeps(batchStatus, overrides = {}) {
   const getBatchState = () => batchStatus.getState();
+  const stopAware = (promise) => runWithStop(promise, batchStatus);
   const selfDeps = {
     chrome,
     batchStatus,
-    waitForTabComplete,
+    waitForTabComplete: (...args) => stopAware(waitForTabComplete(...args)),
     sleepWithControls: (ms) => sleepWithControls(ms, getBatchState),
     captureTabToDownload: (tab, index, total, options, urlContext) => captureTabToDownload(tab, index, total, options, urlContext, selfDeps),
     createReportRow,
@@ -212,12 +256,14 @@ function getCaptureDeps(batchStatus, overrides = {}) {
     runCaptureJobs,
     getBatchState,
     waitWhilePaused: () => waitWhilePaused(getBatchState),
-    activateTab,
+    activateTab: (tab) => stopAware(activateTab(tab)),
     captureViewport: (tab, options) => captureViewport(tab, options, selfDeps),
     captureFullPage: (tab, options) => captureFullPage(tab, options, selfDeps),
     buildFilename,
-    sendTabMessage,
-    waitForTabReadyForCapture,
+    sendTabMessage: (...args) => stopAware(sendTabMessage(...args)),
+    rawSendTabMessage: sendTabMessage,
+    waitForTabReadyForCapture: (...args) => stopAware(waitForTabReadyForCapture(...args)),
+    runWithStop: stopAware,
     ...overrides
   };
   return selfDeps;
@@ -490,7 +536,7 @@ export async function captureCurrentTabSequence(options, deps) {
   try {
     if (startUrl && startUrl !== tab.url) {
       await chrome.tabs.update(tab.id, { url: startUrl });
-      await waitForTabComplete(tab.id);
+      await captureDeps.waitForTabComplete(tab.id, pageLoadTimeoutMs(options));
       await sleepWithControls(1000, getBatchState);
       const updatedTab = await chrome.tabs.get(tab.id);
       tab.url = updatedTab.url || startUrl;
@@ -617,7 +663,7 @@ export async function openCurrentTabSequence(options, deps) {
   try {
     if (startUrl && startUrl !== tab.url) {
       await chrome.tabs.update(tab.id, { url: startUrl });
-      await waitForTabComplete(tab.id);
+      await sequenceDeps.waitForTabComplete(tab.id, pageLoadTimeoutMs(options));
       await sleepWithControls(1000, getBatchState);
       const updatedTab = await chrome.tabs.get(tab.id);
       tab.url = updatedTab.url || startUrl;

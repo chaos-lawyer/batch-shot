@@ -171,6 +171,12 @@
   "delayTooltip": {
     "message": "页面加载完成后等待多久再截图，单位为秒。"
   },
+  "pageLoadTimeoutLabel": {
+    "message": "页面访问超时"
+  },
+  "pageLoadTimeoutHelp": {
+    "message": "等待页面加载完成的最长时间，单位为秒；超时后将该页面标记为错误。可设置 5–300 秒。"
+  },
   "scheduleLabel": {
     "message": "定时"
   },

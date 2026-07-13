@@ -1081,6 +1081,28 @@ body .token-picker-panel {
   padding: 8px 10px;
 }
 
+.token-picker-container:has(#folder) .token-picker-editable-input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  white-space: nowrap;
+  word-break: normal;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+.token-picker-container:has(#folder) .token-picker-editable-input::-webkit-scrollbar {
+  display: none;
+}
+
+.token-picker-container:has(#folder) {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+}
+
 .token-picker-panel.visible {
   display: block;
 }
